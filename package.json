@@ -1,6 +1,7 @@
 {
-  "name": "vexora",
-  "version": "0.1.0",
+  "name": "vyaparflow",
+  "version": "1.0.0",
+  "description": "VyaparFlow — Export Logistics Readiness Platform for Indian MSMEs",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,7 +9,9 @@
     "vercel-build": "prisma generate && next build",
     "postinstall": "prisma generate",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

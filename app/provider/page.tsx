@@ -1,12 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
-import { getActiveUser, updateProviderTaskAction } from '@/app/actions';
+import { requireAuth, getAllUsers, updateProviderTaskAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { Truck, CheckCircle2, FileText, AlertTriangle, Clock, ShieldCheck } from 'lucide-react';
 
 export default async function ProviderPage() {
-  const { role, user } = await getActiveUser();
+  const { role, user } = await requireAuth();
+  const allUsers = await getAllUsers();
 
   // Get all active provider tasks across system
   const providerTasks = await prisma.providerTask.findMany({
@@ -20,7 +21,7 @@ export default async function ProviderPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} />
+      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Header */}

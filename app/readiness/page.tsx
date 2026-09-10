@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
-import { getActiveUser, getAllUsers } from '@/app/actions';
+import { requireAuth, getAllUsers } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { calculateReadinessScore } from '@/lib/services/readiness';
 import {
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 
 export default async function ReadinessPage() {
-  const { role, user } = await getActiveUser();
+  const { role, user } = await requireAuth();
   const allUsers = await getAllUsers();
   const business = user?.businesses[0];
   const product = business?.products[0];

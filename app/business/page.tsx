@@ -1,12 +1,12 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import BusinessRegistrationsForm from '@/components/BusinessRegistrationsForm';
-import { getActiveUser, getAllUsers, updateBusinessRegistrationsAction, verifyDocumentAction } from '@/app/actions';
+import { requireAuth, getAllUsers, updateBusinessRegistrationsAction, verifyDocumentAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { Building2, MapPin, CheckCircle2, ShieldCheck, Upload, FileText, AlertTriangle, Clock, XCircle, Eye } from 'lucide-react';
 
 export default async function BusinessPage() {
-  const { role, user } = await getActiveUser();
+  const { role, user } = await requireAuth();
   const allUsers = await getAllUsers();
   
   // If the logged-in user doesn't own a business (e.g. Admin or Provider),

@@ -1,11 +1,12 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { getActiveUser, requestCertificationAction } from '@/app/actions';
+import { requireAuth, getAllUsers, requestCertificationAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { Award, Clock, CheckCircle2, ShieldCheck, ArrowRight, Building } from 'lucide-react';
 
 export default async function CertificationsPage() {
-  const { role, user } = await getActiveUser();
+  const { role, user } = await requireAuth();
+  const allUsers = await getAllUsers();
   const business = user?.businesses[0];
 
   const certRequirements = await prisma.requirement.findMany({
@@ -25,7 +26,7 @@ export default async function CertificationsPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} />
+      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Header */}

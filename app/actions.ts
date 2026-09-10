@@ -36,14 +36,14 @@ const PERSONA_COOKIE = 'vyaparflow_active_role';
 const USER_ID_COOKIE = 'vyaparflow_active_user_id';
 
 export async function getActiveUser(): Promise<{
-  user: any;
-  role: 'MSME' | 'PROVIDER' | 'ADMIN';
+  user: any | null;
+  role: 'MSME' | 'PROVIDER' | 'ADMIN' | null;
 }> {
   const cookieStore = await cookies();
   const userIdVal = cookieStore.get(USER_ID_COOKIE)?.value;
   const roleVal = cookieStore.get(PERSONA_COOKIE)?.value;
 
-  if (userIdVal && roleVal) {
+  if (userIdVal) {
     const user = await prisma.user.findUnique({
       where: { id: userIdVal },
       include: { 
@@ -60,43 +60,53 @@ export async function getActiveUser(): Promise<{
       },
     });
     if (user) {
-      return { user, role: roleVal as 'MSME' | 'PROVIDER' | 'ADMIN' };
+      const activeRole = (roleVal || user.role || 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN';
+      return { user, role: activeRole };
     }
   }
 
-  // Fallback to demo user if no cookie or user not found
-  const demoMsme = await prisma.user.findFirst({
-    where: { role: 'MSME' },
-    include: { 
-      businesses: { 
-        include: { 
-          products: { 
-            include: { 
-              destinations: { include: { country: true } } 
-            } 
-          } 
-        } 
-      },
-      providers: true
-    },
-  });
+  // No active user / unauthenticated guest state
+  return { user: null, role: null };
+}
 
-  return { user: demoMsme, role: 'MSME' };
+export async function requireAuth(): Promise<{
+  user: any;
+  role: 'MSME' | 'PROVIDER' | 'ADMIN';
+}> {
+  const { user, role } = await getActiveUser();
+  if (!user || !role) {
+    redirect('/login');
+  }
+  return { user, role };
+}
+
+export async function logoutUserAction(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete(USER_ID_COOKIE);
+  cookieStore.delete(PERSONA_COOKIE);
+  revalidatePath('/', 'layout');
+  redirect('/login');
 }
 
 export async function switchUserRoleAction(role: 'MSME' | 'PROVIDER' | 'ADMIN'): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(PERSONA_COOKIE, role);
-  revalidatePath('/');
+  const targetUser = await prisma.user.findFirst({
+    where: { role },
+  });
+  if (targetUser) {
+    cookieStore.set(USER_ID_COOKIE, targetUser.id, { path: '/' });
+  }
+  cookieStore.set(PERSONA_COOKIE, role, { path: '/' });
+  revalidatePath('/', 'layout');
 }
 
 export async function switchUserAccountAction(userId: string): Promise<void> {
   const cookieStore = await cookies();
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (user) {
-    cookieStore.set(USER_ID_COOKIE, user.id);
-    cookieStore.set(PERSONA_COOKIE, user.role);
-    revalidatePath('/');
+    cookieStore.set(USER_ID_COOKIE, user.id, { path: '/' });
+    cookieStore.set(PERSONA_COOKIE, user.role, { path: '/' });
+    revalidatePath('/', 'layout');
   }
 }
 
@@ -730,6 +740,7 @@ export async function registerUserAction(formData: FormData): Promise<void> {
 export async function loginUserAction(formData: FormData): Promise<void> {
   const rawEmail = ((formData.get('email') as string) || '').trim();
   const email = rawEmail.toLowerCase();
+  const password = (formData.get('password') as string) || '';
 
   if (!email) {
     throw new Error('Email is required');
@@ -744,14 +755,20 @@ export async function loginUserAction(formData: FormData): Promise<void> {
     },
   });
 
-  // If user doesn't exist yet, auto-provision so there is never an error
+  // If user doesn't exist yet, auto-provision so user can log in seamlessly
   if (!user) {
+    const isSpecialRole = email.includes('admin')
+      ? 'ADMIN'
+      : email.includes('provider') || email.includes('freight') || email.includes('lab') || email.includes('cha')
+      ? 'PROVIDER'
+      : 'MSME';
+
     user = await prisma.user.create({
       data: {
         email,
         name: rawEmail.split('@')[0] || 'User',
-        role: email.includes('admin') ? 'ADMIN' : 'MSME',
-        passwordHash: 'password123',
+        role: isSpecialRole,
+        passwordHash: password || 'password123',
       },
     });
   }
@@ -760,7 +777,53 @@ export async function loginUserAction(formData: FormData): Promise<void> {
   cookieStore.set(USER_ID_COOKIE, user.id, { path: '/' });
   cookieStore.set(PERSONA_COOKIE, user.role, { path: '/' });
   revalidatePath('/', 'layout');
-  redirect('/dashboard');
+
+  if (user.role === 'PROVIDER') {
+    redirect('/provider');
+  } else if (user.role === 'ADMIN') {
+    redirect('/admin');
+  } else {
+    redirect('/dashboard');
+  }
+}
+
+export async function quickLoginAction(target: string): Promise<void> {
+  let user: any = null;
+
+  // Check if target is an email
+  if (target.includes('@')) {
+    user = await prisma.user.findFirst({
+      where: { email: target.toLowerCase().trim() },
+    });
+  }
+
+  // If not found by email, check if target is a role ('MSME', 'PROVIDER', 'ADMIN')
+  if (!user) {
+    user = await prisma.user.findFirst({
+      where: { role: target.toUpperCase() },
+    });
+  }
+
+  if (!user) {
+    user = await prisma.user.findFirst();
+  }
+
+  if (!user) {
+    throw new Error('No user account available for login');
+  }
+
+  const cookieStore = await cookies();
+  cookieStore.set(USER_ID_COOKIE, user.id, { path: '/' });
+  cookieStore.set(PERSONA_COOKIE, user.role, { path: '/' });
+  revalidatePath('/', 'layout');
+
+  if (user.role === 'PROVIDER') {
+    redirect('/provider');
+  } else if (user.role === 'ADMIN') {
+    redirect('/admin');
+  } else {
+    redirect('/dashboard');
+  }
 }
 
 export async function deleteUserAction(userId: string): Promise<void> {

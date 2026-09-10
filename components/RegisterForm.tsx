@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { UserPlus, Building2, FileText, ShieldCheck, Truck, CheckCircle2 } from 'lucide-react';
 import GSTLookupButton from '@/components/GSTLookupButton';
 import { GSTDetails } from '@/lib/services/sandboxGst';
+import { saveRecentAccount } from '@/lib/recentAccounts';
 
 interface RegisterFormProps {
   action: (formData: FormData) => Promise<void>;
@@ -25,6 +26,23 @@ export default function RegisterForm({ action }: RegisterFormProps) {
     }
     if (details.address?.state) {
       setState(details.address.state);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const form = e.currentTarget;
+    const emailInput = form.elements.namedItem('email') as HTMLInputElement;
+    const nameInput = form.elements.namedItem('name') as HTMLInputElement;
+    const roleSelect = form.elements.namedItem('role') as HTMLSelectElement;
+    const businessNameInput = form.elements.namedItem('businessName') as HTMLInputElement;
+
+    if (emailInput?.value) {
+      saveRecentAccount({
+        email: emailInput.value,
+        name: nameInput?.value || emailInput.value.split('@')[0],
+        role: (roleSelect?.value as 'MSME' | 'PROVIDER' | 'ADMIN') || role,
+        companyName: businessNameInput?.value || (role === 'ADMIN' ? 'Platform Administrator' : undefined),
+      });
     }
   };
 
@@ -64,7 +82,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
         </div>
       </div>
 
-      <form action={action} className="space-y-4 text-xs">
+      <form action={action} onSubmit={handleSubmit} className="space-y-4 text-xs">
         {/* Full Name */}
         <div>
           <label className="block font-semibold text-slate-700 mb-1">Full Name *</label>

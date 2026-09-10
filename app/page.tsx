@@ -14,11 +14,14 @@ import {
   Boxes,
   Compass,
   MapPin,
+  LogIn,
+  UserPlus,
 } from 'lucide-react';
 
 export default async function LandingPage() {
   const { role, user } = await getActiveUser();
   const allUsers = await getAllUsers();
+  const isLoggedIn = Boolean(user && role);
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-slate-900 flex flex-col font-sans">
@@ -46,21 +49,43 @@ export default async function LandingPage() {
 
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-4 pt-2">
-                <Link
-                  href="/dashboard"
-                  className="px-6 py-3.5 rounded-xl bg-orange-600 text-white font-bold text-base shadow-lg shadow-orange-600/30 hover:bg-orange-700 transition-all flex items-center gap-2 group cursor-pointer"
-                >
-                  Enter Golden Demo Dashboard
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                {isLoggedIn ? (
+                  <>
+                    <Link
+                      href={role === 'PROVIDER' ? '/provider' : role === 'ADMIN' ? '/admin' : '/dashboard'}
+                      className="px-6 py-3.5 rounded-xl bg-orange-600 text-white font-bold text-base shadow-lg shadow-orange-600/30 hover:bg-orange-700 transition-all flex items-center gap-2 group cursor-pointer"
+                    >
+                      Go to Your Dashboard
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <Link
+                      href="/readiness"
+                      className="px-6 py-3.5 rounded-xl bg-white text-slate-800 font-semibold text-base border border-slate-300 hover:bg-slate-50 transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+                    >
+                      <Compass className="w-5 h-5 text-slate-600" />
+                      View Readiness Engine
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      className="px-6 py-3.5 rounded-xl bg-orange-600 text-white font-bold text-base shadow-lg shadow-orange-600/30 hover:bg-orange-700 transition-all flex items-center gap-2 group cursor-pointer"
+                    >
+                      <LogIn className="w-5 h-5" />
+                      Sign In / Demo Login
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
 
-                <Link
-                  href="/readiness"
-                  className="px-6 py-3.5 rounded-xl bg-white text-slate-800 font-semibold text-base border border-slate-300 hover:bg-slate-50 transition-all flex items-center gap-2 cursor-pointer shadow-xs"
-                >
-                  <Compass className="w-5 h-5 text-slate-600" />
-                  View Readiness Engine
-                </Link>
+                    <Link
+                      href="/login?tab=register"
+                      className="px-6 py-3.5 rounded-xl bg-white text-slate-800 font-semibold text-base border border-slate-300 hover:bg-slate-50 transition-all flex items-center gap-2 cursor-pointer shadow-xs"
+                    >
+                      <UserPlus className="w-5 h-5 text-orange-600" />
+                      Register New MSME
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Feature Checklist */}
@@ -117,12 +142,21 @@ export default async function LandingPage() {
                 </div>
 
                 {/* CTA inside card */}
-                <Link
-                  href="/dashboard"
-                  className="block w-full py-3 text-center bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-sm transition-colors shadow-md"
-                >
-                  Simulate Resolving Blockers & Shipping →
-                </Link>
+                {isLoggedIn ? (
+                  <Link
+                    href="/dashboard"
+                    className="block w-full py-3 text-center bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-sm transition-colors shadow-md"
+                  >
+                    Open MSME Dashboard →
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="block w-full py-3 text-center bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl text-sm transition-colors shadow-md"
+                  >
+                    Sign In to Resolve Blockers & Ship →
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -130,7 +164,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Process Flow Cards */}
-      <section className="py-16 bg-white border-b border-slate-200">
+      <section id="overview" className="py-16 bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
             <h2 className="text-3xl font-extrabold text-slate-900 font-serif">

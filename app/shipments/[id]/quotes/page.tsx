@@ -1,13 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
-import { getActiveUser, selectQuoteAction } from '@/app/actions';
+import { requireAuth, getAllUsers, selectQuoteAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { Truck, Clock, CheckCircle2, DollarSign, Award, ArrowLeft, ShieldCheck } from 'lucide-react';
 
 export default async function QuotesPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: shipmentId } = await params;
-  const { role, user } = await getActiveUser();
+  const { role, user } = await requireAuth();
+  const allUsers = await getAllUsers();
 
   const shipment = await prisma.shipment.findUnique({
     where: { id: shipmentId },
@@ -38,15 +39,14 @@ export default async function QuotesPage({ params }: { params: Promise<{ id: str
   if (quotes.length > 0) {
     const sortedByCost = [...quotes].sort((a, b) => a.cost - b.cost);
     const sortedByTime = [...quotes].sort((a, b) => a.transitMin - b.transitMin);
-    cheapestId = sortedByCost[0].id;
-    fastestId = sortedByTime[0].id;
-    // Recommended: balance of sea freight cost & reliability
-    recommendedId = sortedByCost[0].id;
+    cheapestId = sortedByCost[0]?.id;
+    fastestId = sortedByTime[0]?.id;
+    recommendedId = quotes.find((q) => q.provider?.name?.toLowerCase().includes('swiftglobe'))?.id || cheapestId;
   }
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} />
+      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <Link href="/shipments" className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900">
