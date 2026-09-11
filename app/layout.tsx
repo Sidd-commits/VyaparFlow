@@ -21,7 +21,8 @@ export const metadata: Metadata = {
     "MSME Exports",
     "Logistics SaaS",
     "Customs Compliance",
-    "Palghar MSME",
+    "Pan-India MSME Exporters",
+    "Global Trade Logistics",
     "VyaparFlow",
   ],
 };

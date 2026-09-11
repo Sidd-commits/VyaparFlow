@@ -14,8 +14,8 @@ export default function RegisterForm({ action }: RegisterFormProps) {
   const [role, setRole] = useState<'MSME' | 'PROVIDER' | 'ADMIN'>('MSME');
   const [gstin, setGstin] = useState('');
   const [businessName, setBusinessName] = useState('');
-  const [city, setCity] = useState('Palghar');
-  const [state, setState] = useState('Maharashtra');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
 
   const handleGSTFetched = (details: GSTDetails) => {
     if (details.legalName) {
@@ -72,7 +72,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
               ? 'Service Provider Registration'
               : 'Create MSME Account'}
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-600">
             {role === 'ADMIN'
               ? 'Admin operator console — no business registrations required'
               : role === 'PROVIDER'
@@ -85,7 +85,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
       <form action={action} onSubmit={handleSubmit} className="space-y-4 text-xs">
         {/* Full Name */}
         <div>
-          <label className="block font-semibold text-slate-700 mb-1">Full Name *</label>
+          <label className="block font-bold text-slate-900 mb-1">Full Name *</label>
           <input
             type="text"
             name="name"
@@ -97,14 +97,14 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                 : 'e.g. Ramesh Shah'
             }
             defaultValue={role === 'ADMIN' ? 'Platform Administrator' : ''}
-            className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium"
+            className="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs transition-all"
             required
           />
         </div>
 
         {/* Email Address */}
         <div>
-          <label className="block font-semibold text-slate-700 mb-1">Email Address *</label>
+          <label className="block font-bold text-slate-900 mb-1">Email Address *</label>
           <input
             type="email"
             name="email"
@@ -113,30 +113,44 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                 ? 'e.g. admin@vyaparflow.com'
                 : role === 'PROVIDER'
                 ? 'e.g. contact@freightcorp.com'
-                : 'e.g. ramesh@palghar-exports.com'
+                : 'e.g. ramesh@exportco.com'
             }
             defaultValue={role === 'ADMIN' ? 'admin@vyaparflow.com' : ''}
-            className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium"
+            className="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs transition-all"
             required
           />
-          <p className="text-[10px] text-slate-500 mt-1">
-            If your email is already registered, you will automatically be signed in without error.
-          </p>
+        </div>
+
+        {/* Account Password */}
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block font-bold text-slate-900">Account Password *</label>
+            <span className="text-[10px] text-slate-500 font-medium">Min. 6 characters</span>
+          </div>
+          <input
+            type="password"
+            name="password"
+            placeholder="Create a strong account password"
+            minLength={6}
+            defaultValue="password123"
+            className="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs transition-all"
+            required
+          />
         </div>
 
         {/* Account Role Selector */}
         <div>
-          <label className="block font-semibold text-slate-700 mb-1">Account Role *</label>
+          <label className="block font-bold text-slate-900 mb-1">Account Role *</label>
           <select
             name="role"
             value={role}
             onChange={(e) => setRole(e.target.value as 'MSME' | 'PROVIDER' | 'ADMIN')}
-            className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium cursor-pointer"
+            className="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 font-bold cursor-pointer focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs"
             required
           >
-            <option value="MSME">🏢 MSME Exporter (Requires GSTIN & IEC)</option>
-            <option value="ADMIN">🛡️ Platform Admin Operator (No GSTIN / Business details)</option>
-            <option value="PROVIDER">🚢 Service Provider (Freight / Lab / CHA)</option>
+            <option value="MSME" className="text-slate-900 bg-white font-medium">🏢 MSME Exporter (Requires GSTIN & IEC)</option>
+            <option value="ADMIN" className="text-slate-900 bg-white font-medium">🛡️ Platform Admin Operator (No GSTIN / Business details)</option>
+            <option value="PROVIDER" className="text-slate-900 bg-white font-medium">🚢 Service Provider (Freight / Lab / CHA)</option>
           </select>
         </div>
 
@@ -162,31 +176,31 @@ export default function RegisterForm({ action }: RegisterFormProps) {
         {/* --- ROLE: PROVIDER VIEW --- */}
         {role === 'PROVIDER' && (
           <div className="space-y-4">
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-              <label className="block font-semibold text-slate-800">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-300 space-y-2">
+              <label className="block font-bold text-slate-900">
                 Provider / Agency Name *
               </label>
               <input
                 type="text"
                 name="businessName"
                 placeholder="e.g. SwiftGlobe Freight Logistics Pvt Ltd"
-                className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs"
+                className="w-full p-2.5 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium text-xs"
                 required
               />
             </div>
 
-            <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 space-y-2">
-              <label className="block font-semibold text-blue-900">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-300 space-y-2">
+              <label className="block font-bold text-slate-900">
                 Service Domain *
               </label>
               <select
                 name="businessCategory"
-                className="w-full p-2.5 rounded-xl border border-blue-300 bg-white font-medium text-xs"
+                className="w-full p-2.5 rounded-xl border-2 border-slate-300 bg-white text-slate-900 font-bold text-xs"
                 required
               >
-                <option value="Steel">🚢 International Ocean & Air Freight Forwarding</option>
-                <option value="Food">🧪 Testing & Certification Laboratory</option>
-                <option value="Agricultural Goods">📋 Customs House Agent (CHA)</option>
+                <option value="Steel" className="text-slate-900 bg-white font-medium">🚢 International Ocean & Air Freight Forwarding</option>
+                <option value="Food" className="text-slate-900 bg-white font-medium">🧪 Testing & Certification Laboratory</option>
+                <option value="Agricultural Goods" className="text-slate-900 bg-white font-medium">📋 Customs House Agent (CHA)</option>
               </select>
             </div>
           </div>
@@ -196,36 +210,40 @@ export default function RegisterForm({ action }: RegisterFormProps) {
         {role === 'MSME' && (
           <>
             {/* Business Type / Industry Selector */}
-            <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 space-y-2">
-              <span className="font-bold text-blue-900 text-xs flex items-center gap-1.5">
-                <Building2 className="w-4 h-4 text-blue-600" /> Type of Business *
-              </span>
+            <div className="p-4 rounded-xl bg-slate-50 border-2 border-slate-300 space-y-2">
+              <div className="flex items-center gap-1.5">
+                <Building2 className="w-4 h-4 text-orange-600" />
+                <span className="font-bold text-slate-900 text-xs">Type of Business / Industry Sector *</span>
+              </div>
               <select
                 name="businessCategory"
-                className="w-full p-2.5 rounded-xl border border-blue-300 bg-white font-medium text-xs cursor-pointer"
+                defaultValue=""
+                className="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 font-bold text-xs cursor-pointer focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none"
                 required
               >
-                <option value="">— Select your business type —</option>
-                <option value="Steel">🏗️ Steel & Metal Products</option>
-                <option value="Food">🍱 Food & Processed Foods</option>
-                <option value="Agricultural Goods">🌾 Agricultural Goods</option>
-                <option value="Diamonds">💎 Diamonds & Precious Stones</option>
-                <option value="Gold">🪙 Gold & Precious Metals</option>
+                <option value="" disabled className="text-slate-500 bg-white font-semibold">
+                  — Select your business type —
+                </option>
+                <option value="Steel" className="text-slate-900 bg-white font-medium">🏗️ Steel & Metal Products</option>
+                <option value="Food" className="text-slate-900 bg-white font-medium">🍱 Food & Processed Foods</option>
+                <option value="Agricultural Goods" className="text-slate-900 bg-white font-medium">🌾 Agricultural Goods</option>
+                <option value="Diamonds" className="text-slate-900 bg-white font-medium">💎 Diamonds & Precious Stones</option>
+                <option value="Gold" className="text-slate-900 bg-white font-medium">🪙 Gold & Precious Metals</option>
               </select>
-              <p className="text-[10px] text-blue-700">
+              <p className="text-[11px] text-slate-600 font-medium">
                 Your certificates, documents, and compliance requirements will be generated based on this selection.
               </p>
             </div>
 
             {/* Compulsory GSTIN & IEC Fields with Format Validation */}
-            <div className="p-3.5 rounded-xl bg-orange-50/70 border border-orange-200 space-y-3">
-              <span className="font-bold text-orange-900 text-xs flex items-center gap-1.5">
+            <div className="p-4 rounded-2xl bg-orange-50/80 border-2 border-orange-200/80 space-y-3">
+              <span className="font-bold text-orange-950 text-xs flex items-center gap-1.5">
                 <FileText className="w-4 h-4 text-orange-600" /> Mandatory Government Registrations
               </span>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block font-semibold text-slate-800">
+                  <label className="block font-bold text-slate-900">
                     GSTIN Number (15 Characters) <span className="text-red-600 font-bold">* Compulsory</span>
                   </label>
                 </div>
@@ -240,11 +258,11 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                     title="GSTIN format: 2 digits (state code) + 5 letters (PAN) + 4 digits + 1 letter + 1 alphanumeric + Z + 1 alphanumeric. Example: 27AAACP1234F1Z5"
                     maxLength={15}
                     minLength={15}
-                    className="flex-1 p-2.5 rounded-xl border border-slate-300 bg-white font-medium uppercase text-xs invalid:[&:not(:placeholder-shown)]:border-red-400 invalid:[&:not(:placeholder-shown)]:bg-red-50/50"
+                    className="flex-1 p-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-bold uppercase text-xs focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none"
                     required
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1 mb-2">
+                <p className="text-[10px] text-slate-600 mt-1 mb-2 font-medium">
                   Format: 2 digits + 5 letters + 4 digits + 1 letter + 1 alphanumeric + Z + 1 alphanumeric
                 </p>
 
@@ -255,8 +273,8 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                 />
               </div>
 
-              <div className="pt-2 border-t border-orange-200/60">
-                <label className="block font-semibold text-slate-800 mb-1">
+              <div className="pt-2 border-t border-orange-200/80">
+                <label className="block font-bold text-slate-900 mb-1">
                   DGFT Import Export Code (IEC - 10 Digits) <span className="text-red-600 font-bold">* Compulsory</span>
                 </label>
                 <input
@@ -267,18 +285,18 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                   title="IEC Code must be exactly 10 digits. Example: 0301099882"
                   maxLength={10}
                   minLength={10}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium uppercase text-xs invalid:[&:not(:placeholder-shown)]:border-red-400 invalid:[&:not(:placeholder-shown)]:bg-red-50/50"
+                  className="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-bold uppercase text-xs focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none"
                   required
                 />
-                <p className="text-[10px] text-slate-500 mt-0.5">Must be exactly 10 digits (e.g. 0301099882)</p>
+                <p className="text-[10px] text-slate-600 mt-0.5 font-medium">Must be exactly 10 digits (e.g. 0301099882)</p>
               </div>
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">
+              <label className="block font-bold text-slate-900 mb-1">
                 Business / Company Legal Name *
                 {businessName && (
-                  <span className="ml-2 text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  <span className="ml-2 text-[10px] text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
                     Auto-filled from GST Portal
                   </span>
                 )}
@@ -288,31 +306,33 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                 name="businessName"
                 value={businessName}
                 onChange={(e) => setBusinessName(e.target.value)}
-                placeholder="e.g. Konkan Agro Products Pvt Ltd (or click Fetch GST Details above)"
-                className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium"
+                placeholder="e.g. Bharat Quality Exports Pvt Ltd"
+                className="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs"
                 required
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">City</label>
+                <label className="block font-bold text-slate-900 mb-1">City</label>
                 <input
                   type="text"
                   name="city"
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium"
+                  placeholder="e.g. Mumbai, Surat, Chennai"
+                  className="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">State</label>
+                <label className="block font-bold text-slate-900 mb-1">State</label>
                 <input
                   type="text"
                   name="state"
                   value={state}
                   onChange={(e) => setState(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium"
+                  placeholder="e.g. Maharashtra, Gujarat"
+                  className="w-full p-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs"
                 />
               </div>
             </div>

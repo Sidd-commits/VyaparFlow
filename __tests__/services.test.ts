@@ -34,8 +34,8 @@ describe('VyaparFlow Comprehensive Service & Engine Tests', () => {
     const pdfBuffer = generateCommercialInvoicePDF({
       invoiceNumber: 'INV-SHP-2026-TEST',
       invoiceDate: '2026-09-08',
-      exporterName: 'Palghar Quality Agro Pvt Ltd',
-      exporterAddress: 'Tarapur Industrial Area, Palghar, Maharashtra',
+      exporterName: 'Apex Quality Agro Pvt Ltd',
+      exporterAddress: 'Western Export Processing Zone, Mumbai, Maharashtra',
       exporterGst: '27AAACP1234F1Z5',
       exporterIec: '0301099882',
       consigneeName: 'Gulf Food Distribution LLC',
@@ -61,8 +61,8 @@ describe('VyaparFlow Comprehensive Service & Engine Tests', () => {
     const pdfBuffer = generatePackingListPDF({
       invoiceNumber: 'INV-SHP-2026-TEST',
       invoiceDate: '2026-09-08',
-      exporterName: 'Palghar Quality Agro Pvt Ltd',
-      exporterAddress: 'Tarapur Industrial Area, Palghar, Maharashtra',
+      exporterName: 'Apex Quality Agro Pvt Ltd',
+      exporterAddress: 'Western Export Processing Zone, Mumbai, Maharashtra',
       exporterGst: '27AAACP1234F1Z5',
       exporterIec: '0301099882',
       consigneeName: 'Gulf Food Distribution LLC',

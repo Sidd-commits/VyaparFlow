@@ -22,172 +22,21 @@ import {
   ExternalLink,
 } from 'lucide-react';
 
+import { redirect } from 'next/navigation';
+
 export default async function DashboardPage() {
   const { role, user } = await requireAuth();
-  const allUsers = await getAllUsers();
 
-  // If Provider role is selected, redirect to Provider portal
+  // Enforce strict Role-Based Access Control
   if (role === 'PROVIDER') {
-    return (
-      <div className="min-h-screen bg-[#FAF9F6]">
-        <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-        <div className="max-w-7xl mx-auto py-12 px-4 text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mx-auto">
-            <Truck className="w-8 h-8" />
-          </div>
-          <h2 className="text-2xl font-bold font-serif text-slate-900">Service Provider Portal Active</h2>
-          <p className="text-slate-600 text-sm max-w-md mx-auto">
-            You are currently viewing Vexora in Service Provider mode. Access your assigned task queue and quote requests below.
-          </p>
-          <Link
-            href="/provider"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-orange-600 text-white font-bold shadow-md hover:bg-orange-700"
-          >
-            Go to Provider Task Queue →
-          </Link>
-        </div>
-      </div>
-    );
+    redirect('/provider');
   }
 
-  // If Admin role is selected, render full Admin Dashboard
   if (role === 'ADMIN') {
-    const totalMsmes = await prisma.business.count();
-    const totalShipments = await prisma.shipment.count();
-    const totalRules = await prisma.rule.count();
-    const pendingDocs = await prisma.document.findMany({
-      where: { status: 'under_review' },
-      include: { requirement: true },
-      take: 6,
-      orderBy: { uploadedAt: 'desc' },
-    });
-    const pendingDocsCount = await prisma.document.count({
-      where: { status: 'under_review' },
-    });
-
-    return (
-      <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-        <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-          {/* Admin Header */}
-          <div className="bg-slate-900 text-white p-6 md:p-8 rounded-2xl border border-slate-800 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-semibold text-orange-400 uppercase tracking-wider">
-                <ShieldAlert className="w-4 h-4" /> Platform Admin Operations Dashboard
-              </div>
-              <h1 className="text-3xl font-black text-white font-serif mt-1">
-                Welcome, {user?.name || 'Administrator'}
-              </h1>
-              <p className="text-xs text-slate-400 mt-1">
-                Supervisory dashboard: Monitor MSME export readiness, verify compliance proofs, and tune the rules engine.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2.5">
-              <Link
-                href="/admin"
-                className="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs shadow-md transition-colors flex items-center gap-2"
-              >
-                Open Full Admin Console →
-              </Link>
-            </div>
-          </div>
-
-          {/* Admin Metrics Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <span className="text-xs text-slate-500 font-semibold">Registered MSMEs</span>
-              <span className="block text-3xl font-black text-slate-900 font-serif">{totalMsmes}</span>
-              <span className="text-[11px] text-slate-500">Active exporter businesses</span>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <span className="text-xs text-slate-500 font-semibold">Active Shipments</span>
-              <span className="block text-3xl font-black text-orange-600 font-serif">{totalShipments}</span>
-              <span className="text-[11px] text-slate-500">Tracked export shipments</span>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <span className="text-xs text-slate-500 font-semibold">Pending Document Proofs</span>
-              <span className="block text-3xl font-black text-amber-600 font-serif">{pendingDocsCount}</span>
-              <span className="text-[11px] text-amber-700 font-medium">Awaiting admin verification</span>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-1">
-              <span className="text-xs text-slate-500 font-semibold">Compliance Rules</span>
-              <span className="block text-3xl font-black text-blue-600 font-serif">{totalRules}</span>
-              <span className="text-[11px] text-slate-500">Active engine criteria</span>
-            </div>
-          </div>
-
-          {/* Pending Document Approvals Queue */}
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold font-serif text-slate-900 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-orange-600" />
-                  Document Verification Desk
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Proof documents uploaded by MSMEs for GSTIN, IEC, and regulatory compliance.
-                </p>
-              </div>
-              <Link
-                href="/admin"
-                className="text-xs font-bold text-orange-600 hover:text-orange-700 hover:underline"
-              >
-                View all in Admin Console →
-              </Link>
-            </div>
-
-            {pendingDocs.length === 0 ? (
-              <div className="text-center py-8 text-slate-400 text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                All submitted documents have been reviewed. No pending items.
-              </div>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {pendingDocs.map((doc) => (
-                  <div key={doc.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-xs text-slate-900">{doc.originalName}</span>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                          {doc.status}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500">
-                        Requirement: <span className="font-medium text-slate-700">{doc.requirement?.title || doc.type}</span> • Type: {doc.type}
-                      </p>
-                      {doc.notes && (
-                        <p className="text-[10px] text-slate-400 italic">{doc.notes}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <a
-                        href={`/api/documents/${doc.id}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs flex items-center gap-1.5 transition-colors"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5 text-blue-600" />
-                        View Document
-                      </a>
-                      <Link
-                        href="/admin"
-                        className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs transition-colors"
-                      >
-                        Review in Console →
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </main>
-      </div>
-    );
+    redirect('/admin');
   }
+
+  const allUsers = await getAllUsers();
 
   // MSME Exporter Dashboard
   const business = user?.businesses[0];
@@ -226,15 +75,15 @@ export default async function DashboardPage() {
         {/* Top Header Card */}
         <div className="bg-white rounded-2xl p-6 md:p-8 border border-slate-200 shadow-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-xs font-semibold text-orange-600 uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-bold text-orange-600 uppercase tracking-wider">
               <MapPin className="w-3.5 h-3.5" />
-              Location: {business?.location}, {business?.city}, {business?.state}
+              Location: {business?.location || 'Registered Industrial Hub'}, {business?.city || 'Mumbai'}, {business?.state || 'Maharashtra'}
             </div>
             <h1 className="text-3xl font-black text-slate-900 font-serif">
-              {business?.displayName || 'Palghar Quality Agro Exporters'}
+              {business?.displayName || `${user?.name || 'MSME'} Global Exporters`}
             </h1>
             <p className="text-xs text-slate-500">
-              Legal Entity: {business?.legalName} | GST: {business?.gstStatus} | IEC: {business?.iecStatus}
+              Legal Entity: {business?.legalName || `${user?.name || 'MSME'} Enterprises Pvt Ltd`} • GST: {business?.gstStatus || 'Active (27AAACP1234F1Z5)'} • IEC: {business?.iecStatus || 'Active (0301099882)'}
             </p>
           </div>
 
@@ -244,7 +93,7 @@ export default async function DashboardPage() {
                 Profile Completion
               </span>
               <span className="text-2xl font-bold text-slate-900">
-                {business?.profileCompletion || 90}%
+                {business?.profileCompletion || 85}%
               </span>
             </div>
             <div className="w-12 h-12 rounded-full border-4 border-emerald-500 border-t-slate-200 flex items-center justify-center font-bold text-xs text-emerald-600">
@@ -497,7 +346,7 @@ export default async function DashboardPage() {
             <div className="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-1">
               <span className="text-slate-400 text-xs font-medium">Estimated Transit Time</span>
               <span className="block text-2xl font-bold text-white">12–15 Days</span>
-              <span className="text-[11px] text-slate-400">Palghar factory to Jebel Ali Port</span>
+              <span className="text-[11px] text-slate-400">{business?.city ? `${business.city} Origin Factory to Destination Port` : 'Factory Origin to Jebel Ali Port'}</span>
             </div>
           </div>
         </div>

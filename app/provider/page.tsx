@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { requireAuth, getAllUsers, updateProviderTaskAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
@@ -7,6 +8,12 @@ import { Truck, CheckCircle2, FileText, AlertTriangle, Clock, ShieldCheck } from
 
 export default async function ProviderPage() {
   const { role, user } = await requireAuth();
+
+  // Enforce strict Role-Based Access Control
+  if (role !== 'PROVIDER') {
+    redirect('/dashboard');
+  }
+
   const allUsers = await getAllUsers();
 
   // Get all active provider tasks across system

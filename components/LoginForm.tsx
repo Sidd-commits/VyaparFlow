@@ -1,130 +1,117 @@
 'use client';
 
 import React, { useState, useEffect, useTransition } from 'react';
-import { loginUserAction, quickLoginAction } from '@/app/actions';
+import { useSearchParams } from 'next/navigation';
+import { loginUserAction } from '@/app/actions';
 import {
-  saveRecentAccount,
   getRecentAccounts,
   removeRecentAccount,
-  formatRelativeTime,
   type SavedAccount,
 } from '@/lib/recentAccounts';
 import {
-  Ship,
-  Building2,
-  Truck,
-  ShieldCheck,
-  Award,
-  FileText,
   ArrowRight,
-  Sparkles,
   Lock,
   Mail,
-  CheckCircle2,
-  KeyRound,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  Sparkles,
   History,
   X,
-  UserCheck,
   ChevronDown,
   ChevronUp,
-  Trash2,
 } from 'lucide-react';
 
 interface LoginFormProps {
   onSwitchToRegister?: () => void;
 }
 
-const PRIMARY_DEMO_PERSONAS = [
-  {
-    role: 'MSME' as const,
-    name: 'Rajesh Patil',
-    company: 'Palghar Quality Agro Pvt Ltd',
-    email: 'msme@palghar-exports.com',
-    target: 'msme@palghar-exports.com',
-    desc: 'Alphonso Mango Pulp → UAE (Active Export Readiness Blockers)',
-    badge: 'Palghar MSME Exporter',
-    badgeColor: 'bg-orange-100 text-orange-800 border-orange-200',
-    icon: Building2,
+const ERROR_MESSAGES: Record<string, { title: string; desc: string; type: 'error' | 'warning' | 'info' }> = {
+  invalid_password: {
+    title: 'Incorrect Password',
+    desc: 'The password you entered does not match our records. Please check and try again.',
+    type: 'error',
   },
-  {
-    role: 'PROVIDER' as const,
-    name: 'Captain Vikram Sharma',
-    company: 'SwiftGlobe Freight Logistics',
-    email: 'provider@freight.com',
-    target: 'provider@freight.com',
-    desc: 'Freight rate quote comparison & multi-agency logistics desk',
-    badge: 'Freight Forwarder',
-    badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
-    icon: Truck,
+  user_not_found: {
+    title: 'Account Not Found',
+    desc: 'No account was found with that email address. Please check your spelling or register a new account.',
+    type: 'warning',
   },
-];
+  use_google_signin: {
+    title: 'Google Account Detected',
+    desc: 'This account was created with Google. Please click "Continue with Google" above to sign in securely.',
+    type: 'info',
+  },
+  email_required: {
+    title: 'Email Required',
+    desc: 'Please enter your registered email address.',
+    type: 'warning',
+  },
+  password_required: {
+    title: 'Password Required',
+    desc: 'Please enter your account password to sign in.',
+    type: 'warning',
+  },
+  google_not_configured: {
+    title: 'Google OAuth Not Configured',
+    desc: 'GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing in .env. Please sign in with email/password.',
+    type: 'warning',
+  },
+  google_auth_failed: {
+    title: 'Google Authentication Cancelled',
+    desc: 'Google sign-in was cancelled or encountered an issue. Please try again.',
+    type: 'error',
+  },
+};
 
-const SECONDARY_DEMO_PERSONAS = [
-  {
-    role: 'PROVIDER' as const,
-    name: 'Dr. Anita Roy',
-    company: 'Apex Agri Testing Labs',
-    email: 'lab@certify.com',
-    target: 'lab@certify.com',
-    desc: 'Phytosanitary & food safety testing certifications desk',
-    badge: 'Testing Lab',
-    badgeColor: 'bg-purple-100 text-purple-800 border-purple-200',
-    icon: Award,
-  },
-  {
-    role: 'PROVIDER' as const,
-    name: 'Suresh Menon',
-    company: 'Palghar Port CHA Desk',
-    email: 'cha@customs.com',
-    target: 'cha@customs.com',
-    desc: 'Customs clearance declarations & duty assessment desk',
-    badge: 'Customs CHA',
-    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    icon: FileText,
-  },
-  {
-    role: 'ADMIN' as const,
-    name: 'Platform Operator Admin',
-    company: 'VyaparFlow Compliance HQ',
-    email: 'admin@vyaparflow.com',
-    target: 'admin@vyaparflow.com',
-    desc: 'Compliance rules configurator & document verification audit console',
-    badge: 'Platform Admin',
-    badgeColor: 'bg-slate-900 text-orange-400 border-slate-700',
-    icon: ShieldCheck,
-  },
-];
+function GoogleIcon({ className = 'w-5 h-5' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24">
+      <path
+        fill="#4285F4"
+        d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 10.04 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+      />
+    </svg>
+  );
+}
 
 export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('password123');
-  const [isPending, startTransition] = useTransition();
-  const [selectedTarget, setSelectedTarget] = useState<string | null>(null);
-  const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([]);
-  const [showAllDemos, setShowAllDemos] = useState(false);
+  const searchParams = useSearchParams();
+  const errorCode = searchParams.get('error');
 
-  // Load saved accounts from localStorage upon client mount
+  const [selectedRole, setSelectedRole] = useState<'MSME' | 'PROVIDER' | 'ADMIN'>('MSME');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([]);
+  const [showHelperAccounts, setShowHelperAccounts] = useState(false);
+
   useEffect(() => {
     setSavedAccounts(getRecentAccounts());
   }, []);
 
-  const handleAccountLogin = (account: {
-    email: string;
-    name?: string;
-    role?: 'MSME' | 'PROVIDER' | 'ADMIN';
-    companyName?: string;
-  }) => {
-    setSelectedTarget(account.email);
-    // Persist/refresh this account as most recent
-    saveRecentAccount({
-      email: account.email,
-      name: account.name || account.email.split('@')[0],
-      role: account.role || 'MSME',
-      companyName: account.companyName,
-    });
-    startTransition(async () => {
-      await quickLoginAction(account.email);
-    });
+  const handleSelectEmail = (targetEmail: string, roleHint?: 'MSME' | 'PROVIDER' | 'ADMIN') => {
+    setEmail(targetEmail);
+    if (roleHint) {
+      setSelectedRole(roleHint);
+    }
+    const pwdInput = document.getElementById('password-input') as HTMLInputElement;
+    if (pwdInput) {
+      pwdInput.focus();
+    }
   };
 
   const handleRemoveSaved = (e: React.MouseEvent, targetEmail: string) => {
@@ -133,308 +120,445 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     setSavedAccounts(updated);
   };
 
-  const handleManualFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    const form = e.currentTarget;
-    const emailInput = form.elements.namedItem('email') as HTMLInputElement;
-    if (emailInput?.value) {
-      saveRecentAccount({
-        email: emailInput.value,
-        name: emailInput.value.split('@')[0],
-        role: emailInput.value.includes('admin')
-          ? 'ADMIN'
-          : emailInput.value.includes('provider') || emailInput.value.includes('lab') || emailInput.value.includes('cha')
-          ? 'PROVIDER'
-          : 'MSME',
-      });
-    }
-  };
+  const errorInfo = errorCode ? ERROR_MESSAGES[errorCode] : null;
 
   return (
-    <div className="space-y-6">
-      {/* 1. SAVED & RECENTLY LOGGED IN ACCOUNTS (Top Priority) */}
-      {savedAccounts.length > 0 && (
-        <div className="bg-white p-6 md:p-8 rounded-2xl border-2 border-orange-500/30 shadow-xl space-y-4 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
-
-          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
-                <History className="w-4 h-4" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold font-serif text-slate-900 flex items-center gap-2">
-                  Recently Used Accounts on this Device
-                  <span className="text-[10px] bg-orange-100 text-orange-800 font-bold px-2 py-0.5 rounded-full">
-                    {savedAccounts.length} Saved
-                  </span>
-                </h2>
-                <p className="text-[11px] text-slate-500">
-                  Click to quickly resume your session without re-entering credentials
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-2.5">
-            {savedAccounts.map((acc) => {
-              const isLoading = isPending && selectedTarget === acc.email;
-              const isMsme = acc.role === 'MSME';
-              const isProvider = acc.role === 'PROVIDER';
-
-              return (
-                <div
-                  key={acc.email}
-                  onClick={() => handleAccountLogin(acc)}
-                  className={`w-full p-3.5 rounded-xl border border-slate-200 bg-linear-to-r from-orange-50/40 via-white to-white hover:border-orange-400 hover:shadow-md transition-all flex items-center justify-between group cursor-pointer ${
-                    isLoading ? 'opacity-70 ring-2 ring-orange-500' : ''
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-                      {isMsme ? (
-                        <Building2 className="w-5 h-5 text-orange-400" />
-                      ) : isProvider ? (
-                        <Truck className="w-5 h-5 text-blue-400" />
-                      ) : (
-                        <ShieldCheck className="w-5 h-5 text-orange-400" />
-                      )}
-                    </div>
-
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-bold text-xs text-slate-900 truncate">
-                          {acc.name}
-                        </span>
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md border bg-orange-50 text-orange-700 border-orange-200">
-                          {acc.role}
-                        </span>
-                        <span className="text-[10px] text-slate-400 font-medium">
-                          • Active {formatRelativeTime(acc.lastActive)}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-600 truncate mt-0.5">
-                        {acc.companyName ? (
-                          <>
-                            <strong className="font-medium text-slate-800">{acc.companyName}</strong> —{' '}
-                          </>
-                        ) : null}
-                        <span className="text-slate-500">{acc.email}</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0 pl-2">
-                    <button
-                      type="button"
-                      onClick={(e) => handleRemoveSaved(e, acc.email)}
-                      title="Forget this account from this device"
-                      className="w-7 h-7 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors cursor-pointer"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-
-                    <div className="px-3 py-1.5 rounded-lg bg-orange-600 group-hover:bg-orange-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-colors">
-                      <span>Sign In</span>
-                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+    <div className="w-full space-y-4">
+      {/* 1. ALERT BANNER (IF ERROR OR NOTICE) */}
+      {errorInfo && (
+        <div
+          className={`p-4 rounded-2xl border text-xs flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-200 shadow-xs ${
+            errorInfo.type === 'error'
+              ? 'bg-rose-50 border-rose-200 text-rose-900'
+              : errorInfo.type === 'info'
+              ? 'bg-blue-50 border-blue-200 text-blue-900'
+              : 'bg-amber-50 border-amber-200 text-amber-900'
+          }`}
+        >
+          <AlertCircle
+            className={`w-5 h-5 shrink-0 mt-0.5 ${
+              errorInfo.type === 'error'
+                ? 'text-rose-600'
+                : errorInfo.type === 'info'
+                ? 'text-blue-600'
+                : 'text-amber-600'
+            }`}
+          />
+          <div className="space-y-0.5 min-w-0">
+            <h4 className="font-bold">{errorInfo.title}</h4>
+            <p className="opacity-90 leading-relaxed text-[11px]">{errorInfo.desc}</p>
           </div>
         </div>
       )}
 
-      {/* 2. DEMO ACCOUNTS (1-2 Featured + Expandable for all roles) */}
-      <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-xl space-y-4">
-        <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-          <div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-orange-500" />
-              <h3 className="text-sm font-bold text-slate-900">
-                1-Click Instant Demo Access
-              </h3>
-            </div>
-            <p className="text-[11px] text-slate-500 mt-0.5">
-              Instant evaluation profiles with pre-seeded shipment and compliance records
-            </p>
+      {/* 2. AUTHENTICATION CARD */}
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xl shadow-slate-950/20 space-y-6 relative overflow-hidden">
+        {/* Subtle decorative glow */}
+        <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10" />
+
+        {/* PERSONA / PORTAL SELECTOR TABS */}
+        <div className="space-y-2">
+          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+            Select Portal to Sign Into:
+          </label>
+          <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200">
+            <button
+              type="button"
+              onClick={() => setSelectedRole('MSME')}
+              className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                selectedRole === 'MSME'
+                  ? 'bg-white text-orange-600 shadow-sm border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+              }`}
+            >
+              <span className="text-sm">🏢</span>
+              <span className="truncate">MSME</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSelectedRole('PROVIDER')}
+              className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                selectedRole === 'PROVIDER'
+                  ? 'bg-white text-blue-600 shadow-sm border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+              }`}
+            >
+              <span className="text-sm">🚢</span>
+              <span className="truncate">Provider</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setSelectedRole('ADMIN')}
+              className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                selectedRole === 'ADMIN'
+                  ? 'bg-slate-900 text-orange-400 shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+              }`}
+            >
+              <span className="text-sm">🛡️</span>
+              <span className="truncate">Admin</span>
+            </button>
           </div>
-          <span className="text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full border border-slate-200">
-            Evaluation Mode
-          </span>
-        </div>
 
-        {/* Primary 2 Demos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {PRIMARY_DEMO_PERSONAS.map((p) => {
-            const Icon = p.icon;
-            const isLoading = isPending && selectedTarget === p.target;
-            return (
-              <button
-                key={p.target}
-                type="button"
-                onClick={() => handleAccountLogin(p)}
-                disabled={isPending}
-                className={`text-left p-4 rounded-xl border border-slate-200 hover:border-orange-400 hover:shadow-md bg-slate-50/50 hover:bg-white transition-all flex flex-col justify-between gap-3 group cursor-pointer ${
-                  isLoading ? 'opacity-70 ring-2 ring-orange-500' : ''
-                }`}
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${p.badgeColor}`}>
-                      {p.badge}
-                    </span>
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-xs text-slate-900 group-hover:text-orange-600 transition-colors">
-                      {p.name}
-                    </h4>
-                    <p className="text-[11px] text-slate-500 font-medium">
-                      {p.company}
-                    </p>
-                    <p className="text-[10px] text-slate-400 mt-1 leading-snug">
-                      {p.desc}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] font-bold text-orange-600">
-                  <span>Enter as {p.name.split(' ')[0]}</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Expand/Collapse other demo personas */}
-        <div>
-          <button
-            type="button"
-            onClick={() => setShowAllDemos(!showAllDemos)}
-            className="w-full py-2 px-3 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+          {/* Contextual Subtitle */}
+          <div
+            className={`p-2.5 rounded-xl border text-[11px] leading-relaxed transition-all ${
+              selectedRole === 'MSME'
+                ? 'bg-orange-50/70 border-orange-200/80 text-orange-950'
+                : selectedRole === 'PROVIDER'
+                ? 'bg-blue-50/70 border-blue-200/80 text-blue-950'
+                : 'bg-slate-900 text-slate-200 border-slate-800'
+            }`}
           >
-            {showAllDemos ? (
-              <>
-                <ChevronUp className="w-3.5 h-3.5" />
-                Hide other demo personas (Lab, Customs CHA, Platform Admin)
-              </>
-            ) : (
-              <>
-                <ChevronDown className="w-3.5 h-3.5" />
-                Show other demo roles: Certification Lab, Customs CHA, Platform Admin
-              </>
+            {selectedRole === 'MSME' && (
+              <p>
+                <strong>🏢 Exporter Command Center:</strong> Access factory export readiness, documents, and carrier quotes.
+              </p>
             )}
-          </button>
-
-          {showAllDemos && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3 animate-in fade-in duration-200">
-              {SECONDARY_DEMO_PERSONAS.map((p) => {
-                const Icon = p.icon;
-                const isLoading = isPending && selectedTarget === p.target;
-                return (
-                  <button
-                    key={p.target}
-                    type="button"
-                    onClick={() => handleAccountLogin(p)}
-                    disabled={isPending}
-                    className={`text-left p-3 rounded-xl border border-slate-200 hover:border-slate-400 hover:shadow-xs bg-white transition-all flex flex-col justify-between gap-2 group cursor-pointer ${
-                      isLoading ? 'opacity-70 ring-2 ring-orange-500' : ''
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <Icon className="w-4 h-4 text-slate-600" />
-                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded border ${p.badgeColor}`}>
-                          {p.badge}
-                        </span>
-                      </div>
-                      <h5 className="font-bold text-xs text-slate-900">{p.name}</h5>
-                      <p className="text-[10px] text-slate-500">{p.company}</p>
-                    </div>
-                    <div className="text-[10px] font-bold text-slate-700 flex items-center justify-between pt-1 border-t border-slate-100">
-                      <span>Sign In</span>
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 3. MANUAL SIGN IN WITH EMAIL & PASSWORD */}
-      <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-xl space-y-4">
-        <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
-          <KeyRound className="w-4 h-4 text-slate-700" />
-          <h3 className="text-sm font-bold text-slate-900">
-            Sign In with Email & Password
-          </h3>
+            {selectedRole === 'PROVIDER' && (
+              <p>
+                <strong>🚢 Service Provider Desk:</strong> Fulfill freight forwarder bids, quarantine testing, and customs CHA filings.
+              </p>
+            )}
+            {selectedRole === 'ADMIN' && (
+              <p>
+                <strong>🛡️ Platform Admin Operator:</strong> Manage deterministic rules, compliance requirements, and audit logs.
+              </p>
+            )}
+          </div>
         </div>
 
-        <form action={loginUserAction} onSubmit={handleManualFormSubmit} className="space-y-3.5 text-xs">
+        {/* PRIMARY GOOGLE SSO BUTTON */}
+        <div className="space-y-2">
+          <a
+            href={`/api/auth/google?role=${selectedRole}`}
+            className={`w-full py-3.5 px-4 rounded-2xl border-2 transition-all flex items-center justify-center gap-3 shadow-xs hover:shadow-md hover:-translate-y-0.5 cursor-pointer group ${
+              selectedRole === 'PROVIDER'
+                ? 'border-slate-200 hover:border-blue-500 bg-white hover:bg-blue-50/20 text-slate-800 font-bold text-sm'
+                : selectedRole === 'ADMIN'
+                ? 'border-slate-200 hover:border-slate-800 bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm'
+                : 'border-slate-200 hover:border-orange-500 bg-white hover:bg-orange-50/20 text-slate-800 font-bold text-sm'
+            }`}
+          >
+            <GoogleIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
+            <span>
+              Continue with Google (as {selectedRole === 'PROVIDER' ? 'Provider' : selectedRole === 'ADMIN' ? 'Admin' : 'MSME'})
+            </span>
+          </a>
+          <p className="text-[11px] text-center text-slate-500 font-medium">
+            Fast, secure single sign-on with authorized Google accounts
+          </p>
+        </div>
+
+        {/* OR WORK EMAIL DIVIDER */}
+        <div className="relative flex items-center justify-center my-2">
+          <div className="border-t border-slate-200 w-full" />
+          <span className="bg-slate-100 text-slate-600 px-3.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider shrink-0 border border-slate-200 shadow-xs mx-2">
+            or work email
+          </span>
+          <div className="border-t border-slate-200 w-full" />
+        </div>
+
+        {/* EMAIL & PASSWORD LOGIN FORM */}
+        <form action={loginUserAction} className="space-y-4 text-xs">
+          <input type="hidden" name="preferredRole" value={selectedRole} />
+
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">
-              Email Address *
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block font-bold text-slate-900 text-xs">
+                Work Email Address <span className="text-orange-600">*</span>
+              </label>
+              <span className="text-[10px] text-slate-500 font-medium">
+                {selectedRole === 'PROVIDER'
+                  ? 'e.g. quotes@freightcorp.com'
+                  : selectedRole === 'ADMIN'
+                  ? 'e.g. admin@vyaparflow.com'
+                  : 'e.g. ramesh@exportco.com'}
+              </span>
+            </div>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
               <input
+                id="email-input"
                 type="email"
                 name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="e.g. your-name@company.com"
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-orange-500 text-xs"
+                placeholder={
+                  selectedRole === 'PROVIDER'
+                    ? 'Enter service provider email address'
+                    : selectedRole === 'ADMIN'
+                    ? 'Enter admin email address'
+                    : 'Enter registered exporter email address'
+                }
+                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 text-xs transition-all outline-none"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-semibold text-slate-700 mb-1">
-              Password *
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block font-bold text-slate-900 text-xs">
+                Account Password <span className="text-orange-600">*</span>
+              </label>
+              <span className="text-[10px] text-slate-500 font-medium">Test accounts: password123</span>
+            </div>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+              <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
               <input
-                type="password"
+                id="password-input"
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 font-medium focus:ring-2 focus:ring-orange-500 text-xs"
+                placeholder="Enter your account password"
+                className="w-full pl-10 pr-10 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 text-xs transition-all outline-none"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-800 p-0.5 cursor-pointer"
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
-            <p className="text-[10px] text-slate-400 mt-1">
-              Default demo password: <code className="bg-slate-100 px-1 py-0.5 rounded text-slate-700 font-mono">password123</code>
-            </p>
           </div>
 
           <button
             type="submit"
             disabled={isPending}
-            className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition-colors cursor-pointer flex items-center justify-center gap-2"
+            className={`w-full py-3.5 rounded-xl font-bold text-sm text-white shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 disabled:opacity-60 ${
+              selectedRole === 'PROVIDER'
+                ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/30 hover:shadow-blue-600/40'
+                : selectedRole === 'ADMIN'
+                ? 'bg-slate-900 hover:bg-slate-800 shadow-slate-900/30'
+                : 'bg-linear-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 shadow-orange-600/30 hover:shadow-orange-600/40'
+            }`}
           >
-            Sign In & Save to this Device →
+            {isPending ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                Signing in...
+              </span>
+            ) : (
+              <>
+                <span>
+                  {selectedRole === 'PROVIDER'
+                    ? 'Sign In to Service Provider Portal'
+                    : selectedRole === 'ADMIN'
+                    ? 'Sign In to Admin Operations Console'
+                    : 'Sign In to Exporter Dashboard'}
+                </span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </form>
 
+        {/* RECENT ACCOUNTS AUTO-FILL CHIPS */}
+        {savedAccounts.length > 0 && (
+          <div className="pt-3 border-t border-slate-100 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                <History className="w-3 h-3 text-orange-500" /> Recent on this device (click to fill):
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {savedAccounts.slice(0, 3).map((acc) => (
+                <div
+                  key={acc.email}
+                  onClick={() => handleSelectEmail(acc.email, acc.role)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
+                    email === acc.email
+                      ? 'bg-orange-50 border-orange-400 text-orange-800 shadow-xs'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-orange-50/50'
+                  }`}
+                  title="Click to fill email into form"
+                >
+                  <span className="truncate max-w-[180px]">{acc.email}</span>
+                  <span className="text-[9px] bg-white px-1.5 py-0.2 rounded border border-slate-200 text-slate-500 font-bold">
+                    {acc.role}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => handleRemoveSaved(e, acc.email)}
+                    className="text-slate-400 hover:text-red-500 ml-1 p-0.5 rounded"
+                    title="Remove from device memory"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* SWITCH TO REGISTER */}
         {onSwitchToRegister && (
-          <div className="text-center pt-2 text-xs text-slate-600">
-            Don&apos;t have an account yet?{' '}
-            <button
-              type="button"
-              onClick={onSwitchToRegister}
-              className="text-orange-600 font-bold hover:underline cursor-pointer"
-            >
-              Register new MSME account →
-            </button>
+          <div className="text-center pt-2 text-xs text-slate-600 border-t border-slate-100">
+            {selectedRole === 'PROVIDER' ? (
+              <>
+                Looking to partner as a carrier or lab?{' '}
+                <button
+                  type="button"
+                  onClick={onSwitchToRegister}
+                  className="text-blue-600 font-bold hover:underline cursor-pointer"
+                >
+                  Register as Service Provider →
+                </button>
+              </>
+            ) : selectedRole === 'ADMIN' ? (
+              <>
+                Need new platform operator access?{' '}
+                <button
+                  type="button"
+                  onClick={onSwitchToRegister}
+                  className="text-slate-900 font-bold hover:underline cursor-pointer"
+                >
+                  Register Admin Account →
+                </button>
+              </>
+            ) : (
+              <>
+                Don&apos;t have an exporter account yet?{' '}
+                <button
+                  type="button"
+                  onClick={onSwitchToRegister}
+                  className="text-orange-600 font-bold hover:underline cursor-pointer"
+                >
+                  Register new MSME account →
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 3. TEST / SEEDED ACCOUNTS HELPER (COLLAPSED BY DEFAULT) */}
+      <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl overflow-hidden shadow-lg">
+        <button
+          type="button"
+          onClick={() => setShowHelperAccounts(!showHelperAccounts)}
+          className="w-full p-3.5 text-left flex items-center justify-between hover:bg-slate-800/50 transition-colors cursor-pointer text-xs"
+        >
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+            <span className="font-bold text-slate-200">
+              Need Pre-configured Test Accounts? ({selectedRole} selected)
+            </span>
+          </div>
+          <div className="flex items-center gap-1 text-slate-400 font-medium text-[11px]">
+            <span>{showHelperAccounts ? 'Hide' : 'Show accounts'}</span>
+            {showHelperAccounts ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </div>
+        </button>
+
+        {showHelperAccounts && (
+          <div className="p-4 pt-1 border-t border-slate-800 bg-slate-950/60 space-y-2 text-xs animate-in fade-in duration-150">
+            <p className="text-[11px] text-slate-400">
+              Click any account below to auto-fill its credentials. Password for all test accounts is <code className="bg-slate-800 px-1.5 py-0.5 rounded font-mono text-orange-300 font-bold border border-slate-700">password123</code>:
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+              <div
+                onClick={() => {
+                  setSelectedRole('MSME');
+                  setEmail('msme@apex-exports.com');
+                  setPassword('password123');
+                }}
+                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  selectedRole === 'MSME'
+                    ? 'border-orange-500 bg-slate-900 ring-1 ring-orange-500/50'
+                    : 'border-slate-800 hover:border-orange-500/60 bg-slate-900/60 hover:bg-slate-900'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-white">MSME Exporter</span>
+                  <span className="text-[9px] bg-orange-500/20 text-orange-400 border border-orange-500/30 px-1.5 py-0.2 rounded font-bold">Agri / Food</span>
+                </div>
+                <p className="text-[10px] text-slate-400 truncate mt-0.5">msme@apex-exports.com</p>
+              </div>
+
+              <div
+                onClick={() => {
+                  setSelectedRole('PROVIDER');
+                  setEmail('provider@freight.com');
+                  setPassword('password123');
+                }}
+                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  selectedRole === 'PROVIDER' && email === 'provider@freight.com'
+                    ? 'border-blue-500 bg-slate-900 ring-1 ring-blue-500/50'
+                    : 'border-slate-800 hover:border-blue-500/60 bg-slate-900/60 hover:bg-slate-900'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-white">Freight Forwarder</span>
+                  <span className="text-[9px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.2 rounded font-bold">Logistics</span>
+                </div>
+                <p className="text-[10px] text-slate-400 truncate mt-0.5">provider@freight.com</p>
+              </div>
+
+              <div
+                onClick={() => {
+                  setSelectedRole('PROVIDER');
+                  setEmail('lab@certify.com');
+                  setPassword('password123');
+                }}
+                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  selectedRole === 'PROVIDER' && email === 'lab@certify.com'
+                    ? 'border-purple-500 bg-slate-900 ring-1 ring-purple-500/50'
+                    : 'border-slate-800 hover:border-purple-500/60 bg-slate-900/60 hover:bg-slate-900'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-white">Testing Lab</span>
+                  <span className="text-[9px] bg-purple-500/20 text-purple-400 border border-purple-500/30 px-1.5 py-0.2 rounded font-bold">Phytosanitary</span>
+                </div>
+                <p className="text-[10px] text-slate-400 truncate mt-0.5">lab@certify.com</p>
+              </div>
+
+              <div
+                onClick={() => {
+                  setSelectedRole('PROVIDER');
+                  setEmail('cha@customs.com');
+                  setPassword('password123');
+                }}
+                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  selectedRole === 'PROVIDER' && email === 'cha@customs.com'
+                    ? 'border-emerald-500 bg-slate-900 ring-1 ring-emerald-500/50'
+                    : 'border-slate-800 hover:border-emerald-500/60 bg-slate-900/60 hover:bg-slate-900'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-white">Customs House Agent</span>
+                  <span className="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded font-bold">Customs CHA</span>
+                </div>
+                <p className="text-[10px] text-slate-400 truncate mt-0.5">cha@customs.com</p>
+              </div>
+
+              <div
+                onClick={() => {
+                  setSelectedRole('ADMIN');
+                  setEmail('admin@vyaparflow.com');
+                  setPassword('password123');
+                }}
+                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  selectedRole === 'ADMIN'
+                    ? 'border-amber-500 bg-slate-900 ring-1 ring-amber-500/50'
+                    : 'border-slate-800 hover:border-amber-500/60 bg-slate-900/60 hover:bg-slate-900'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-white">Platform Admin</span>
+                  <span className="text-[9px] bg-slate-800 text-orange-400 border border-slate-700 px-1.5 py-0.2 rounded font-bold">HQ Operations</span>
+                </div>
+                <p className="text-[10px] text-slate-400 truncate mt-0.5">admin@vyaparflow.com</p>
+              </div>
+            </div>
           </div>
         )}
       </div>

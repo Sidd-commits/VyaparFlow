@@ -131,20 +131,20 @@ function getDemoGSTDetails(gstin: string): GSTDetails {
   if (cleanGst === '27AAACP1234F1Z5') {
     return {
       gstin: cleanGst,
-      legalName: 'Palghar Quality Agro Pvt Ltd',
-      tradeName: 'Palghar Agro Exports',
+      legalName: 'Apex Agro & Engineering Exports Pvt Ltd',
+      tradeName: 'Apex Quality Exports',
       status: 'Active',
       constitutionOfBusiness: 'Private Limited Company',
       taxpayerType: 'Regular',
       registrationDate: '01/07/2017',
       address: {
         buildingName: 'Plot 42, Sector 3',
-        street: 'MIDC Tarapur Industrial Area',
-        location: 'Boisar Road',
-        city: 'Palghar',
-        district: 'Palghar',
+        street: 'Export Promotion Industrial Park',
+        location: 'Western Trade Corridor',
+        city: 'Mumbai',
+        district: 'Mumbai Suburb',
         state: 'Maharashtra',
-        pincode: '401506',
+        pincode: '400093',
       },
       isLive: false,
       source: 'Sandbox Sandbox Mock (Preset Exporter)',
@@ -159,7 +159,7 @@ function getDemoGSTDetails(gstin: string): GSTDetails {
   else if (entityTypeChar === 'F') entityType = 'Partnership / LLP';
   else if (entityTypeChar === 'C') entityType = 'Private Limited Company';
 
-  const defaultCity = stateCode === '27' ? 'Palghar' : stateCode === '24' ? 'Surat' : 'Mumbai';
+  const defaultCity = stateCode === '27' ? 'Mumbai' : stateCode === '24' ? 'Surat' : stateCode === '07' ? 'New Delhi' : stateCode === '33' ? 'Chennai' : 'Bengaluru';
 
   return {
     gstin: cleanGst,
@@ -176,7 +176,7 @@ function getDemoGSTDetails(gstin: string): GSTDetails {
       city: defaultCity,
       district: defaultCity,
       state: stateName,
-      pincode: stateCode === '27' ? '401501' : '395003',
+      pincode: stateCode === '27' ? '400001' : '395003',
     },
     isLive: false,
     source: 'Deterministic Verification Fallback (Add SANDBOX_API_KEY for Live GSTN data)',
@@ -266,7 +266,7 @@ export async function fetchGSTDetailsFromSandbox(gstin: string): Promise<{
         const addressObj = payload.principal_place_of_business?.address || payload.pradr?.addr || payload.address || {};
         const stateCode = cleanGst.substring(0, 2);
         const stateName = addressObj.state_name || addressObj.state || STATE_CODE_MAP[stateCode] || 'Maharashtra';
-        const city = addressObj.city || addressObj.city_name || addressObj.district || addressObj.dst || 'Palghar';
+        const city = addressObj.city || addressObj.city_name || addressObj.district || addressObj.dst || 'Mumbai';
 
         return {
           success: true,

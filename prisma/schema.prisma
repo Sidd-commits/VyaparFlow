@@ -31,7 +31,7 @@ model Business {
   displayName       String
   businessType      String
   location          String
-  city              String       @default("Palghar")
+  city              String       @default("Mumbai")
   state             String       @default("Maharashtra")
   gstStatus         String       @default("Active")
   iecStatus         String       @default("Active")

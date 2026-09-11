@@ -1,7 +1,7 @@
 # VyaparFlow — Export Logistics Readiness Platform
 
 > **Deterministic Export Compliance, Readiness Scoring & Multi-Carrier Logistics SaaS for Indian MSMEs**  
-> *Initial Pilot Region: Palghar Industrial Region, Maharashtra*
+> *Pan-India Operating System for Global Trade Corridors (USA, EU, UAE, UK, ASEAN)*
 
 ---
 
@@ -97,7 +97,7 @@ VyaparFlow/
 │       └── sandboxGst.ts       # Sandbox.co.in GST API client with offline fallback
 ├── prisma/                     # Database Layer
 │   ├── schema.prisma           # Prisma Data Model (12 Relational Entities)
-│   └── seed.ts                 # Golden Demo Seed Data (Palghar Agro Exports)
+│   └── seed.ts                 # Golden Demo Seed Data (Agro & Industrial Exports)
 ├── public/                     # Static Assets & Storage
 │   └── uploads/                # Local runtime upload destination (.gitkeep)
 ├── __tests__/                  # Unit & Integration Test Suites
@@ -149,7 +149,7 @@ Synchronize the Prisma schema and seed golden demo records:
 # Push schema to SQLite
 npx prisma db push
 
-# Populate with Palghar demo dataset
+# Populate with demo dataset
 npx prisma db seed
 ```
 
@@ -176,12 +176,12 @@ npm run test:watch
 
 ## 🔑 Demo Personas & Credentials
 
-The platform includes a built-in **Persona Switcher** in the navigation bar to test all three core workflows:
+The platform includes test credentials to evaluate all three core workflows:
 
 | Persona | Email | Password | Primary Role & Workflow |
 | :--- | :--- | :--- | :--- |
-| **Palghar MSME Exporter** | `msme@palghar-exports.com` | `password123` | Palghar Quality Agro Pvt Ltd — Mango pulp export to UAE |
-| **Logistics / CHA Provider** | `provider@freight.com` | `password123` | SwiftFreight Global — Quote submission & milestone updates |
+| **MSME Exporter** | `msme@apex-exports.com` | `password123` | Apex Agro Processing & Exports — Mango pulp export to UAE |
+| **Logistics / CHA Provider** | `provider@freight.com` | `password123` | SwiftGlobe Freight — Quote submission & milestone updates |
 | **Platform Administrator** | `admin@vyaparflow.com` | `password123` | Compliance Officer — Rules configurator & audit log viewer |
 
 ---

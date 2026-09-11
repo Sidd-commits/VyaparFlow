@@ -29,7 +29,7 @@ export default function AuthContainer({ currentUser }: AuthContainerProps) {
   }, [searchParams]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className={`w-full mx-auto space-y-4 transition-all ${activeTab === 'register' ? 'max-w-2xl' : 'max-w-md'}`}>
       {/* If already signed in, display helpful banner */}
       {currentUser && (
         <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
@@ -68,18 +68,18 @@ export default function AuthContainer({ currentUser }: AuthContainerProps) {
 
       {/* Tab Switcher Header */}
       <div className="flex items-center justify-center">
-        <div className="bg-slate-200/80 p-1 rounded-2xl flex items-center gap-1 shadow-inner border border-slate-300/60 max-w-md w-full">
+        <div className="bg-slate-900/80 backdrop-blur-md p-1.5 rounded-2xl flex items-center gap-1.5 shadow-xl border border-slate-800/80 max-w-md w-full">
           <button
             type="button"
             onClick={() => setActiveTab('login')}
             className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'login'
-                ? 'bg-white text-slate-900 shadow-md font-extrabold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                ? 'bg-linear-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-600/30 font-extrabold'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
-            <LogIn className="w-4 h-4 text-orange-600" />
-            Sign In & Demo Logins
+            <LogIn className="w-4 h-4" />
+            Sign In
           </button>
 
           <button
@@ -87,12 +87,12 @@ export default function AuthContainer({ currentUser }: AuthContainerProps) {
             onClick={() => setActiveTab('register')}
             className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'register'
-                ? 'bg-white text-slate-900 shadow-md font-extrabold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                ? 'bg-linear-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-600/30 font-extrabold'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
-            <UserPlus className="w-4 h-4 text-orange-600" />
-            Register New MSME
+            <UserPlus className="w-4 h-4" />
+            Create Account
           </button>
         </div>
       </div>

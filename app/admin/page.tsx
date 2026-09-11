@@ -1,4 +1,5 @@
 import React from 'react';
+import { redirect } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { requireAuth, getAllUsers, updateRuleAction, deleteUserAction, verifyDocumentAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
@@ -6,6 +7,12 @@ import { ShieldCheck, Sliders, FileText, AlertTriangle, Users, Ship, Trash2, Che
 
 export default async function AdminPage() {
   const { role, user } = await requireAuth();
+
+  // Enforce strict Role-Based Access Control
+  if (role !== 'ADMIN') {
+    redirect('/dashboard');
+  }
+
   const allUsers = await getAllUsers();
 
   const rules = await prisma.rule.findMany({

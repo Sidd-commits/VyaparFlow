@@ -3,7 +3,7 @@ import { prisma } from '../lib/prisma';
 
 describe('Export Readiness Engine Unit Tests', () => {
   test('Readiness score calculation & critical blocker detection', async () => {
-    // Fetch Palghar MSME product country mapping from database
+    // Fetch MSME product country mapping from database
     const pc = await prisma.productCountry.findFirst({
       include: { product: true },
     });

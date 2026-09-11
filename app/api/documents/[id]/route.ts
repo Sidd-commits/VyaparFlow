@@ -54,8 +54,8 @@ function generateCertificatePDF(doc: {
   // Entity Details Grid
   const business = doc.business;
   const entityData = [
-    ['Registered Exporter / Entity', business?.legalName || 'Palghar Quality Agro Pvt Ltd'],
-    ['Registered Address', `${business?.location || 'Plot 42, Sector 3, MIDC'}, ${business?.city || 'Palghar'}, ${business?.state || 'Maharashtra'}`],
+    ['Registered Exporter / Entity', business?.legalName || 'Apex Agro & Engineering Exports Pvt Ltd'],
+    ['Registered Address', `${business?.location || 'Plot 42, Sector 3, Industrial Estate'}, ${business?.city || 'Mumbai'}, ${business?.state || 'Maharashtra'}`],
     ['GSTIN Registration', business?.gstStatus || '27AAACP1234F1Z5'],
     ['DGFT Import Export Code (IEC)', business?.iecStatus || '0301099882'],
     ['Document Type / Category', doc.type],

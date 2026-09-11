@@ -35,7 +35,7 @@ export default async function LandingPage() {
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-xs font-semibold">
                 <MapPin className="w-3.5 h-3.5 text-orange-600" />
-                Pilot Geography: Palghar, Maharashtra → Scalable Across India
+                Pan-India Export Operating System → Global Trade Corridors
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1] font-serif">
@@ -73,7 +73,7 @@ export default async function LandingPage() {
                       className="px-6 py-3.5 rounded-xl bg-orange-600 text-white font-bold text-base shadow-lg shadow-orange-600/30 hover:bg-orange-700 transition-all flex items-center gap-2 group cursor-pointer"
                     >
                       <LogIn className="w-5 h-5" />
-                      Sign In / Demo Login
+                      Sign In to Portal
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
 
@@ -106,11 +106,11 @@ export default async function LandingPage() {
             </div>
 
             {/* Right Card / Visual Banner */}
-            <div className="lg:col-span-5">
+            <div id="export-showcase" className="lg:col-span-5">
               <div className="relative rounded-2xl overflow-hidden border border-slate-200 shadow-2xl bg-slate-900 text-white p-6 md:p-8 space-y-6">
                 <div className="flex items-center justify-between">
                   <span className="text-xs uppercase tracking-wider text-orange-400 font-bold">
-                    Palghar MSME Case Study
+                    National MSME Operating Showcase
                   </span>
                   <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-0.5 rounded-full font-semibold border border-emerald-500/30">
                     62% Initial Readiness
@@ -119,10 +119,10 @@ export default async function LandingPage() {
 
                 <div>
                   <h3 className="text-2xl font-bold text-white font-serif">
-                    Palghar Agro Processing Pvt Ltd
+                    Apex Agro & Manufacturing Exports
                   </h3>
                   <p className="text-xs text-slate-400 mt-1">
-                    Exporting: Premium Alphonso Mango Pulp → Dubai, UAE
+                    Exporting: Premium Processed Goods → Dubai (UAE) & Rotterdam (EU)
                   </p>
                 </div>
 

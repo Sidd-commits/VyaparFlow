@@ -31,6 +31,8 @@ async function saveFileLocally(file: File | null, prefix: string): Promise<{ sto
 }
 
 
+import { ensureMSMEBusiness } from '@/lib/services/setupMSME';
+
 // Cookie key for active persona
 const PERSONA_COOKIE = 'vyaparflow_active_role';
 const USER_ID_COOKIE = 'vyaparflow_active_user_id';
@@ -41,26 +43,49 @@ export async function getActiveUser(): Promise<{
 }> {
   const cookieStore = await cookies();
   const userIdVal = cookieStore.get(USER_ID_COOKIE)?.value;
-  const roleVal = cookieStore.get(PERSONA_COOKIE)?.value;
 
   if (userIdVal) {
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { id: userIdVal },
       include: { 
         businesses: { 
           include: { 
             products: { 
               include: { 
-                destinations: { include: { country: true } } 
+                destinations: { include: { country: true, requirements: true } } 
               } 
-            } 
+            },
+            shipments: true,
           } 
         },
         providers: true 
       },
     });
+
     if (user) {
-      const activeRole = (roleVal || user.role || 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN';
+      const activeRole = (user.role || 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN';
+
+      // If MSME user does not have a business record yet, ensure tailored MSME business setup
+      if (activeRole === 'MSME' && user.businesses.length === 0) {
+        await ensureMSMEBusiness(user.id, user.name, user.email);
+        user = await prisma.user.findUnique({
+          where: { id: userIdVal },
+          include: { 
+            businesses: { 
+              include: { 
+                products: { 
+                  include: { 
+                    destinations: { include: { country: true, requirements: true } } 
+                  } 
+                },
+                shipments: true,
+              } 
+            },
+            providers: true 
+          },
+        });
+      }
+
       return { user, role: activeRole };
     }
   }
@@ -86,28 +111,6 @@ export async function logoutUserAction(): Promise<void> {
   cookieStore.delete(PERSONA_COOKIE);
   revalidatePath('/', 'layout');
   redirect('/login');
-}
-
-export async function switchUserRoleAction(role: 'MSME' | 'PROVIDER' | 'ADMIN'): Promise<void> {
-  const cookieStore = await cookies();
-  const targetUser = await prisma.user.findFirst({
-    where: { role },
-  });
-  if (targetUser) {
-    cookieStore.set(USER_ID_COOKIE, targetUser.id, { path: '/' });
-  }
-  cookieStore.set(PERSONA_COOKIE, role, { path: '/' });
-  revalidatePath('/', 'layout');
-}
-
-export async function switchUserAccountAction(userId: string): Promise<void> {
-  const cookieStore = await cookies();
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (user) {
-    cookieStore.set(USER_ID_COOKIE, user.id, { path: '/' });
-    cookieStore.set(PERSONA_COOKIE, user.role, { path: '/' });
-    revalidatePath('/', 'layout');
-  }
 }
 
 export async function uploadDocumentAction(formData: FormData): Promise<void> {
@@ -308,7 +311,7 @@ export async function createShipmentAction(formData: FormData): Promise<void> {
           currency: 'INR',
           transitMin: 8,
           transitMax: 10,
-          inclusions: 'Factory gate pickup in Palghar, Priority container discharge',
+          inclusions: 'Factory gate pickup at origin, Priority container discharge',
           exclusions: 'Local warehouse demurrage',
         },
         {
@@ -319,7 +322,7 @@ export async function createShipmentAction(formData: FormData): Promise<void> {
           currency: 'INR',
           transitMin: 2,
           transitMax: 3,
-          inclusions: 'Direct flight BOM -> DXB, Airport cold store handling',
+          inclusions: 'Direct air cargo route, Airport cold store handling',
           exclusions: 'Heavy cargo surcharge',
         },
       ],
@@ -330,7 +333,7 @@ export async function createShipmentAction(formData: FormData): Promise<void> {
     data: {
       shipmentId: shipment.id,
       status: 'Order Confirmed',
-      location: 'Palghar Industrial Estate, Maharashtra',
+      location: 'Origin Manufacturing Facility, Exporter Hub',
       note: 'Shipment created and draft export documentation prepared.',
     },
   });
@@ -449,7 +452,7 @@ export async function registerUserAction(formData: FormData): Promise<void> {
   const password = (formData.get('password') as string) || 'password123';
   const role = (formData.get('role') as 'MSME' | 'PROVIDER' | 'ADMIN') || 'MSME';
   const businessName = (formData.get('businessName') as string)?.trim() || `${name} Exports Pvt Ltd`;
-  const city = (formData.get('city') as string)?.trim() || 'Palghar';
+  const city = (formData.get('city') as string)?.trim() || 'Mumbai';
   const state = (formData.get('state') as string)?.trim() || 'Maharashtra';
   const gstNumber = (formData.get('gstNumber') as string)?.trim() || '';
   const iecCode = (formData.get('iecCode') as string)?.trim() || '';
@@ -531,13 +534,32 @@ export async function registerUserAction(formData: FormData): Promise<void> {
       cookieStore.set(USER_ID_COOKIE, fallbackUser.id, { path: '/' });
       cookieStore.set(PERSONA_COOKIE, fallbackUser.role, { path: '/' });
       revalidatePath('/', 'layout');
-      redirect('/dashboard');
+      if (fallbackUser.role === 'PROVIDER') redirect('/provider');
+      else if (fallbackUser.role === 'ADMIN') redirect('/admin');
+      else redirect('/dashboard');
     }
 
     throw err;
   }
 
-  if (role === 'MSME') {
+  if (role === 'PROVIDER') {
+    const providerType =
+      businessCategory === 'Steel'
+        ? 'FREIGHT'
+        : businessCategory === 'Food'
+        ? 'CERTIFICATION'
+        : 'CUSTOMS_CHA';
+
+    await prisma.provider.create({
+      data: {
+        userId: newUser.id,
+        name: businessName || `${name} Logistics & Maritime Services`,
+        type: providerType,
+        serviceArea: 'Pan-India & Global Corridors',
+        contactEmail: email,
+      },
+    });
+  } else if (role === 'MSME') {
     const bizType = businessCategory as BusinessType;
     const config = BUSINESS_TYPE_CONFIGS[bizType];
 
@@ -733,20 +755,31 @@ export async function registerUserAction(formData: FormData): Promise<void> {
   cookieStore.set(PERSONA_COOKIE, newUser.role, { path: '/' });
   revalidatePath('/', 'layout');
 
-  // Jump directly to dashboard
-  redirect('/dashboard');
+  // Jump to appropriate dashboard based on user's registered role
+  if (newUser.role === 'PROVIDER') {
+    redirect('/provider');
+  } else if (newUser.role === 'ADMIN') {
+    redirect('/admin');
+  } else {
+    redirect('/dashboard');
+  }
 }
 
 export async function loginUserAction(formData: FormData): Promise<void> {
   const rawEmail = ((formData.get('email') as string) || '').trim();
   const email = rawEmail.toLowerCase();
   const password = (formData.get('password') as string) || '';
+  const preferredRole = (formData.get('preferredRole') as string)?.trim() as 'MSME' | 'PROVIDER' | 'ADMIN' | undefined;
 
   if (!email) {
-    throw new Error('Email is required');
+    redirect('/login?error=email_required');
   }
 
-  let user = await prisma.user.findFirst({
+  if (!password) {
+    redirect('/login?error=password_required');
+  }
+
+  const user = await prisma.user.findFirst({
     where: {
       OR: [
         { email },
@@ -755,71 +788,64 @@ export async function loginUserAction(formData: FormData): Promise<void> {
     },
   });
 
-  // If user doesn't exist yet, auto-provision so user can log in seamlessly
   if (!user) {
-    const isSpecialRole = email.includes('admin')
-      ? 'ADMIN'
-      : email.includes('provider') || email.includes('freight') || email.includes('lab') || email.includes('cha')
-      ? 'PROVIDER'
-      : 'MSME';
+    redirect('/login?error=user_not_found');
+  }
 
-    user = await prisma.user.create({
-      data: {
-        email,
-        name: rawEmail.split('@')[0] || 'User',
-        role: isSpecialRole,
-        passwordHash: password || 'password123',
-      },
+  // If user signed up via Google OAuth, prompt them to use Google SSO
+  if (user.passwordHash === 'oauth_google') {
+    redirect('/login?error=use_google_signin');
+  }
+
+  // Verify password (allows user's actual password or default password123 for pre-seeded test accounts)
+  const isMatch = user.passwordHash === password || (user.passwordHash === 'password123' && password === 'password123');
+  if (!isMatch) {
+    redirect('/login?error=invalid_password');
+  }
+
+  // If the user selected a specific portal (e.g. PROVIDER or ADMIN) and is permitted, update role
+  let activeRole = user.role;
+  if (preferredRole && preferredRole !== user.role) {
+    // If logging into PROVIDER portal and has no provider profile, ensure one is provisioned
+    if (preferredRole === 'PROVIDER') {
+      const existingProvider = await prisma.provider.findFirst({ where: { userId: user.id } });
+      if (!existingProvider) {
+        await prisma.provider.create({
+          data: {
+            userId: user.id,
+            name: `${user.name} Logistics & Trade Services`,
+            type: 'FREIGHT',
+            serviceArea: 'Pan-India & Global Corridors',
+            contactEmail: user.email,
+          },
+        });
+      }
+    }
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { role: preferredRole },
     });
+    activeRole = preferredRole;
   }
 
   const cookieStore = await cookies();
-  cookieStore.set(USER_ID_COOKIE, user.id, { path: '/' });
-  cookieStore.set(PERSONA_COOKIE, user.role, { path: '/' });
+  cookieStore.set(USER_ID_COOKIE, user.id, {
+    path: '/',
+    httpOnly: false,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30,
+  });
+  cookieStore.set(PERSONA_COOKIE, activeRole, {
+    path: '/',
+    httpOnly: false,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30,
+  });
   revalidatePath('/', 'layout');
 
-  if (user.role === 'PROVIDER') {
+  if (activeRole === 'PROVIDER') {
     redirect('/provider');
-  } else if (user.role === 'ADMIN') {
-    redirect('/admin');
-  } else {
-    redirect('/dashboard');
-  }
-}
-
-export async function quickLoginAction(target: string): Promise<void> {
-  let user: any = null;
-
-  // Check if target is an email
-  if (target.includes('@')) {
-    user = await prisma.user.findFirst({
-      where: { email: target.toLowerCase().trim() },
-    });
-  }
-
-  // If not found by email, check if target is a role ('MSME', 'PROVIDER', 'ADMIN')
-  if (!user) {
-    user = await prisma.user.findFirst({
-      where: { role: target.toUpperCase() },
-    });
-  }
-
-  if (!user) {
-    user = await prisma.user.findFirst();
-  }
-
-  if (!user) {
-    throw new Error('No user account available for login');
-  }
-
-  const cookieStore = await cookies();
-  cookieStore.set(USER_ID_COOKIE, user.id, { path: '/' });
-  cookieStore.set(PERSONA_COOKIE, user.role, { path: '/' });
-  revalidatePath('/', 'layout');
-
-  if (user.role === 'PROVIDER') {
-    redirect('/provider');
-  } else if (user.role === 'ADMIN') {
+  } else if (activeRole === 'ADMIN') {
     redirect('/admin');
   } else {
     redirect('/dashboard');

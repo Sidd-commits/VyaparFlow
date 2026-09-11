@@ -30,6 +30,25 @@
     font-family: var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+
+  select, input, textarea {
+    color: #0f172a;
+  }
+
+  select option {
+    background-color: #ffffff;
+    color: #0f172a;
+    font-weight: 600;
+  }
+
+  select option:disabled {
+    color: #64748b;
+  }
+
+  ::placeholder {
+    color: #64748b !important;
+    opacity: 1 !important;
+  }
 }
 
 /* Custom Scrollbars */

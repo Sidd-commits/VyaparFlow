@@ -30,7 +30,7 @@ async function main() {
   console.log('Creating users...');
   const msmeUser = await prisma.user.create({
     data: {
-      email: 'msme@palghar-exports.com',
+      email: 'msme@apex-exports.com',
       passwordHash: 'password123',
       name: 'Rajesh Patil (MSME Owner)',
       role: 'MSME',
@@ -69,7 +69,7 @@ async function main() {
     data: {
       email: 'cha@customs.com',
       passwordHash: 'password123',
-      name: 'Suresh Menon (Palghar Port CHA)',
+      name: 'Suresh Menon (Western Ports CHA)',
       role: 'PROVIDER',
     },
   });
@@ -88,11 +88,11 @@ async function main() {
   const palgharBusiness = await prisma.business.create({
     data: {
       ownerUserId: msmeUser.id,
-      legalName: 'Palghar Agro Processing & Exports Pvt Ltd',
-      displayName: 'Palghar Quality Agro Exporters',
+      legalName: 'Apex Agro Processing & Exports Pvt Ltd',
+      displayName: 'Apex Quality Agro Exporters',
       businessType: 'Private Limited / MSME Manufacturer',
-      location: 'Plot 42, Tarapur Industrial Area',
-      city: 'Palghar',
+      location: 'Plot 42, Export Processing Zone',
+      city: 'Mumbai',
       state: 'Maharashtra',
       gstStatus: 'Active (27AAACP1234F1Z5)',
       iecStatus: 'Active (0301099882)',
@@ -490,8 +490,8 @@ async function main() {
       businessId: palgharBusiness.id,
       requirementId: reqApeda.id,
       type: 'APEDA_RCMC',
-      storageKey: 'docs/apeda_rcmc_palghar_2026.pdf',
-      originalName: 'APEDA_RCMC_Palghar_PvtLtd.pdf',
+      storageKey: 'docs/apeda_rcmc_apexagro_2026.pdf',
+      originalName: 'APEDA_RCMC_ApexAgro_PvtLtd.pdf',
       mimeType: 'application/pdf',
       size: 452000,
       issueDate: new Date('2025-01-10'),
@@ -519,7 +519,7 @@ async function main() {
       requirementId: reqCoO.id,
       type: 'CoO',
       storageKey: 'docs/certificate_of_origin_draft.pdf',
-      originalName: 'Certificate_of_Origin_Palghar_Agro.pdf',
+      originalName: 'Certificate_of_Origin_Apex_Agro.pdf',
       mimeType: 'application/pdf',
       size: 320000,
       issueDate: new Date('2026-03-01'),
@@ -574,7 +574,7 @@ async function main() {
       userId: providerUserLab.id,
       name: 'Apex Quality & Plant Quarantine Labs',
       type: 'CERTIFICATION',
-      serviceArea: 'Palghar & JNPT Port Region',
+      serviceArea: 'Western & JNPT Port Region',
       contactEmail: 'lab@certify.com',
     },
   });
@@ -610,10 +610,10 @@ async function main() {
   const providerCHA = await prisma.provider.create({
     data: {
       userId: providerUserCHA.id,
-      name: 'Palghar Customs House Agent (CHA) & Maritime Services',
+      name: 'Western Ports Customs House Agent (CHA) & Maritime Services',
       type: 'CUSTOMS_CHA',
-      serviceArea: 'JNPT Port & Palghar ICD',
-      contactEmail: 'cha@palgharport.in',
+      serviceArea: 'JNPT Port & Western ICD',
+      contactEmail: 'cha@westernport.in',
     },
   });
 
@@ -626,7 +626,7 @@ async function main() {
     },
   });
 
-  // 12. Active Demo Shipment for Palghar MSME
+  // 12. Active Demo Shipment for MSME
   console.log('Creating active demo shipment...');
   const activeShipment = await prisma.shipment.create({
     data: {
@@ -672,7 +672,7 @@ async function main() {
       currency: 'INR',
       transitMin: 8,
       transitMax: 10,
-      inclusions: 'Door-to-door Palghar factory pickup, Container seal validation, Jebel Ali priority discharge',
+      inclusions: 'Door-to-door factory pickup, Container seal validation, Jebel Ali priority discharge',
       exclusions: 'Import VAT/Duty in UAE',
       isSelected: false,
     },
@@ -735,28 +735,28 @@ async function main() {
         shipmentId: completedShipment.id,
         status: 'Order Confirmed',
         timestamp: pastDays(20),
-        location: 'Palghar Industrial Estate, Maharashtra',
+        location: 'Export Processing Zone, Maharashtra',
         note: 'Shipment created and pre-shipment export checklist validated.',
       },
       {
         shipmentId: completedShipment.id,
         status: 'Documents Ready',
         timestamp: pastDays(18),
-        location: 'Palghar Quality Agro HQ',
+        location: 'Apex Quality Agro HQ',
         note: 'Commercial Invoice, Packing List, Certificate of Origin & EU Phytosanitary Certificate verified.',
       },
       {
         shipmentId: completedShipment.id,
         status: 'Pickup Scheduled',
         timestamp: pastDays(16),
-        location: 'Palghar Factory Gate 2',
+        location: 'Factory Gate 2',
         note: 'SwiftGlobe Reefer container truck arrived for loading.',
       },
       {
         shipmentId: completedShipment.id,
         status: 'Picked Up',
         timestamp: pastDays(15),
-        location: 'Palghar -> JNPT Port Corridor',
+        location: 'Origin Factory -> JNPT Port Corridor',
         note: '500 Sealed drums loaded; cold-chain temperature set to +4°C.',
       },
       {
@@ -821,7 +821,7 @@ async function main() {
       entityType: 'SystemSeed',
       entityId: palgharBusiness.id,
       action: 'INITIALIZE_GOLDEN_DEMO',
-      newValueJson: JSON.stringify({ business: 'Palghar Quality Agro', status: 'Initialized' }),
+      newValueJson: JSON.stringify({ business: 'Apex Quality Agro', status: 'Initialized' }),
     },
   });
 
@@ -830,7 +830,7 @@ async function main() {
   ══════════════════════════════════════════════════════════
   🚀 VYAPARFLOW DEMO CREDENTIALS:
   ----------------------------------------------------------
-  • Palghar MSME Exporter : msme@palghar-exports.com / password123
+  • MSME Exporter          : msme@apex-exports.com / password123
   • Service Provider       : provider@freight.com / password123
   • Certification Lab      : lab@certify.com / password123
   • Customs CHA Agent      : cha@customs.com / password123
