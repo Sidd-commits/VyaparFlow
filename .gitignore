@@ -20,12 +20,11 @@
 /build
 
 # Database & SQLite Binaries
-*.db
 *.db-journal
-*.sqlite
-*.sqlite3
-prisma/*.db
+*.sqlite-journal
 prisma/*.db-journal
+*.db
+!prisma/dev.db
 
 # Runtime Uploads & Generated Media
 public/uploads/*

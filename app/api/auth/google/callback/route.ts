@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { ensureMSMEBusiness } from '@/lib/services/setupMSME';
-import { cookies } from 'next/headers';
+import {
+  PERSONA_COOKIE,
+  USER_ID_COOKIE,
+  USER_EMAIL_COOKIE,
+  USER_NAME_COOKIE,
+} from '@/lib/authCookies';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-const PERSONA_COOKIE = 'vyaparflow_active_role';
-const USER_ID_COOKIE = 'vyaparflow_active_user_id';
 
 function getAppOrigin(request: NextRequest): string {
   if (process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('http')) {

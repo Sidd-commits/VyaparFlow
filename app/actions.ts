@@ -32,12 +32,12 @@ async function saveFileLocally(file: File | null, prefix: string): Promise<{ sto
 
 
 import { ensureMSMEBusiness } from '@/lib/services/setupMSME';
-
-// Cookie keys for active session
-const PERSONA_COOKIE = 'vyaparflow_active_role';
-const USER_ID_COOKIE = 'vyaparflow_active_user_id';
-const USER_EMAIL_COOKIE = 'vyaparflow_active_user_email';
-const USER_NAME_COOKIE = 'vyaparflow_active_user_name';
+import {
+  PERSONA_COOKIE,
+  USER_ID_COOKIE,
+  USER_EMAIL_COOKIE,
+  USER_NAME_COOKIE,
+} from '@/lib/authCookies';
 
 export async function getActiveUser(): Promise<{
   user: any | null;
