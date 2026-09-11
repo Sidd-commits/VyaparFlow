@@ -33,9 +33,11 @@ async function saveFileLocally(file: File | null, prefix: string): Promise<{ sto
 
 import { ensureMSMEBusiness } from '@/lib/services/setupMSME';
 
-// Cookie key for active persona
+// Cookie keys for active session
 const PERSONA_COOKIE = 'vyaparflow_active_role';
 const USER_ID_COOKIE = 'vyaparflow_active_user_id';
+const USER_EMAIL_COOKIE = 'vyaparflow_active_user_email';
+const USER_NAME_COOKIE = 'vyaparflow_active_user_name';
 
 export async function getActiveUser(): Promise<{
   user: any | null;
@@ -44,33 +46,117 @@ export async function getActiveUser(): Promise<{
   try {
     const cookieStore = await cookies();
     const userIdVal = cookieStore.get(USER_ID_COOKIE)?.value;
+    const userEmailVal = cookieStore.get(USER_EMAIL_COOKIE)?.value;
+    const rawName = cookieStore.get(USER_NAME_COOKIE)?.value;
+    const userNameVal = rawName ? decodeURIComponent(rawName) : null;
+    const personaVal = cookieStore.get(PERSONA_COOKIE)?.value as 'MSME' | 'PROVIDER' | 'ADMIN' | undefined;
 
-    if (userIdVal) {
-      let user = await prisma.user.findUnique({
-        where: { id: userIdVal },
-        include: { 
-          businesses: { 
+    if (userIdVal || userEmailVal) {
+      let user = null;
+      if (userIdVal) {
+        user = await prisma.user.findUnique({
+          where: { id: userIdVal },
+          include: { 
+            businesses: { 
+              include: { 
+                products: { 
+                  include: { 
+                    destinations: { include: { country: true, requirements: true } } 
+                  } 
+                },
+                shipments: true,
+              } 
+            },
+            providers: true 
+          },
+        });
+      }
+
+      if (!user && userEmailVal) {
+        user = await prisma.user.findFirst({
+          where: { email: userEmailVal },
+          include: { 
+            businesses: { 
+              include: { 
+                products: { 
+                  include: { 
+                    destinations: { include: { country: true, requirements: true } } 
+                  } 
+                },
+                shipments: true,
+              } 
+            },
+            providers: true 
+          },
+        });
+      }
+
+      // If user session exists but local serverless lambda database doesn't have the row yet:
+      if (!user && (userEmailVal || userIdVal)) {
+        const email = userEmailVal || `user_${userIdVal?.slice(0, 8)}@vyaparflow.app`;
+        const name = userNameVal || email.split('@')[0];
+        const role = personaVal || 'MSME';
+
+        try {
+          user = await prisma.user.create({
+            data: {
+              ...(userIdVal ? { id: userIdVal } : {}),
+              email,
+              name,
+              role,
+              passwordHash: 'oauth_google',
+              ...(role === 'PROVIDER'
+                ? {
+                    providers: {
+                      create: {
+                        name: `${name} Logistics & Trade Services`,
+                        type: 'FREIGHT',
+                        serviceArea: 'Pan-India & Global Corridors',
+                        contactEmail: email,
+                      },
+                    },
+                  }
+                : {}),
+            },
+            include: {
+              businesses: true,
+              providers: true,
+            },
+          });
+
+          if (role === 'MSME') {
+            await ensureMSMEBusiness(user.id, name, email);
+          }
+
+          user = await prisma.user.findUnique({
+            where: { id: user.id },
             include: { 
-              products: { 
+              businesses: { 
                 include: { 
-                  destinations: { include: { country: true, requirements: true } } 
+                  products: { 
+                    include: { 
+                      destinations: { include: { country: true, requirements: true } } 
+                    } 
+                  },
+                  shipments: true,
                 } 
               },
-              shipments: true,
-            } 
-          },
-          providers: true 
-        },
-      });
+              providers: true 
+            },
+          });
+        } catch (syncErr) {
+          console.error('Auto-syncing session user to local lambda failed:', syncErr);
+        }
+      }
 
       if (user) {
-        const activeRole = (user.role || 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN';
+        const activeRole = (user.role || personaVal || 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN';
 
         // If MSME user does not have a business record yet, ensure tailored MSME business setup
         if (activeRole === 'MSME' && user.businesses.length === 0) {
           await ensureMSMEBusiness(user.id, user.name, user.email);
           user = await prisma.user.findUnique({
-            where: { id: userIdVal },
+            where: { id: user.id },
             include: { 
               businesses: { 
                 include: { 
@@ -113,6 +199,8 @@ export async function logoutUserAction(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete(USER_ID_COOKIE);
   cookieStore.delete(PERSONA_COOKIE);
+  cookieStore.delete(USER_EMAIL_COOKIE);
+  cookieStore.delete(USER_NAME_COOKIE);
   revalidatePath('/', 'layout');
   redirect('/login');
 }
@@ -755,8 +843,10 @@ export async function registerUserAction(formData: FormData): Promise<void> {
 
   // Switch role and log in with the newly created user account
   const cookieStore = await cookies();
-  cookieStore.set(USER_ID_COOKIE, newUser.id, { path: '/' });
-  cookieStore.set(PERSONA_COOKIE, newUser.role, { path: '/' });
+  cookieStore.set(USER_ID_COOKIE, newUser.id, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
+  cookieStore.set(PERSONA_COOKIE, newUser.role, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
+  cookieStore.set(USER_EMAIL_COOKIE, newUser.email, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
+  cookieStore.set(USER_NAME_COOKIE, encodeURIComponent(newUser.name), { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
   revalidatePath('/', 'layout');
 
   // Jump to appropriate dashboard based on user's registered role
@@ -840,6 +930,18 @@ export async function loginUserAction(formData: FormData): Promise<void> {
     maxAge: 60 * 60 * 24 * 30,
   });
   cookieStore.set(PERSONA_COOKIE, activeRole, {
+    path: '/',
+    httpOnly: false,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30,
+  });
+  cookieStore.set(USER_EMAIL_COOKIE, user.email, {
+    path: '/',
+    httpOnly: false,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 30,
+  });
+  cookieStore.set(USER_NAME_COOKIE, encodeURIComponent(user.name), {
     path: '/',
     httpOnly: false,
     sameSite: 'lax',

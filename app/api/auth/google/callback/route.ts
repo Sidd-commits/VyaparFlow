@@ -181,6 +181,18 @@ export async function GET(request: NextRequest) {
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 30,
     });
+    response.cookies.set(USER_EMAIL_COOKIE, user.email, {
+      path: '/',
+      httpOnly: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    response.cookies.set(USER_NAME_COOKIE, encodeURIComponent(user.name), {
+      path: '/',
+      httpOnly: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30,
+    });
 
     return response;
   } catch (err: any) {
