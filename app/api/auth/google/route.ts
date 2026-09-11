@@ -3,9 +3,22 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+function getAppOrigin(request: NextRequest): string {
+  const forwardedHost = request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.host;
+  const forwardedProto = request.headers.get('x-forwarded-proto') || (forwardedHost.includes('localhost') ? 'http' : 'https');
+  
+  if (forwardedHost) {
+    return `${forwardedProto}://${forwardedHost}`;
+  }
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+  }
+  return `${request.nextUrl.protocol}//${request.nextUrl.host}`;
+}
+
 export async function GET(request: NextRequest) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || `${request.nextUrl.protocol}//${request.nextUrl.host}`;
+  const appUrl = getAppOrigin(request);
   const redirectUri = `${appUrl}/api/auth/google/callback`;
   const role = request.nextUrl.searchParams.get('role') || 'MSME';
 

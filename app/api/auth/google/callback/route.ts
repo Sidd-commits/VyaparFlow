@@ -9,12 +9,25 @@ export const runtime = 'nodejs';
 const PERSONA_COOKIE = 'vyaparflow_active_role';
 const USER_ID_COOKIE = 'vyaparflow_active_user_id';
 
+function getAppOrigin(request: NextRequest): string {
+  const forwardedHost = request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.host;
+  const forwardedProto = request.headers.get('x-forwarded-proto') || (forwardedHost.includes('localhost') ? 'http' : 'https');
+  
+  if (forwardedHost) {
+    return `${forwardedProto}://${forwardedHost}`;
+  }
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '');
+  }
+  return `${request.nextUrl.protocol}//${request.nextUrl.host}`;
+}
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get('code');
   const error = searchParams.get('error');
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || `${request.nextUrl.protocol}//${request.nextUrl.host}`;
+  const appUrl = getAppOrigin(request);
   const redirectUri = `${appUrl}/api/auth/google/callback`;
 
   if (error || !code) {
