@@ -2,18 +2,24 @@ import React, { Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import AuthContainer from '@/components/AuthContainer';
 import { getActiveUser, getAllUsers } from '@/app/actions';
+import { redirect } from 'next/navigation';
 import { Ship, ShieldCheck, CheckCircle2, TrendingUp, Globe2, Sparkles, Building2, MapPin } from 'lucide-react';
 
 export default async function LoginPage() {
   const { role, user } = await getActiveUser();
-  const allUsers = await getAllUsers();
 
-  const currentUserData = user && role ? {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: role,
-  } : null;
+  // If already authenticated, redirect straight to the user's role dashboard
+  if (user && role) {
+    if (role === 'PROVIDER') {
+      redirect('/provider');
+    } else if (role === 'ADMIN') {
+      redirect('/admin');
+    } else {
+      redirect('/dashboard');
+    }
+  }
+
+  const allUsers = await getAllUsers();
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 flex flex-col font-sans relative overflow-hidden">
