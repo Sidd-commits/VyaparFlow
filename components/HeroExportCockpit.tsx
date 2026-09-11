@@ -208,17 +208,17 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
   };
 
   return (
-    <div className="relative rounded-3xl overflow-hidden border border-slate-800/90 shadow-2xl bg-[#090D16] text-white p-5 sm:p-7 space-y-6 transition-all">
+    <div className="relative rounded-3xl overflow-hidden border border-slate-800/90 shadow-2xl bg-[#090D16] text-white p-5 sm:p-7 space-y-5 transition-all">
       {/* Top Cockpit Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3.5">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-orange-600/20 border border-orange-500/40 flex items-center justify-center text-orange-400">
+          <div className="w-8 h-8 rounded-xl bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
             <Activity className="w-4 h-4 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-orange-400 font-bold">
-                COMMAND CENTER TELEMETRY
+              <span className="text-[11px] uppercase tracking-wider text-orange-400 font-bold">
+                EXPORT COMMAND CENTER
               </span>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             </div>
@@ -231,7 +231,7 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
         {/* Live Status Pill */}
         <div className="flex items-center gap-2">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-mono font-bold border transition-colors ${
+            className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${
               isResolved
                 ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
                 : 'bg-amber-500/15 text-amber-400 border-amber-500/30'
@@ -245,8 +245,8 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
       {/* Corridor Quick-Selector Pills */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-          <span>Active Trade Payload Simulator:</span>
-          <span className="text-orange-400 font-mono">Pan-India Network</span>
+          <span>Active Trade Payload:</span>
+          <span className="text-orange-400 font-semibold">Pan-India Corridors</span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {TRADE_CORRIDORS.map((item) => (
@@ -271,7 +271,7 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
       <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
-            <span className="text-[10px] uppercase tracking-wider font-mono font-bold text-orange-400 block">
+            <span className="text-[10px] uppercase tracking-wider font-bold text-orange-400 block">
               Active Manifest: {corridor.originHub.split(',')[0]}
             </span>
             <h4 className="text-base sm:text-lg font-bold text-white font-serif mt-0.5">
@@ -286,11 +286,11 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
             </p>
           </div>
           <div className="text-right">
-            <span className="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono text-orange-300 inline-block">
+            <span className="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono font-bold text-orange-300 inline-block">
               HS: {corridor.hsCode}
             </span>
-            <span className="block text-[10px] text-slate-400 mt-1 font-mono">
-              Transit: {corridor.transitTime} ({corridor.transitMode})
+            <span className="block text-[10px] text-slate-400 mt-1">
+              Transit: <strong>{corridor.transitTime}</strong> ({corridor.transitMode})
             </span>
           </div>
         </div>

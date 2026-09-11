@@ -22,9 +22,9 @@
     --input: #E2E8F0;
     --ring: #EA580C;
     --radius: 1rem;
-    --font-serif: var(--font-newsreader), Georgia, Cambria, serif;
+    --font-serif: var(--font-newsreader), "Playfair Display", Georgia, serif;
     --font-sans: var(--font-jakarta), var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-    --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-mono: var(--font-geist-mono), ui-monospace, Menlo, monospace;
   }
 
   body {
@@ -36,12 +36,14 @@
     text-rendering: optimizeLegibility;
   }
 
-  h1, h2, h3, .font-serif {
+  .font-serif {
     font-family: var(--font-serif);
   }
 
-  code, pre, .font-mono {
+  .font-mono {
     font-family: var(--font-mono);
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
   }
 
   select, input, textarea {

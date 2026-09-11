@@ -32,36 +32,42 @@ export default async function LandingPage() {
       {/* ─────────────────────────────────────────────────────────────
           HERO SECTION — EDITORIAL NARRATIVE & EXPORT COMMAND CENTER
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden py-12 md:py-20 border-b border-slate-200 bg-linear-to-b from-white via-orange-50/25 to-[#FAF9F6] bg-trade-grid-light">
+      <section className="relative overflow-hidden pt-6 sm:pt-10 pb-12 sm:pb-16 border-b border-slate-200 bg-linear-to-b from-white via-orange-50/20 to-[#FAF9F6] bg-trade-grid-light">
         {/* Ambient background light gradients */}
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none -mt-20" />
-        <div className="absolute bottom-10 left-10 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-6 left-10 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Left Column: Editorial Headline & Actions */}
-            <div className="lg:col-span-6 space-y-6 text-left">
-              {/* Eyebrow Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-100/90 border border-orange-300 text-orange-900 text-xs font-mono font-bold shadow-xs">
-                <MapPin className="w-3.5 h-3.5 text-orange-600 shrink-0" />
-                <span>Pan-India MSME Export OS &bull; JNPT, Mundra, Hazira, Chennai</span>
+            <div className="lg:col-span-6 space-y-5 text-left pt-1">
+              {/* Live Status & Region Badge Group */}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-600 text-white text-xs font-bold shadow-xs">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Pan-India Export OS</span>
+                </div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-900 text-xs font-semibold">
+                  <MapPin className="w-3.5 h-3.5 text-orange-600 shrink-0" />
+                  <span>JNPT, Mundra, Hazira &amp; Chennai &rarr; Global Markets</span>
+                </div>
               </div>
 
               {/* Display Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.10] font-serif">
+              <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-black text-slate-900 tracking-tight leading-[1.08] font-serif">
                 Tell us what you make. <br />
                 <span className="bg-linear-to-r from-orange-600 via-amber-600 to-yellow-600 bg-clip-text text-transparent">
                   We guide your export journey.
                 </span>
               </h1>
 
-              {/* Refined Subtitle */}
-              <p className="text-base sm:text-lg text-slate-700 max-w-xl font-normal leading-relaxed">
+              {/* Subtitle */}
+              <p className="text-base text-slate-700 max-w-xl font-normal leading-relaxed">
                 VyaparFlow converts complex multi-agency Indian export regulations (DGFT, CBIC, FSSAI, APEDA) into one clear, deterministic, and trackable digital operating system for Tier-2 &amp; Tier-3 MSMEs.
               </p>
 
               {/* Primary Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3.5 pt-2">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
                 {isLoggedIn ? (
                   <>
                     <Link
@@ -102,24 +108,24 @@ export default async function LandingPage() {
               </div>
 
               {/* Feature Highlights Grid */}
-              <div className="pt-3 grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-slate-700 font-semibold">
-                <div className="flex items-center gap-2 bg-white/90 p-3 rounded-xl border border-slate-200 shadow-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-700 font-semibold pt-1">
+                <div className="flex items-center gap-2 bg-white/90 p-2.5 rounded-xl border border-slate-200 shadow-xs">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>Deterministic Rules</span>
                 </div>
-                <div className="flex items-center gap-2 bg-white/90 p-3 rounded-xl border border-slate-200 shadow-xs">
+                <div className="flex items-center gap-2 bg-white/90 p-2.5 rounded-xl border border-slate-200 shadow-xs">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>0–100 Score Audits</span>
                 </div>
-                <div className="flex items-center gap-2 bg-white/90 p-3 rounded-xl border border-slate-200 shadow-xs">
+                <div className="flex items-center gap-2 bg-white/90 p-2.5 rounded-xl border border-slate-200 shadow-xs">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>Integrated CHA & Carrier</span>
                 </div>
               </div>
 
               {/* Exporter Trust & Metrics Micro-Bar */}
-              <div className="flex items-center gap-6 pt-2 text-[11px] text-slate-500 font-mono border-t border-slate-200/80">
-                <span>₹14.2 Cr+ Export Cargo Processed</span>
+              <div className="flex flex-wrap items-center gap-4 pt-1 text-[11px] text-slate-500 font-mono border-t border-slate-200/80">
+                <span>₹14.2 Cr+ Cargo Processed</span>
                 <span>&bull;</span>
                 <span>0 Customs Detentions</span>
                 <span>&bull;</span>
