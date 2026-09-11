@@ -32,7 +32,7 @@ export default async function LandingPage() {
       {/* ─────────────────────────────────────────────────────────────
           HERO SECTION — EDITORIAL NARRATIVE & EXPORT COMMAND CENTER
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-6 sm:pt-10 pb-12 sm:pb-16 border-b border-slate-200 bg-linear-to-b from-white via-orange-50/20 to-[#FAF9F6] bg-trade-grid-light">
+      <section className="relative overflow-hidden pt-3 sm:pt-5 pb-10 sm:pb-14 border-b border-slate-200 bg-linear-to-b from-white via-orange-50/20 to-[#FAF9F6] bg-trade-grid-light">
         {/* Ambient background light gradients */}
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none -mt-20" />
         <div className="absolute bottom-6 left-10 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
@@ -40,17 +40,16 @@ export default async function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Left Column: Editorial Headline & Actions */}
-            <div className="lg:col-span-6 space-y-5 text-left pt-1">
-              {/* Live Status & Region Badge Group */}
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-600 text-white text-xs font-bold shadow-xs">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Pan-India Export OS</span>
-                </div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-900 text-xs font-semibold">
-                  <MapPin className="w-3.5 h-3.5 text-orange-600 shrink-0" />
-                  <span>JNPT, Mundra, Hazira &amp; Chennai &rarr; Global Markets</span>
-                </div>
+            <div className="lg:col-span-6 space-y-4 text-left">
+              {/* Top Integrated Corridor Ribbon */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-950 text-xs font-semibold shadow-xs">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600" />
+                </span>
+                <span className="font-bold text-orange-800">Pan-India Export OS</span>
+                <span className="text-orange-300">•</span>
+                <span className="text-slate-700">JNPT, Mundra, Hazira &amp; Chennai &rarr; Global Corridors</span>
               </div>
 
               {/* Display Headline */}
