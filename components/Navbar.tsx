@@ -292,13 +292,17 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
             {isLoggedIn ? (
               <div className="flex items-center gap-3">
                 {/* User Profile Badge */}
-                <div className="flex items-center gap-2.5 pl-3 border-l border-slate-200">
-                  <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                <Link
+                  href={currentRole === 'MSME' ? '/business' : currentRole === 'PROVIDER' ? '/provider' : '/admin'}
+                  className="flex items-center gap-2.5 pl-3 border-l border-slate-200 hover:opacity-85 transition-opacity group"
+                  title="View & manage company profile and registrations"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-xs group-hover:bg-orange-600 transition-colors">
                     {userName ? userName.charAt(0).toUpperCase() : currentRole ? currentRole.charAt(0) : 'U'}
                   </div>
                   <div className="hidden sm:block text-left text-xs">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-slate-900 leading-tight">
+                      <span className="font-bold text-slate-900 leading-tight group-hover:text-orange-600 transition-colors">
                         {userName || userEmail?.split('@')[0]}
                       </span>
                       <span
@@ -321,7 +325,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                       {userEmail}
                     </span>
                   </div>
-                </div>
+                </Link>
 
                 {/* Sign Out Button */}
                 <button

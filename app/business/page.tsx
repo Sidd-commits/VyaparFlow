@@ -1,9 +1,10 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import BusinessRegistrationsForm from '@/components/BusinessRegistrationsForm';
+import EditCompanyProfileModal from '@/components/EditCompanyProfileModal';
 import { requireAuth, getAllUsers, updateBusinessRegistrationsAction, verifyDocumentAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
-import { Building2, MapPin, CheckCircle2, ShieldCheck, Upload, FileText, AlertTriangle, Clock, XCircle, Eye } from 'lucide-react';
+import { Building2, MapPin, CheckCircle2, ShieldCheck, Upload, FileText, AlertTriangle, Clock, XCircle, Eye, Edit3 } from 'lucide-react';
 
 export default async function BusinessPage() {
   const { role, user } = await requireAuth();
@@ -108,14 +109,24 @@ export default async function BusinessPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Business Details Overview */}
           <div className="lg:col-span-6 bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-xs space-y-6">
-            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <Building2 className="w-6 h-6 text-orange-600" />
-              <div>
-                <h3 className="text-lg font-bold text-slate-900 font-serif">
-                  {business?.legalName || 'New MSME Exporter'}
-                </h3>
-                <p className="text-xs text-slate-500">{business?.businessType}</p>
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <Building2 className="w-6 h-6 text-orange-600" />
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 font-serif">
+                    {business?.legalName || 'New MSME Exporter'}
+                  </h3>
+                  <p className="text-xs text-slate-500">{business?.businessType}</p>
+                </div>
               </div>
+
+              {business && (
+                <EditCompanyProfileModal
+                  business={business}
+                  buttonText="Edit Company Details"
+                  triggerClassName="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold text-xs transition-colors flex items-center gap-1.5 border border-orange-200 cursor-pointer shadow-2xs"
+                />
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">

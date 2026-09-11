@@ -1117,5 +1117,87 @@ export async function updateBusinessRegistrationsAction(formData: FormData): Pro
   revalidatePath('/documents');
 }
 
+export async function updateCompanyProfileAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  const businessId = (formData.get('businessId') as string)?.trim();
+  const displayName = (formData.get('displayName') as string)?.trim();
+  const legalName = (formData.get('legalName') as string)?.trim();
+  const businessType = (formData.get('businessType') as string)?.trim();
+  const location = (formData.get('location') as string)?.trim();
+  const city = (formData.get('city') as string)?.trim();
+  const state = (formData.get('state') as string)?.trim();
 
+  if (!displayName) {
+    return { success: false, error: 'Display Brand / Company Name is required.' };
+  }
 
+  if (!legalName) {
+    return { success: false, error: 'Legal Entity Name is required.' };
+  }
+
+  // Authorization check
+  const { user } = await getActiveUser();
+  if (!user) {
+    return { success: false, error: 'Authentication required to update company profile.' };
+  }
+
+  let targetBusinessId = businessId;
+  if (!targetBusinessId) {
+    if (user.businesses && user.businesses.length > 0) {
+      targetBusinessId = user.businesses[0].id;
+    } else {
+      const fallbackBiz = await prisma.business.findFirst();
+      if (fallbackBiz) targetBusinessId = fallbackBiz.id;
+    }
+  }
+
+  if (!targetBusinessId) {
+    return { success: false, error: 'No business profile found to update.' };
+  }
+
+  // Ensure user owns this business or is Admin
+  const existingBiz = await prisma.business.findUnique({
+    where: { id: targetBusinessId },
+  });
+
+  if (!existingBiz) {
+    return { success: false, error: 'Business profile not found in database.' };
+  }
+
+  if (user.role !== 'ADMIN' && existingBiz.ownerUserId !== user.id) {
+    // If not matching directly, check if it's the user's primary business
+    const userOwnsAny = user.businesses?.some((b: any) => b.id === targetBusinessId);
+    if (!userOwnsAny && user.role !== 'ADMIN') {
+      return { success: false, error: 'Unauthorized to modify this company profile.' };
+    }
+  }
+
+  await prisma.business.update({
+    where: { id: targetBusinessId },
+    data: {
+      displayName: displayName || existingBiz.displayName,
+      legalName: legalName || existingBiz.legalName,
+      businessType: businessType || existingBiz.businessType,
+      location: location || existingBiz.location,
+      city: city || existingBiz.city,
+      state: state || existingBiz.state,
+    },
+  });
+
+  // Log audit action
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      entityType: 'Business',
+      entityId: targetBusinessId,
+      action: 'UPDATE_COMPANY_PROFILE',
+      newValueJson: JSON.stringify({ displayName, legalName, businessType, location, city, state }),
+    },
+  });
+
+  revalidatePath('/dashboard');
+  revalidatePath('/business');
+  revalidatePath('/readiness');
+  revalidatePath('/shipments');
+
+  return { success: true };
+}
