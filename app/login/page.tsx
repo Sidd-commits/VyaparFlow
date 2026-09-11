@@ -101,7 +101,7 @@ export default async function LoginPage() {
           <div className="lg:col-span-6 w-full max-w-lg mx-auto">
             {/* Suspense wrapper for Next.js searchParams */}
             <Suspense fallback={<div className="text-center py-12 text-sm text-slate-400">Loading authentication interface...</div>}>
-              <AuthContainer currentUser={currentUserData} />
+              <AuthContainer currentUser={user} />
             </Suspense>
           </div>
 
