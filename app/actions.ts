@@ -41,57 +41,61 @@ export async function getActiveUser(): Promise<{
   user: any | null;
   role: 'MSME' | 'PROVIDER' | 'ADMIN' | null;
 }> {
-  const cookieStore = await cookies();
-  const userIdVal = cookieStore.get(USER_ID_COOKIE)?.value;
+  try {
+    const cookieStore = await cookies();
+    const userIdVal = cookieStore.get(USER_ID_COOKIE)?.value;
 
-  if (userIdVal) {
-    let user = await prisma.user.findUnique({
-      where: { id: userIdVal },
-      include: { 
-        businesses: { 
-          include: { 
-            products: { 
-              include: { 
-                destinations: { include: { country: true, requirements: true } } 
-              } 
-            },
-            shipments: true,
-          } 
-        },
-        providers: true 
-      },
-    });
-
-    if (user) {
-      const activeRole = (user.role || 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN';
-
-      // If MSME user does not have a business record yet, ensure tailored MSME business setup
-      if (activeRole === 'MSME' && user.businesses.length === 0) {
-        await ensureMSMEBusiness(user.id, user.name, user.email);
-        user = await prisma.user.findUnique({
-          where: { id: userIdVal },
-          include: { 
-            businesses: { 
-              include: { 
-                products: { 
-                  include: { 
-                    destinations: { include: { country: true, requirements: true } } 
-                  } 
-                },
-                shipments: true,
-              } 
-            },
-            providers: true 
+    if (userIdVal) {
+      let user = await prisma.user.findUnique({
+        where: { id: userIdVal },
+        include: { 
+          businesses: { 
+            include: { 
+              products: { 
+                include: { 
+                  destinations: { include: { country: true, requirements: true } } 
+                } 
+              },
+              shipments: true,
+            } 
           },
-        });
+          providers: true 
+        },
+      });
+
+      if (user) {
+        const activeRole = (user.role || 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN';
+
+        // If MSME user does not have a business record yet, ensure tailored MSME business setup
+        if (activeRole === 'MSME' && user.businesses.length === 0) {
+          await ensureMSMEBusiness(user.id, user.name, user.email);
+          user = await prisma.user.findUnique({
+            where: { id: userIdVal },
+            include: { 
+              businesses: { 
+                include: { 
+                  products: { 
+                    include: { 
+                      destinations: { include: { country: true, requirements: true } } 
+                    } 
+                  },
+                  shipments: true,
+                } 
+              },
+              providers: true 
+            },
+          });
+        }
+
+        return { user, role: activeRole };
       }
-
-      return { user, role: activeRole };
     }
-  }
 
-  // No active user / unauthenticated guest state
-  return { user: null, role: null };
+    return { user: null, role: null };
+  } catch (error) {
+    console.error('Error fetching active user:', error);
+    return { user: null, role: null };
+  }
 }
 
 export async function requireAuth(): Promise<{
@@ -868,21 +872,26 @@ export async function getAllUsers(): Promise<Array<{
   role: 'MSME' | 'PROVIDER' | 'ADMIN';
   displayName: string;
 }>> {
-  const users = await prisma.user.findMany({
-    include: {
-      businesses: true,
-      providers: true,
-    },
-    orderBy: { createdAt: 'asc' },
-  });
+  try {
+    const users = await prisma.user.findMany({
+      include: {
+        businesses: true,
+        providers: true,
+      },
+      orderBy: { createdAt: 'asc' },
+    });
 
-  return users.map((u) => ({
-    id: u.id,
-    name: u.name,
-    email: u.email,
-    role: u.role as 'MSME' | 'PROVIDER' | 'ADMIN',
-    displayName: u.businesses[0]?.displayName || u.providers[0]?.name || u.name,
-  }));
+    return users.map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      role: u.role as 'MSME' | 'PROVIDER' | 'ADMIN',
+      displayName: u.businesses[0]?.displayName || u.providers[0]?.name || u.name,
+    }));
+  } catch (error) {
+    console.error('Error in getAllUsers:', error);
+    return [];
+  }
 }
 
 export async function updateBusinessRegistrationsAction(formData: FormData): Promise<void> {
