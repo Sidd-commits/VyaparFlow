@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateCommercialInvoicePDF } from '@/lib/services/documentGenerator';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const shipmentId = searchParams.get('shipmentId');

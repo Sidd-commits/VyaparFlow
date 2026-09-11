@@ -5,6 +5,9 @@ import path from 'path';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 /**
  * Generate a clean, realistic compliance document certificate PDF
  * for documents without physical files on disk.

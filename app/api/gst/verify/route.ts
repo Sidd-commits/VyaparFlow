@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fetchGSTDetailsFromSandbox } from '@/lib/services/sandboxGst';
 import { validateGSTIN } from '@/lib/businessTypeConfig';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const gstin = searchParams.get('gstin');

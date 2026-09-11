@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { ensureMSMEBusiness } from '@/lib/services/setupMSME';
 import { cookies } from 'next/headers';
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 const PERSONA_COOKIE = 'vyaparflow_active_role';
 const USER_ID_COOKIE = 'vyaparflow_active_user_id';
@@ -107,23 +111,7 @@ export async function GET(request: NextRequest) {
           role,
           avatar: picture,
           passwordHash: 'oauth_google',
-          ...(role === 'MSME'
-            ? {
-                businesses: {
-                  create: {
-                    legalName: `${name} Exports Pvt Ltd`,
-                    displayName: `${name} Agro & Industrial Exports`,
-                    businessType: 'MANUFACTURER_EXPORTER',
-                    location: 'Pan-India Export Corridor',
-                    city: 'Mumbai',
-                    state: 'Maharashtra',
-                    gstStatus: 'Active',
-                    iecStatus: 'Active',
-                    profileCompletion: 65,
-                  },
-                },
-              }
-            : role === 'PROVIDER'
+          ...(role === 'PROVIDER'
             ? {
                 providers: {
                   create: {
@@ -141,6 +129,10 @@ export async function GET(request: NextRequest) {
           providers: true,
         },
       });
+
+      if (role === 'MSME') {
+        await ensureMSMEBusiness(user.id, name, email);
+      }
     } else {
       // Update avatar if not present
       if (picture && !user.avatar) {
@@ -149,24 +141,12 @@ export async function GET(request: NextRequest) {
           data: { avatar: picture },
         });
       }
+      if (user.role === 'MSME' && user.businesses.length === 0) {
+        await ensureMSMEBusiness(user.id, user.name, user.email);
+      }
     }
 
-    // 4. Set Session Cookies
-    const cookieStore = await cookies();
-    cookieStore.set(USER_ID_COOKIE, user.id, {
-      path: '/',
-      httpOnly: false,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-    });
-    cookieStore.set(PERSONA_COOKIE, user.role, {
-      path: '/',
-      httpOnly: false,
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30,
-    });
-
-    // 5. Redirect to role dashboard
+    // 4. Set Session Cookies & Redirect
     const targetUrl =
       user.role === 'PROVIDER'
         ? '/provider'
@@ -174,7 +154,21 @@ export async function GET(request: NextRequest) {
         ? '/admin'
         : '/dashboard';
 
-    return NextResponse.redirect(new URL(targetUrl, request.url));
+    const response = NextResponse.redirect(new URL(targetUrl, request.url));
+    response.cookies.set(USER_ID_COOKIE, user.id, {
+      path: '/',
+      httpOnly: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+    response.cookies.set(PERSONA_COOKIE, user.role, {
+      path: '/',
+      httpOnly: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30,
+    });
+
+    return response;
   } catch (err: any) {
     console.error('Google OAuth callback unexpected error:', err);
     return NextResponse.redirect(new URL('/login?error=google_unexpected_error', request.url));

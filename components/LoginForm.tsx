@@ -62,6 +62,21 @@ const ERROR_MESSAGES: Record<string, { title: string; desc: string; type: 'error
     desc: 'Google sign-in was cancelled or encountered an issue. Please try again.',
     type: 'error',
   },
+  google_token_exchange_failed: {
+    title: 'Google Token Exchange Failed',
+    desc: 'Could not verify token with Google. Please check your Authorized redirect URIs in Google Cloud Console.',
+    type: 'error',
+  },
+  google_profile_failed: {
+    title: 'Google Profile Access Failed',
+    desc: 'Unable to retrieve your email profile from Google. Please try again.',
+    type: 'error',
+  },
+  google_unexpected_error: {
+    title: 'Authentication Error',
+    desc: 'An unexpected error occurred during Google sign-in. Please try again or sign in with email.',
+    type: 'error',
+  },
 };
 
 function GoogleIcon({ className = 'w-5 h-5' }: { className?: string }) {
@@ -144,9 +159,18 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 : 'text-amber-600'
             }`}
           />
-          <div className="space-y-0.5 min-w-0">
+          <div className="space-y-1 min-w-0 flex-1">
             <h4 className="font-bold">{errorInfo.title}</h4>
             <p className="opacity-90 leading-relaxed text-[11px]">{errorInfo.desc}</p>
+            {errorCode === 'user_not_found' && onSwitchToRegister && (
+              <button
+                type="button"
+                onClick={onSwitchToRegister}
+                className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-900 underline hover:text-amber-950 cursor-pointer"
+              >
+                Create / Register this account now →
+              </button>
+            )}
           </div>
         </div>
       )}
