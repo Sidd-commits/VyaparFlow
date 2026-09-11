@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useTransition } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { logoutUserAction } from '@/app/actions';
@@ -32,9 +32,62 @@ interface NavbarProps {
   }>;
 }
 
+const NAV_SECTIONS = [
+  { id: 'overview', label: 'Architecture' },
+  { id: 'regulatory', label: 'Regulatory Engine' },
+  { id: 'readiness', label: 'Readiness Index' },
+  { id: 'documents', label: 'Document Vault' },
+  { id: 'ecosystem', label: 'Trade Ecosystem' },
+];
+
 export default function Navbar({ currentRole, userEmail, userName }: NavbarProps) {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+  const [activeSection, setActiveSection] = useState<string>('');
+
+  useEffect(() => {
+    if (pathname !== '/') return;
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -60% 0px',
+      threshold: 0,
+    };
+
+    const handleIntersect: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersect, observerOptions);
+
+    NAV_SECTIONS.forEach((sec) => {
+      const el = document.getElementById(sec.id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (pathname === '/') {
+      e.preventDefault();
+      setActiveSection(id);
+      const targetElement = document.getElementById(id);
+      if (targetElement) {
+        const navHeight = 70;
+        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navHeight;
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth',
+        });
+        window.history.replaceState(null, '', `#${id}`);
+      }
+    }
+  };
 
   const handleSignOut = () => {
     startTransition(async () => {
@@ -77,7 +130,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
             </Link>
           </div>
 
-          {/* Navigation Links — Strictly Tailored to Current Role */}
+          {/* Navigation Links — Strictly Tailored to Current Role or Landing Scrollspy */}
           {isLoggedIn ? (
             <nav className="hidden lg:flex items-center gap-1">
               {currentRole === 'MSME' && (
@@ -213,22 +266,24 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
               )}
             </nav>
           ) : (
-            <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600">
-              <Link href="/#overview" className="hover:text-orange-600 transition-colors">
-                Architecture
-              </Link>
-              <Link href="/#regulatory" className="hover:text-orange-600 transition-colors">
-                Regulatory Engine
-              </Link>
-              <Link href="/#readiness" className="hover:text-orange-600 transition-colors">
-                Readiness Index
-              </Link>
-              <Link href="/#documents" className="hover:text-orange-600 transition-colors">
-                Document Vault
-              </Link>
-              <Link href="/#ecosystem" className="hover:text-orange-600 transition-colors">
-                Trade Ecosystem
-              </Link>
+            <nav className="hidden md:flex items-center gap-1 text-xs font-semibold">
+              {NAV_SECTIONS.map((sec) => {
+                const isActive = activeSection === sec.id;
+                return (
+                  <Link
+                    key={sec.id}
+                    href={`/#${sec.id}`}
+                    onClick={(e) => handleNavClick(e, sec.id)}
+                    className={`px-3 py-1.5 rounded-xl transition-all ${
+                      isActive
+                        ? 'bg-orange-50 text-orange-600 font-bold border border-orange-200/80 shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                    }`}
+                  >
+                    {sec.label}
+                  </Link>
+                );
+              })}
             </nav>
           )}
 
