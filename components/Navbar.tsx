@@ -213,18 +213,21 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
               )}
             </nav>
           ) : (
-            <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+            <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600">
               <Link href="/#overview" className="hover:text-orange-600 transition-colors">
-                Overview
+                Architecture
               </Link>
-              <Link href="/readiness" className="hover:text-orange-600 transition-colors">
+              <Link href="/#regulatory" className="hover:text-orange-600 transition-colors">
                 Regulatory Engine
               </Link>
-              <Link href="/#export-showcase" className="hover:text-orange-600 transition-colors">
-                Export Intelligence
+              <Link href="/#readiness" className="hover:text-orange-600 transition-colors">
+                Readiness Index
               </Link>
-              <Link href="/login?tab=register" className="hover:text-orange-600 transition-colors">
-                MSME Onboarding
+              <Link href="/#documents" className="hover:text-orange-600 transition-colors">
+                Document Vault
+              </Link>
+              <Link href="/#ecosystem" className="hover:text-orange-600 transition-colors">
+                Trade Ecosystem
               </Link>
             </nav>
           )}
