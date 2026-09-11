@@ -134,26 +134,21 @@ export async function GET(
     return NextResponse.json({ error: 'Document not found' }, { status: 404 });
   }
 
-  // 1. Check if an actual file was uploaded to disk under public/uploads or uploads/
-  const possiblePaths = [
-    path.join(process.cwd(), 'public', doc.storageKey),
-    path.join(process.cwd(), doc.storageKey),
-    path.join(process.cwd(), 'public', 'uploads', path.basename(doc.storageKey)),
-  ];
+  // 1. Check if an actual file was uploaded to disk under public/uploads
+  const cleanFilename = path.basename(doc.storageKey);
+  const targetUploadPath = path.join(process.cwd(), 'public', 'uploads', cleanFilename);
 
-  for (const filePath of possiblePaths) {
-    if (fs.existsSync(filePath)) {
-      try {
-        const fileBuffer = fs.readFileSync(filePath);
-        return new NextResponse(new Uint8Array(fileBuffer), {
-          headers: {
-            'Content-Type': doc.mimeType || 'application/pdf',
-            'Content-Disposition': `inline; filename="${doc.originalName}"`,
-          },
-        });
-      } catch (err) {
-        console.error('Error reading file from disk:', err);
-      }
+  if (fs.existsSync(/*turbopackIgnore: true*/ targetUploadPath)) {
+    try {
+      const fileBuffer = fs.readFileSync(/*turbopackIgnore: true*/ targetUploadPath);
+      return new NextResponse(new Uint8Array(fileBuffer), {
+        headers: {
+          'Content-Type': doc.mimeType || 'application/pdf',
+          'Content-Disposition': `inline; filename="${doc.originalName}"`,
+        },
+      });
+    } catch (err) {
+      console.error('Error reading file from disk:', err);
     }
   }
 
