@@ -74,7 +74,9 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
 
   // Form state
   // Step 1
-  const [companyName, setCompanyName] = useState<string>(initialBusiness?.displayName || `${user.name} Global Exports`);
+  const [companyName, setCompanyName] = useState<string>(
+    initialBusiness?.displayName || initialBusiness?.legalName || ''
+  );
   const [businessType, setBusinessType] = useState<'MANUFACTURER' | 'MERCHANT' | 'BOTH'>('MANUFACTURER');
 
   // Step 2
@@ -91,23 +93,46 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
   const [udyamNumber, setUdyamNumber] = useState<string>('');
 
   // Step 3
-  const [industry, setIndustry] = useState<string>('Textiles & Garments');
-  const [products, setProducts] = useState<ProductItem[]>([
-    {
-      id: 'p1',
-      name: '100% Organic Cotton Knitted Apparel',
-      category: 'Textiles & Garments',
-      hsCode: '6109.10.00',
-      description: 'Men & Women cotton casual t-shirts and apparel',
-      noHsCodeYet: false,
-    },
-  ]);
+  const [industry, setIndustry] = useState<string>(initialBusiness?.industry || 'Textiles & Garments');
+  const [products, setProducts] = useState<ProductItem[]>(
+    initialBusiness?.products && initialBusiness.products.length > 0
+      ? initialBusiness.products.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          category: initialBusiness?.industry || 'Textiles & Garments',
+          hsCode: p.hsCode || '',
+          description: '',
+          noHsCodeYet: !p.hsCode,
+        }))
+      : [
+          {
+            id: 'p1',
+            name: '',
+            category: 'Textiles & Garments',
+            hsCode: '',
+            description: '',
+            noHsCodeYet: false,
+          },
+        ]
+  );
 
   // Step 4
-  const [selectedDestinations, setSelectedDestinations] = useState<Array<{ name: string; isoCode: string }>>([
-    { name: 'United Arab Emirates', isoCode: 'AE' },
-    { name: 'United States', isoCode: 'US' },
-  ]);
+  const [selectedDestinations, setSelectedDestinations] = useState<Array<{ name: string; isoCode: string }>>(() => {
+    if (initialBusiness?.products && initialBusiness.products.length > 0) {
+      const dests: Array<{ name: string; isoCode: string }> = [];
+      for (const prod of initialBusiness.products) {
+        if (prod.destinations) {
+          for (const d of prod.destinations) {
+            if (d.country && !dests.some((x) => x.name === d.country.name)) {
+              dests.push({ name: d.country.name, isoCode: d.country.isoCode });
+            }
+          }
+        }
+      }
+      if (dests.length > 0) return dests;
+    }
+    return [];
+  });
   const [customDestination, setCustomDestination] = useState<string>('');
 
   // Step 5: Document selection
@@ -204,9 +229,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
   const toggleDestination = (dest: { name: string; isoCode: string }) => {
     const exists = selectedDestinations.some((d) => d.name === dest.name);
     if (exists) {
-      if (selectedDestinations.length > 1) {
-        setSelectedDestinations(selectedDestinations.filter((d) => d.name !== dest.name));
-      }
+      setSelectedDestinations(selectedDestinations.filter((d) => d.name !== dest.name));
     } else {
       setSelectedDestinations([...selectedDestinations, dest]);
     }
@@ -214,13 +237,28 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
 
   const addCustomDestination = () => {
     if (customDestination.trim()) {
-      const isUae = customDestination.toLowerCase().includes('emirates') || customDestination.toLowerCase().includes('uae');
+      const name = customDestination.trim();
+      const lower = name.toLowerCase();
+      let isoCode = 'XX';
+      if (lower.includes('netherlands') || lower.includes('holland') || lower.includes('dutch')) isoCode = 'NL';
+      else if (lower.includes('germany') || lower.includes('deutschland')) isoCode = 'DE';
+      else if (lower.includes('emirates') || lower.includes('uae') || lower.includes('dubai')) isoCode = 'AE';
+      else if (lower.includes('united states') || lower.includes('usa') || lower === 'us') isoCode = 'US';
+      else if (lower.includes('united kingdom') || lower.includes('uk') || lower.includes('britain')) isoCode = 'GB';
+      else if (lower.includes('saudi')) isoCode = 'SA';
+      else if (lower.includes('singapore')) isoCode = 'SG';
+      else if (lower.includes('vietnam')) isoCode = 'VN';
+      else if (lower.includes('australia')) isoCode = 'AU';
+      else if (lower.includes('japan')) isoCode = 'JP';
+      else if (lower.includes('canada')) isoCode = 'CA';
+      else if (lower.includes('france')) isoCode = 'FR';
+      else if (lower.includes('italy')) isoCode = 'IT';
+      else if (lower.length === 2) isoCode = lower.toUpperCase();
+      else isoCode = name.substring(0, 2).toUpperCase();
+
       setSelectedDestinations([
-        ...selectedDestinations,
-        {
-          name: customDestination.trim(),
-          isoCode: isUae ? 'AE' : 'US',
-        },
+        ...selectedDestinations.filter((d) => d.name.toLowerCase() !== name.toLowerCase()),
+        { name, isoCode },
       ]);
       setCustomDestination('');
     }

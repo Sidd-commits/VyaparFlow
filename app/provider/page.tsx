@@ -156,10 +156,10 @@ export default async function ProviderPage() {
                         Target Destination Market
                       </span>
                       <span className="font-bold text-slate-900">
-                        {destination?.name || 'United Arab Emirates'}
+                        {destination?.name || 'Unspecified Corridor'}
                       </span>
                       <span className="text-[11px] text-slate-500 block">
-                        ISO: {destination?.isoCode || 'AE'}
+                        ISO: {destination?.isoCode || 'N/A'}
                       </span>
                     </div>
                   </div>

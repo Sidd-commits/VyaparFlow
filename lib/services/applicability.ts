@@ -84,6 +84,16 @@ export function getApplicableRequirementsForCorridor(
     {
       title: destinationCountryIso === 'AE'
         ? 'Certificate of Origin (India-UAE CEPA Preferential)'
+        : destinationCountryIso === 'AU'
+        ? 'Certificate of Origin (India-Australia ECTA Preferential)'
+        : destinationCountryIso === 'VN' || destinationCountryIso === 'SG'
+        ? 'Certificate of Origin (AIFTA Form AI Preferential)'
+        : destinationCountryIso === 'JP'
+        ? 'Certificate of Origin (India-Japan CEPA Preferential)'
+        : destinationCountryIso === 'NL' || destinationCountryIso === 'DE' || destinationCountryIso === 'FR' || destinationCountryIso === 'IT'
+        ? 'Certificate of Origin (EU Registered Exporter System - REX)'
+        : destinationCountryIso === 'GB'
+        ? 'Certificate of Origin (UK Developing Countries Trading Scheme / Standard)'
         : 'Certificate of Origin (Non-Preferential / Chamber of Commerce)',
       type: 'document',
       priority: 'critical',
@@ -91,6 +101,16 @@ export function getApplicableRequirementsForCorridor(
       blocksDispatch: true,
       reason: destinationCountryIso === 'AE'
         ? 'Mandatory COO under India-UAE Comprehensive Economic Partnership Agreement (CEPA) for 0% preferential duty clearance.'
+        : destinationCountryIso === 'AU'
+        ? 'Mandatory COO under India-Australia Economic Cooperation and Trade Agreement (ECTA).'
+        : destinationCountryIso === 'VN' || destinationCountryIso === 'SG'
+        ? 'Mandatory COO under ASEAN-India Free Trade Agreement (AIFTA Form AI) for preferential duty benefits.'
+        : destinationCountryIso === 'JP'
+        ? 'Mandatory COO under India-Japan Comprehensive Economic Partnership Agreement (CEPA).'
+        : destinationCountryIso === 'NL' || destinationCountryIso === 'DE' || destinationCountryIso === 'FR' || destinationCountryIso === 'IT'
+        ? 'Self-certification statement or Chamber COO under EU Registered Exporter (REX) system for customs clearance at EU ports (Rotterdam, Hamburg).'
+        : destinationCountryIso === 'GB'
+        ? 'Chamber of Commerce Certificate of Origin for HM Revenue & Customs clearance in the United Kingdom.'
         : 'Official certificate verifying Indian manufacturing origin for destination customs clearance.',
       mandatory: true,
     },
@@ -199,21 +219,21 @@ export function getApplicableRequirementsForCorridor(
   } else if (bizStr.includes('chemical') || bizStr.includes('pharma') || bizStr.includes('drug') || bizStr.includes('medicine')) {
     rules.push(
       {
-        title: 'Pharmexcil / CHEMEXCIL Registration (RCMC)',
+        title: 'Pharmexcil / Chemexcil Registration (RCMC)',
         type: 'certification',
         priority: 'critical',
         weight: 15,
         blocksDispatch: true,
-        reason: 'Statutory Export Promotion Council registration for pharmaceuticals and chemicals.',
+        reason: 'Statutory registration with Pharmexcil or Basic Chemicals, Cosmetics & Dyes Export Promotion Council.',
         mandatory: true,
       },
       {
-        title: 'Certificate of Analysis (CoA) & GMP Compliance Declaration',
+        title: 'WHO-GMP & Certificate of Analysis (COA)',
         type: 'certification',
         priority: 'critical',
         weight: 20,
         blocksDispatch: true,
-        reason: 'Batch chemical purity assay and Good Manufacturing Practice compliance documentation.',
+        reason: 'Good Manufacturing Practice validation and batch-specific chemical assay analysis.',
         mandatory: true,
       }
     );
@@ -313,6 +333,55 @@ export function getApplicableRequirementsForCorridor(
       weight: 15,
       blocksDispatch: true,
       reason: 'US Customs and FDA electronic Prior Notice confirmation for US port entry.',
+      mandatory: true,
+    });
+  } else if (destinationCountryIso === 'NL' || destinationCountryIso === 'DE' || destinationCountryIso === 'FR') {
+    rules.push({
+      title: 'EU CE Marking & REACH Chemical Declaration',
+      type: 'certification',
+      priority: 'high',
+      weight: 10,
+      blocksDispatch: false,
+      reason: 'European Union single market compliance declaring conformity with EU health, safety, and environmental protection standards.',
+      mandatory: true,
+    });
+    rules.push({
+      title: 'EU Single Window Customs Document (Transit Port Rotterdam/Hamburg)',
+      type: 'document',
+      priority: 'critical',
+      weight: 15,
+      blocksDispatch: true,
+      reason: 'EU Entry Summary Declaration (ENS) and customs entry manifest for maritime arrival at Port of Rotterdam.',
+      mandatory: true,
+    });
+  } else if (destinationCountryIso === 'GB') {
+    rules.push({
+      title: 'UKCA Conformity Declaration & UK Customs Declaration Service (CDS)',
+      type: 'document',
+      priority: 'high',
+      weight: 10,
+      blocksDispatch: false,
+      reason: 'UK Conformity Assessed marking and CDS electronic customs declaration.',
+      mandatory: true,
+    });
+  } else if (destinationCountryIso === 'SA') {
+    rules.push({
+      title: 'Saber Platform Product & Shipment Certificate of Conformity (PCoC / SCoC)',
+      type: 'certification',
+      priority: 'critical',
+      weight: 15,
+      blocksDispatch: true,
+      reason: 'Saudi Standards, Metrology and Quality Organization (SASO) Saber electronic portal certification.',
+      mandatory: true,
+    });
+  } else if (destinationCountryIso === 'VN') {
+    rules.push({
+      title: 'Vietnam Customs Form AI & Quality Inspection Certificate',
+      type: 'document',
+      priority: 'high',
+      weight: 10,
+      blocksDispatch: false,
+      reason: 'General Department of Vietnam Customs import clearance and state quality inspection.',
       mandatory: true,
     });
   }

@@ -59,9 +59,10 @@ export default async function ProductsPage() {
                   {p.destinations.map((d) => (
                     <span
                       key={d.id}
-                      className="bg-white text-slate-800 font-bold px-3 py-1 rounded-lg border border-slate-300 flex items-center gap-1"
+                      className="bg-white text-slate-800 font-bold px-3 py-1 rounded-lg border border-slate-300 flex items-center gap-1.5"
                     >
-                      🇦🇪 {d.country.name} ({d.country.isoCode})
+                      <Globe className="w-3.5 h-3.5 text-orange-600" />
+                      <span>{d.country.name} ({d.country.isoCode})</span>
                     </span>
                   ))}
                 </div>

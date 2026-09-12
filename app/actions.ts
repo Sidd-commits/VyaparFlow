@@ -142,10 +142,6 @@ export async function getActiveUser(): Promise<{
             },
           });
 
-          if (role === 'MSME') {
-            await ensureMSMEBusiness(user.id, name, email);
-          }
-
           user = await prisma.user.findUnique({
             where: { id: user.id },
             include: { 
@@ -179,38 +175,6 @@ export async function getActiveUser(): Promise<{
 
       if (user) {
         const activeRole = (user.role || personaVal || 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN';
-
-        // If MSME user does not have a business record yet and is not currently registering, ensure tailored MSME business setup
-        if (activeRole === 'MSME' && user.businesses.length === 0) {
-          await ensureMSMEBusiness(user.id, user.name, user.email);
-          user = await prisma.user.findUnique({
-            where: { id: user.id },
-            include: { 
-              businesses: { 
-                where: { ownerUserId: user.id },
-                include: { 
-                  products: { 
-                    include: { 
-                      destinations: { include: { country: true, requirements: { include: { rule: true, documents: true } }, packagingItems: true } } 
-                    } 
-                  },
-                  shipments: {
-                    include: {
-                      product: true,
-                      destinationCountry: true,
-                      quotes: { include: { provider: true } },
-                      trackingEvents: { orderBy: { timestamp: 'desc' } },
-                      providerTasks: true,
-                    },
-                    orderBy: { createdAt: 'desc' },
-                  },
-                } 
-              },
-              providers: true 
-            },
-          });
-        }
-
         return { user, role: activeRole };
       }
     }
@@ -1123,12 +1087,17 @@ export async function completeOnboardingAction(formData: FormData): Promise<void
   }
 
   if (destinationsList.length === 0) {
-    const singleDest = ((formData.get('destination') as string) || 'United Arab Emirates').trim();
-    const isUae = singleDest.toLowerCase().includes('emirates') || singleDest.toLowerCase().includes('uae');
-    destinationsList.push({
-      name: singleDest,
-      isoCode: isUae ? 'AE' : 'US',
-    });
+    const singleDest = ((formData.get('destination') as string) || '').trim();
+    if (singleDest) {
+      const isUae = singleDest.toLowerCase().includes('emirates') || singleDest.toLowerCase().includes('uae');
+      const isNl = singleDest.toLowerCase().includes('netherlands') || singleDest.toLowerCase().includes('holland');
+      const isVn = singleDest.toLowerCase().includes('vietnam');
+      const isDe = singleDest.toLowerCase().includes('germany');
+      destinationsList.push({
+        name: singleDest,
+        isoCode: isNl ? 'NL' : isVn ? 'VN' : isDe ? 'DE' : isUae ? 'AE' : 'US',
+      });
+    }
   }
 
   // Determine or find existing business owned by this user
@@ -1173,7 +1142,9 @@ export async function completeOnboardingAction(formData: FormData): Promise<void
     });
   }
 
-  // Process Products and Categories
+  // Process Products and Categories cleanly
+  const activeProductIds: string[] = [];
+
   for (const prodItem of productsList) {
     const categoryName = prodItem.category || industry || 'General Exports';
     let cat = await prisma.productCategory.findFirst({
@@ -1216,7 +1187,10 @@ export async function completeOnboardingAction(formData: FormData): Promise<void
       });
     }
 
-    // Connect Product to Destinations
+    activeProductIds.push(product.id);
+
+    // Connect Product to Destinations in exact user-selected order
+    const targetCountryIds: string[] = [];
     for (const dest of destinationsList) {
       let country = await prisma.country.findFirst({
         where: {
@@ -1236,6 +1210,8 @@ export async function completeOnboardingAction(formData: FormData): Promise<void
         });
       }
 
+      targetCountryIds.push(country.id);
+
       let productCountry = await prisma.productCountry.findFirst({
         where: {
           productId: product.id,
@@ -1252,6 +1228,26 @@ export async function completeOnboardingAction(formData: FormData): Promise<void
         });
       }
     }
+
+    // Clean up any stale ProductCountry mappings that the user did not select
+    if (targetCountryIds.length > 0) {
+      await prisma.productCountry.deleteMany({
+        where: {
+          productId: product.id,
+          countryId: { notIn: targetCountryIds },
+        },
+      });
+    }
+  }
+
+  // Delete any stale products belonging to this business not in active onboarding list
+  if (activeProductIds.length > 0) {
+    await prisma.product.deleteMany({
+      where: {
+        businessId: business.id,
+        id: { notIn: activeProductIds },
+      },
+    });
   }
 
   // Handle Document Uploads from Step 5

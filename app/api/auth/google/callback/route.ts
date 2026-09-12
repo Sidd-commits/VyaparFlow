@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { ensureMSMEBusiness } from '@/lib/services/setupMSME';
 import {
   PERSONA_COOKIE,
   USER_ID_COOKIE,
@@ -146,9 +145,7 @@ export async function GET(request: NextRequest) {
         },
       });
 
-      if (role === 'MSME') {
-        await ensureMSMEBusiness(user.id, name, email);
-      }
+      // Role-specific setup if needed (MSME will complete real onboarding in wizard)
     } else {
       // Update avatar if not present
       if (picture && !user.avatar) {
@@ -156,9 +153,6 @@ export async function GET(request: NextRequest) {
           where: { id: user.id },
           data: { avatar: picture },
         });
-      }
-      if (user.role === 'MSME' && user.businesses.length === 0) {
-        await ensureMSMEBusiness(user.id, user.name, user.email);
       }
     }
 
@@ -168,7 +162,9 @@ export async function GET(request: NextRequest) {
         ? '/provider'
         : user.role === 'ADMIN'
         ? '/admin'
-        : '/dashboard';
+        : (user.businesses && user.businesses.length > 0)
+        ? '/dashboard'
+        : '/onboarding';
 
     const response = NextResponse.redirect(new URL(targetUrl, request.url));
     response.cookies.set(USER_ID_COOKIE, user.id, {
