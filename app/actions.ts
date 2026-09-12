@@ -1229,8 +1229,39 @@ export async function completeOnboardingAction(formData: FormData): Promise<void
       }
     }
 
-    // Clean up any stale ProductCountry mappings that the user did not select
+    // Clean up any stale ProductCountry mappings for active products that the user did not select
     if (targetCountryIds.length > 0) {
+      const staleProductCountries = await prisma.productCountry.findMany({
+        where: {
+          productId: product.id,
+          countryId: { notIn: targetCountryIds },
+        },
+        include: {
+          requirements: true,
+        },
+      });
+
+      for (const spc of staleProductCountries) {
+        for (const req of spc.requirements) {
+          await prisma.document.updateMany({
+            where: { requirementId: req.id },
+            data: { requirementId: null },
+          });
+          await prisma.providerTask.deleteMany({
+            where: { requirementId: req.id },
+          });
+          await prisma.certificationRequest.deleteMany({
+            where: { requirementId: req.id },
+          });
+        }
+        await prisma.requirement.deleteMany({
+          where: { productCountryId: spc.id },
+        });
+        await prisma.packagingItem.deleteMany({
+          where: { productCountryId: spc.id },
+        });
+      }
+
       await prisma.productCountry.deleteMany({
         where: {
           productId: product.id,
@@ -1242,12 +1273,95 @@ export async function completeOnboardingAction(formData: FormData): Promise<void
 
   // Delete any stale products belonging to this business not in active onboarding list
   if (activeProductIds.length > 0) {
-    await prisma.product.deleteMany({
+    const staleProducts = await prisma.product.findMany({
       where: {
         businessId: business.id,
         id: { notIn: activeProductIds },
       },
+      include: {
+        destinations: {
+          include: {
+            requirements: true,
+          },
+        },
+      },
     });
+
+    for (const sp of staleProducts) {
+      // Re-link any existing shipments pointing to this stale product to the active product
+      await prisma.shipment.updateMany({
+        where: { productId: sp.id },
+        data: { productId: activeProductIds[0] },
+      });
+
+      for (const dest of sp.destinations) {
+        for (const req of dest.requirements) {
+          await prisma.document.updateMany({
+            where: { requirementId: req.id },
+            data: { requirementId: null },
+          });
+          await prisma.providerTask.deleteMany({
+            where: { requirementId: req.id },
+          });
+          await prisma.certificationRequest.deleteMany({
+            where: { requirementId: req.id },
+          });
+        }
+        await prisma.requirement.deleteMany({
+          where: { productCountryId: dest.id },
+        });
+        await prisma.packagingItem.deleteMany({
+          where: { productCountryId: dest.id },
+        });
+      }
+
+      await prisma.productCountry.deleteMany({
+        where: { productId: sp.id },
+      });
+
+      await prisma.product.delete({
+        where: { id: sp.id },
+      });
+    }
+  }
+
+  // Synchronize business active shipment to match selected product and target corridor
+  if (activeProductIds.length > 0 && destinationsList.length > 0) {
+    const primaryDest = destinationsList[0];
+    const primaryCountry = await prisma.country.findFirst({
+      where: {
+        OR: [
+          { isoCode: primaryDest.isoCode },
+          { name: primaryDest.name },
+        ],
+      },
+    });
+
+    if (primaryCountry) {
+      const portCity =
+        primaryCountry.isoCode === 'NL'
+          ? 'Rotterdam (Port of Rotterdam)'
+          : primaryCountry.isoCode === 'DE'
+          ? 'Hamburg (Port of Hamburg)'
+          : primaryCountry.isoCode === 'VN'
+          ? 'Hai Phong / Cat Lai Port'
+          : primaryCountry.isoCode === 'AE'
+          ? 'Dubai (Jebel Ali Port)'
+          : primaryCountry.isoCode === 'US'
+          ? 'New York / New Jersey Port'
+          : primaryCountry.isoCode === 'GB'
+          ? 'London Gateway / Southampton'
+          : `${primaryCountry.name} Main Port`;
+
+      await prisma.shipment.updateMany({
+        where: { businessId: business.id },
+        data: {
+          productId: activeProductIds[0],
+          destinationCountryId: primaryCountry.id,
+          destinationCity: portCity,
+        },
+      });
+    }
   }
 
   // Handle Document Uploads from Step 5

@@ -344,24 +344,37 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
           onSubmit={() => setIsSubmitting(true)}
           className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm"
         >
-          {/* Hidden JSON Fields for complex step data */}
+          {/* Root Form State inputs guaranteed to submit in FormData across all steps */}
+          <input type="hidden" name="companyName" value={companyName} />
+          <input type="hidden" name="businessType" value={businessType} />
+          <input type="hidden" name="legalName" value={legalName} />
+          <input type="hidden" name="officialEmail" value={officialEmail} />
+          <input type="hidden" name="phone" value={phone} />
+          <input type="hidden" name="address" value={address} />
+          <input type="hidden" name="city" value={city} />
+          <input type="hidden" name="state" value={state} />
+          <input type="hidden" name="country" value={country} />
+          <input type="hidden" name="gstin" value={gstin} />
+          <input type="hidden" name="hasIec" value={hasIec ? 'true' : 'false'} />
+          <input type="hidden" name="iec" value={iec} />
+          <input type="hidden" name="udyamNumber" value={udyamNumber} />
+          <input type="hidden" name="industry" value={industry} />
           <input type="hidden" name="products" value={JSON.stringify(products)} />
           <input type="hidden" name="destinations" value={JSON.stringify(selectedDestinations)} />
 
           {/* ========================================================================= */}
           {/* STEP 1: CREATE ORGANIZATION                                                */}
           {/* ========================================================================= */}
-          {step === 1 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-100 pb-5">
-                <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
-                  <Building2 className="w-4 h-4" /> Workspace Identity
-                </div>
-                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Create your organization</h1>
-                <p className="text-slate-500 text-xs sm:text-sm mt-1">
-                  Set up your business workspace to manage compliance, certifications, logistics, and shipments.
-                </p>
+          <div className={step === 1 ? 'space-y-6 animate-in fade-in duration-300' : 'hidden'}>
+            <div className="border-b border-slate-100 pb-5">
+              <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
+                <Building2 className="w-4 h-4" /> Workspace Identity
               </div>
+              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Create your organization</h1>
+              <p className="text-slate-500 text-xs sm:text-sm mt-1">
+                Set up your business workspace to manage compliance, certifications, logistics, and shipments.
+              </p>
+            </div>
 
               <div className="space-y-5">
                 <div>
@@ -437,14 +450,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 </div>
               </div>
             </div>
-          )}
 
           {/* ========================================================================= */}
           {/* STEP 2: BUSINESS DETAILS                                                   */}
           {/* ========================================================================= */}
-          {step === 2 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-100 pb-5">
+          <div className={step === 2 ? 'space-y-6 animate-in fade-in duration-300' : 'hidden'}>
+            <div className="border-b border-slate-100 pb-5">
                 <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <FileCheck2 className="w-4 h-4" /> Legal & Contact Coordinates
                 </div>
@@ -643,14 +654,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 </div>
               </div>
             </div>
-          )}
 
           {/* ========================================================================= */}
           {/* STEP 3: INDUSTRY AND PRODUCTS                                             */}
           {/* ========================================================================= */}
-          {step === 3 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-100 pb-5">
+          <div className={step === 3 ? 'space-y-6 animate-in fade-in duration-300' : 'hidden'}>
+            <div className="border-b border-slate-100 pb-5">
                 <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <Package className="w-4 h-4" /> Personalization Engine
                 </div>
@@ -801,14 +810,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 </div>
               </div>
             </div>
-          )}
 
           {/* ========================================================================= */}
           {/* STEP 4: EXPORT DESTINATIONS                                               */}
           {/* ========================================================================= */}
-          {step === 4 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-100 pb-5">
+          <div className={step === 4 ? 'space-y-6 animate-in fade-in duration-300' : 'hidden'}>
+            <div className="border-b border-slate-100 pb-5">
                 <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <Globe2 className="w-4 h-4" /> Trade Corridors
                 </div>
@@ -886,14 +893,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 </div>
               </div>
             </div>
-          )}
 
           {/* ========================================================================= */}
           {/* STEP 5: EXISTING REGISTRATIONS & DOCUMENTS                                */}
           {/* ========================================================================= */}
-          {step === 5 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-100 pb-5">
+          <div className={step === 5 ? 'space-y-6 animate-in fade-in duration-300' : 'hidden'}>
+            <div className="border-b border-slate-100 pb-5">
                 <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <FileUp className="w-4 h-4" /> Document Vault
                 </div>
@@ -1022,14 +1027,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 </div>
               </div>
             </div>
-          )}
 
           {/* ========================================================================= */}
           {/* STEP 6: REVIEW & LAUNCH WORKSPACE                                         */}
           {/* ========================================================================= */}
-          {step === 6 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-100 pb-5">
+          <div className={step === 6 ? 'space-y-6 animate-in fade-in duration-300' : 'hidden'}>
+            <div className="border-b border-slate-100 pb-5">
                 <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <ShieldCheck className="w-4 h-4" /> Ready for Launch
                 </div>
@@ -1146,7 +1149,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 </p>
               </div>
             </div>
-          )}
 
           {/* ========================================================================= */}
           {/* NAVIGATION BUTTONS                                                        */}
