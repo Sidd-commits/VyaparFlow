@@ -14,6 +14,13 @@ import {
   type BusinessType,
 } from '@/lib/businessTypeConfig';
 import { syncBusinessRequirements } from '@/lib/services/applicability';
+import { ensureMSMEBusiness } from '@/lib/services/setupMSME';
+import {
+  PERSONA_COOKIE,
+  USER_ID_COOKIE,
+  USER_EMAIL_COOKIE,
+  USER_NAME_COOKIE,
+} from '@/lib/authCookies';
 
 async function saveFileLocally(file: File | null, prefix: string): Promise<{ storageKey: string, size: number, name: string } | null> {
   if (!file || file.size === 0) return null;
@@ -30,15 +37,6 @@ async function saveFileLocally(file: File | null, prefix: string): Promise<{ sto
   
   return { storageKey: `uploads/${filename}`, size: file.size, name: file.name };
 }
-
-
-import { ensureMSMEBusiness } from '@/lib/services/setupMSME';
-import {
-  PERSONA_COOKIE,
-  USER_ID_COOKIE,
-  USER_EMAIL_COOKIE,
-  USER_NAME_COOKIE,
-} from '@/lib/authCookies';
 
 export async function getActiveUser(): Promise<{
   user: any | null;
@@ -111,7 +109,7 @@ export async function getActiveUser(): Promise<{
         });
       }
 
-      // If user session exists but local serverless lambda database doesn't have the row yet:
+      // If user session exists but local database doesn't have the row yet:
       if (!user && (userEmailVal || userIdVal)) {
         const email = userEmailVal || `user_${userIdVal?.slice(0, 8)}@vyaparflow.app`;
         const name = userNameVal || email.split('@')[0];
@@ -182,7 +180,7 @@ export async function getActiveUser(): Promise<{
       if (user) {
         const activeRole = (user.role || personaVal || 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN';
 
-        // If MSME user does not have a business record yet, ensure tailored MSME business setup
+        // If MSME user does not have a business record yet and is not currently registering, ensure tailored MSME business setup
         if (activeRole === 'MSME' && user.businesses.length === 0) {
           await ensureMSMEBusiness(user.id, user.name, user.email);
           user = await prisma.user.findUnique({
@@ -219,7 +217,6 @@ export async function getActiveUser(): Promise<{
 
     return { user: null, role: null };
   } catch (error: any) {
-    // Next.js dynamic server usage error should be rethrown
     if (error?.digest === 'DYNAMIC_SERVER_USAGE') {
       throw error;
     }
@@ -431,16 +428,24 @@ export async function verifyDocumentAction(
   revalidatePath('/admin');
 }
 
-export async function requestCertificationAction(requirementId: string, providerId: string): Promise<void> {
+export async function requestCertificationAction(requirementId: string, providerId?: string): Promise<void> {
   const req = await prisma.requirement.findUnique({
     where: { id: requirementId },
   });
-
   if (!req) throw new Error('Requirement not found');
+
+  let targetProviderId = providerId;
+  if (!targetProviderId) {
+    const provider = await prisma.provider.findFirst({
+      where: { type: 'CERTIFICATION' },
+    });
+    if (!provider) throw new Error('No certification provider available');
+    targetProviderId = provider.id;
+  }
 
   const providerTask = await prisma.providerTask.create({
     data: {
-      providerId,
+      providerId: targetProviderId,
       requirementId,
       type: 'CERTIFICATION',
       status: 'in_progress',
@@ -673,27 +678,29 @@ export async function updateRuleAction(ruleId: string, data: { priority?: string
       version: { increment: 1 },
     },
   });
-
   revalidatePath('/admin');
   revalidatePath('/dashboard');
-  revalidatePath('/readiness');
 }
 
 export async function registerUserAction(formData: FormData): Promise<void> {
-  const name = (formData.get('name') as string)?.trim() || 'User';
+  const name = ((formData.get('name') as string) || '').trim();
   const rawEmail = ((formData.get('email') as string) || '').trim();
   const email = rawEmail.toLowerCase();
-  const password = (formData.get('password') as string) || 'password123';
-  const role = (formData.get('role') as 'MSME' | 'PROVIDER' | 'ADMIN') || 'MSME';
-  const businessName = (formData.get('businessName') as string)?.trim() || `${name} Exports Pvt Ltd`;
-  const city = (formData.get('city') as string)?.trim() || 'Mumbai';
-  const state = (formData.get('state') as string)?.trim() || 'Maharashtra';
-  const gstNumber = (formData.get('gstNumber') as string)?.trim() || '';
-  const iecCode = (formData.get('iecCode') as string)?.trim() || '';
-  const businessCategory = (formData.get('businessCategory') as string)?.trim() || '';
+  const password = (formData.get('password') as string) || '';
+  const role = ((formData.get('role') as string) || 'MSME').trim() as 'MSME' | 'PROVIDER' | 'ADMIN';
 
-  // Check if user already exists - if so, seamlessly log them in without any error and jump to dashboard
-  const existing = await prisma.user.findFirst({
+  if (!name) {
+    redirect('/login?tab=register&error=name_required');
+  }
+  if (!email || !email.includes('@')) {
+    redirect('/login?tab=register&error=invalid_email');
+  }
+  if (!password || password.length < 6) {
+    redirect('/login?tab=register&error=password_too_short');
+  }
+
+  // Check if user already exists
+  const existingUser = await prisma.user.findFirst({
     where: {
       OR: [
         { email },
@@ -702,292 +709,31 @@ export async function registerUserAction(formData: FormData): Promise<void> {
     },
   });
 
-  if (existing) {
-    if (role && role !== existing.role) {
-      await prisma.user.update({
-        where: { id: existing.id },
-        data: { role },
-      });
-    }
-
-    const cookieStore = await cookies();
-    cookieStore.set(USER_ID_COOKIE, existing.id, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
-    cookieStore.set(PERSONA_COOKIE, role || existing.role, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
-    cookieStore.set(USER_EMAIL_COOKIE, existing.email, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
-    cookieStore.set(USER_NAME_COOKIE, encodeURIComponent(existing.name), { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
-    revalidatePath('/', 'layout');
-    if ((role || existing.role) === 'PROVIDER') redirect('/provider');
-    else if ((role || existing.role) === 'ADMIN') redirect('/admin');
-    else redirect('/dashboard');
+  if (existingUser) {
+    redirect('/login?tab=register&error=email_exists');
   }
 
-  if (role === 'MSME') {
-    // Validate GSTIN & IEC are provided
-    if (!gstNumber || !iecCode) {
-      throw new Error('GSTIN Number and IEC Code are compulsory fields for MSME exporters.');
-    }
-
-    // Server-side GSTIN format verification
-    const gstValidation = validateGSTIN(gstNumber);
-    if (!gstValidation.valid) {
-      throw new Error(`GSTIN Verification Failed: ${gstValidation.error}`);
-    }
-
-    // Server-side IEC format verification
-    const iecValidation = validateIEC(iecCode);
-    if (!iecValidation.valid) {
-      throw new Error(`IEC Verification Failed: ${iecValidation.error}`);
-    }
-
-    // Validate business category
-    if (!businessCategory || !(businessCategory in BUSINESS_TYPE_CONFIGS)) {
-      throw new Error('Please select a valid business type (Steel, Food, Agricultural Goods, Diamonds, or Gold).');
-    }
-  }
-
-  // Create User with fallback in case email is already registered
-  let newUser;
-  try {
-    newUser = await prisma.user.create({
-      data: {
-        email,
-        name,
-        passwordHash: password,
-        role,
-      },
-    });
-  } catch (err: any) {
-    // If user already exists (unique constraint caught), seamlessly log them in!
-    const fallbackUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email },
-          { email: rawEmail },
-        ],
-      },
-    });
-
-    if (fallbackUser) {
-      const cookieStore = await cookies();
-      cookieStore.set(USER_ID_COOKIE, fallbackUser.id, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
-      cookieStore.set(PERSONA_COOKIE, fallbackUser.role, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
-      cookieStore.set(USER_EMAIL_COOKIE, fallbackUser.email, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
-      cookieStore.set(USER_NAME_COOKIE, encodeURIComponent(fallbackUser.name), { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
-      revalidatePath('/', 'layout');
-      if (fallbackUser.role === 'PROVIDER') redirect('/provider');
-      else if (fallbackUser.role === 'ADMIN') redirect('/admin');
-      else redirect('/dashboard');
-    }
-
-    throw err;
-  }
-
-  if (role === 'PROVIDER') {
-    const providerType =
-      businessCategory === 'Steel'
-        ? 'FREIGHT'
-        : businessCategory === 'Food'
-        ? 'CERTIFICATION'
-        : 'CUSTOMS_CHA';
-
-    await prisma.provider.create({
-      data: {
-        userId: newUser.id,
-        name: businessName || `${name} Logistics & Maritime Services`,
-        type: providerType,
-        serviceArea: 'Pan-India & Global Corridors',
-        contactEmail: email,
-      },
-    });
-  } else if (role === 'MSME') {
-    const bizType = businessCategory as BusinessType;
-    const config = BUSINESS_TYPE_CONFIGS[bizType];
-
-    // Create Business with registered GSTIN and IEC numbers
-    const business = await prisma.business.create({
-      data: {
-        ownerUserId: newUser.id,
-        legalName: `${businessName} Pvt Ltd`,
-        displayName: businessName,
-        businessType: config.businessTypeLabel,
-        location: `${city} Industrial Area`,
-        city,
-        state,
-        gstStatus: `Verified (${gstNumber.toUpperCase()})`,
-        iecStatus: `Verified (${iecCode})`,
-        profileCompletion: 60,
-      },
-    });
-
-    // Find matching ProductCategory for this business type
-    const matchingCategory = await prisma.productCategory.findFirst({
-      where: {
-        name: { contains: config.categoryMatch },
-      },
-    });
-
-    const defaultCountry = await prisma.country.findFirst({ where: { isoCode: 'AE' } });
-
-    if (matchingCategory && defaultCountry) {
-      // Create default product based on business type
-      const product = await prisma.product.create({
-        data: {
-          businessId: business.id,
-          categoryId: matchingCategory.id,
-          name: config.defaultProduct.name,
-          hsCode: config.defaultProduct.hsCode,
-          unit: config.defaultProduct.unit,
-          defaultValue: config.defaultProduct.defaultValue,
-        },
-      });
-
-      const pc = await prisma.productCountry.create({
-        data: {
-          productId: product.id,
-          countryId: defaultCountry.id,
-        },
-      });
-
-      // --- GSTIN & IEC as under_review requirements (awaiting admin proof verification) ---
-      const gstReq = await prisma.requirement.create({
-        data: {
-          productCountryId: pc.id,
-          type: 'document',
-          title: 'GSTIN Registration Certificate',
-          priority: 'critical',
-          status: 'under_review',
-          weight: 10,
-          reason: `GSTIN number registered: ${gstNumber.toUpperCase()}. Awaiting proof document verification by admin.`,
-        },
-      });
-
-      // Create placeholder proof document for GSTIN (admin can accept/reject)
-      await prisma.document.create({
-        data: {
-          businessId: business.id,
-          requirementId: gstReq.id,
-          type: 'GST_CERTIFICATE',
-          storageKey: `uploads/gst_proof_${Date.now()}.pdf`,
-          originalName: `GSTIN_Proof_${gstNumber.toUpperCase()}.pdf`,
-          mimeType: 'application/pdf',
-          size: 150000,
-          issueDate: new Date(),
-          status: 'under_review',
-          notes: `GSTIN: ${gstNumber.toUpperCase()} — Format validated. Awaiting admin verification of proof document.`,
-        },
-      });
-
-      const iecReq = await prisma.requirement.create({
-        data: {
-          productCountryId: pc.id,
-          type: 'document',
-          title: 'Import Export Code (IEC) Certificate',
-          priority: 'critical',
-          status: 'under_review',
-          weight: 10,
-          reason: `IEC Code registered: ${iecCode}. Awaiting proof document verification by admin.`,
-        },
-      });
-
-      // Create placeholder proof document for IEC (admin can accept/reject)
-      await prisma.document.create({
-        data: {
-          businessId: business.id,
-          requirementId: iecReq.id,
-          type: 'IEC_CERTIFICATE',
-          storageKey: `uploads/iec_proof_${Date.now()}.pdf`,
-          originalName: `IEC_Proof_${iecCode}.pdf`,
-          mimeType: 'application/pdf',
-          size: 150000,
-          issueDate: new Date(),
-          status: 'under_review',
-          notes: `IEC Code: ${iecCode} — Format validated. Awaiting admin verification of proof document.`,
-        },
-      });
-
-      // --- Business-type-specific certificates & documents ---
-      for (const req of config.requirements) {
-        await prisma.requirement.create({
-          data: {
-            productCountryId: pc.id,
-            type: req.type,
-            title: req.title,
-            priority: req.priority,
-            status: 'missing',
-            weight: req.weight,
-            reason: req.description,
-          },
-        });
-      }
-
-      // --- Business-type-specific packaging & labelling items (some pre-completed for initial score) ---
-      for (const item of config.packagingItems) {
-        await prisma.packagingItem.create({
-          data: {
-            productCountryId: pc.id,
-            title: item.title,
-            type: item.type,
-            priority: item.priority,
-            mandatory: item.mandatory,
-            status: item.initialStatus,
-            notes: item.notes,
-          },
-        });
-      }
-
-      // --- Business-type-specific shipment prerequisites (some pre-verified for initial score) ---
-      for (const shipReq of config.shipmentPrereqs) {
-        await prisma.requirement.create({
-          data: {
-            productCountryId: pc.id,
-            type: shipReq.type,
-            title: shipReq.title,
-            priority: shipReq.priority,
-            status: shipReq.initialStatus,
-            weight: shipReq.weight,
-            reason: shipReq.description,
-            completedAt: shipReq.initialStatus === 'verified' ? new Date() : null,
-          },
-        });
-      }
-
-      // Also generate requirements from any matching global rules
-      const rules = await prisma.rule.findMany({
-        where: {
-          OR: [
-            { categoryId: matchingCategory.id, countryId: defaultCountry.id },
-            { categoryId: matchingCategory.id, countryId: null },
-            { categoryId: null, countryId: defaultCountry.id },
-          ],
-          active: true,
-        },
-      });
-
-      for (const rule of rules) {
-        // Avoid duplicates — skip if a requirement with same title already exists
-        const existingReq = await prisma.requirement.findFirst({
-          where: {
-            productCountryId: pc.id,
-            title: rule.title,
-          },
-        });
-        if (!existingReq) {
-          await prisma.requirement.create({
-            data: {
-              productCountryId: pc.id,
-              ruleId: rule.id,
-              type: rule.type,
-              title: rule.title,
-              priority: rule.priority,
-              status: 'missing',
-              weight: rule.weight,
-              reason: rule.description,
+  // Create new user account
+  const newUser = await prisma.user.create({
+    data: {
+      name,
+      email,
+      passwordHash: password,
+      role,
+      ...(role === 'PROVIDER'
+        ? {
+            providers: {
+              create: {
+                name: `${name} Logistics & Trade Services`,
+                type: 'FREIGHT',
+                serviceArea: 'Pan-India & Global Corridors',
+                contactEmail: email,
+              },
             },
-          });
-        }
-      }
-    }
-  }
+          }
+        : {}),
+    },
+  });
 
   // Switch role and log in with the newly created user account
   const cookieStore = await cookies();
@@ -997,13 +743,13 @@ export async function registerUserAction(formData: FormData): Promise<void> {
   cookieStore.set(USER_NAME_COOKIE, encodeURIComponent(newUser.name), { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
   revalidatePath('/', 'layout');
 
-  // Jump to appropriate dashboard based on user's registered role
+  // Jump to appropriate flow based on user's registered role
   if (newUser.role === 'PROVIDER') {
     redirect('/provider');
   } else if (newUser.role === 'ADMIN') {
     redirect('/admin');
   } else {
-    redirect('/dashboard');
+    redirect('/onboarding');
   }
 }
 
@@ -1322,4 +1068,249 @@ export async function updateCompanyProfileAction(formData: FormData): Promise<{ 
   revalidatePath('/shipments');
 
   return { success: true };
+}
+
+export async function completeOnboardingAction(formData: FormData): Promise<void> {
+  const { user } = await getActiveUser();
+  if (!user) {
+    redirect('/login?error=auth_required');
+  }
+
+  // Extract Step 1 & 2 fields
+  const companyName = ((formData.get('companyName') as string) || '').trim();
+  const rawBusinessType = ((formData.get('businessType') as string) || 'MANUFACTURER').trim();
+  const legalName = ((formData.get('legalName') as string) || companyName).trim();
+  const address = ((formData.get('address') as string) || 'Industrial Export Corridor').trim();
+  const city = ((formData.get('city') as string) || 'Mumbai').trim();
+  const state = ((formData.get('state') as string) || 'Maharashtra').trim();
+  const countryName = ((formData.get('country') as string) || 'India').trim();
+  const gstin = ((formData.get('gstin') as string) || '').trim().toUpperCase();
+  const hasIec = formData.get('hasIec') === 'true' || formData.get('hasIec') === 'yes' || formData.get('hasIec') === 'on';
+  const iec = ((formData.get('iec') as string) || '').trim().toUpperCase();
+  const udyamNumber = ((formData.get('udyamNumber') as string) || '').trim().toUpperCase();
+
+  // Extract Step 3 (Industry & Products)
+  const industry = ((formData.get('industry') as string) || 'Textiles & Garments').trim();
+  const productsJsonStr = formData.get('products') as string;
+  let productsList: Array<{ name: string; category?: string; hsCode?: string; description?: string }> = [];
+  try {
+    if (productsJsonStr) {
+      productsList = JSON.parse(productsJsonStr);
+    }
+  } catch (e) {
+    console.error('Failed to parse productsJson:', e);
+  }
+
+  if (productsList.length === 0) {
+    const singleProdName = ((formData.get('productName') as string) || `${industry} Export Merchandise`).trim();
+    const singleProdHs = ((formData.get('hsCode') as string) || '').trim();
+    productsList.push({
+      name: singleProdName,
+      category: industry,
+      hsCode: singleProdHs || 'PENDING',
+    });
+  }
+
+  // Extract Step 4 (Destinations)
+  const destinationsJsonStr = formData.get('destinations') as string;
+  let destinationsList: Array<{ name: string; isoCode: string }> = [];
+  try {
+    if (destinationsJsonStr) {
+      destinationsList = JSON.parse(destinationsJsonStr);
+    }
+  } catch (e) {
+    console.error('Failed to parse destinationsJson:', e);
+  }
+
+  if (destinationsList.length === 0) {
+    const singleDest = ((formData.get('destination') as string) || 'United Arab Emirates').trim();
+    const isUae = singleDest.toLowerCase().includes('emirates') || singleDest.toLowerCase().includes('uae');
+    destinationsList.push({
+      name: singleDest,
+      isoCode: isUae ? 'AE' : 'US',
+    });
+  }
+
+  // Determine or find existing business owned by this user
+  let business = await prisma.business.findFirst({
+    where: { ownerUserId: user.id },
+  });
+
+  const gstStatus = gstin ? `Active (${gstin})` : 'Not Registered';
+  const iecStatus = (hasIec && iec) ? `Active (${iec})` : 'Pending Application';
+  const profileCompletion = (gstin && iec) ? 100 : (gstin || iec) ? 80 : 60;
+  const compositeBusinessType = `${industry} (${rawBusinessType})`;
+
+  if (business) {
+    business = await prisma.business.update({
+      where: { id: business.id },
+      data: {
+        displayName: companyName || business.displayName,
+        legalName: legalName || business.legalName,
+        businessType: compositeBusinessType,
+        location: address,
+        city,
+        state,
+        gstStatus,
+        iecStatus,
+        profileCompletion,
+      },
+    });
+  } else {
+    business = await prisma.business.create({
+      data: {
+        ownerUserId: user.id,
+        displayName: companyName || `${user.name} Exports`,
+        legalName: legalName || `${user.name} Private Limited`,
+        businessType: compositeBusinessType,
+        location: address,
+        city,
+        state,
+        gstStatus,
+        iecStatus,
+        profileCompletion,
+      },
+    });
+  }
+
+  // Process Products and Categories
+  for (const prodItem of productsList) {
+    const categoryName = prodItem.category || industry || 'General Exports';
+    let cat = await prisma.productCategory.findFirst({
+      where: { name: { contains: categoryName } },
+    });
+    if (!cat) {
+      cat = await prisma.productCategory.create({
+        data: {
+          name: categoryName,
+          description: `${categoryName} export products and goods`,
+        },
+      });
+    }
+
+    let product = await prisma.product.findFirst({
+      where: {
+        businessId: business.id,
+        name: prodItem.name,
+      },
+    });
+
+    if (!product) {
+      product = await prisma.product.create({
+        data: {
+          businessId: business.id,
+          categoryId: cat.id,
+          name: prodItem.name,
+          hsCode: prodItem.hsCode || 'PENDING',
+          unit: 'KG',
+          defaultValue: 1000000,
+        },
+      });
+    } else {
+      product = await prisma.product.update({
+        where: { id: product.id },
+        data: {
+          categoryId: cat.id,
+          hsCode: prodItem.hsCode || product.hsCode,
+        },
+      });
+    }
+
+    // Connect Product to Destinations
+    for (const dest of destinationsList) {
+      let country = await prisma.country.findFirst({
+        where: {
+          OR: [
+            { isoCode: dest.isoCode },
+            { name: dest.name },
+          ],
+        },
+      });
+
+      if (!country) {
+        country = await prisma.country.create({
+          data: {
+            name: dest.name,
+            isoCode: dest.isoCode || 'US',
+          },
+        });
+      }
+
+      let productCountry = await prisma.productCountry.findFirst({
+        where: {
+          productId: product.id,
+          countryId: country.id,
+        },
+      });
+
+      if (!productCountry) {
+        await prisma.productCountry.create({
+          data: {
+            productId: product.id,
+            countryId: country.id,
+          },
+        });
+      }
+    }
+  }
+
+  // Handle Document Uploads from Step 5
+  const docFiles = [
+    { key: 'gstDoc', type: 'GST_CERTIFICATE', name: 'GSTIN Registration Certificate' },
+    { key: 'iecDoc', type: 'IEC_CERTIFICATE', name: 'DGFT Import Export Code (IEC)' },
+    { key: 'udyamDoc', type: 'UDYAM_REGISTRATION', name: 'Udyam MSME Registration' },
+    { key: 'rcmcDoc', type: 'RCMC_CERTIFICATE', name: 'Export Promotion Council RCMC' },
+    { key: 'cooDoc', type: 'CERTIFICATE_OF_ORIGIN', name: 'Certificate of Origin' },
+    { key: 'otherDoc', type: 'COMPLIANCE_EVIDENCE', name: 'Compliance Evidence Document' },
+  ];
+
+  for (const docSpec of docFiles) {
+    const file = formData.get(docSpec.key) as File | null;
+    if (file && file.size > 0 && file.size <= 10 * 1024 * 1024) {
+      const saved = await saveFileLocally(file, docSpec.key);
+      if (saved) {
+        await prisma.document.create({
+          data: {
+            businessId: business.id,
+            type: docSpec.type,
+            storageKey: saved.storageKey,
+            originalName: saved.name || file.name,
+            mimeType: file.type || 'application/pdf',
+            size: saved.size || file.size,
+            status: 'under_review',
+            notes: `Submitted during business onboarding: ${docSpec.name}`,
+          },
+        });
+      }
+    }
+  }
+
+  // Calculate & sync personalized requirements tailored to industry, products, destinations
+  await syncBusinessRequirements(business.id);
+
+  // Audit log
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      entityType: 'Business',
+      entityId: business.id,
+      action: 'ONBOARDING_COMPLETED',
+      newValueJson: JSON.stringify({
+        displayName: business.displayName,
+        businessType: business.businessType,
+        industry,
+        productsCount: productsList.length,
+        destinationsCount: destinationsList.length,
+      }),
+    },
+  });
+
+  revalidatePath('/', 'layout');
+  revalidatePath('/dashboard');
+  revalidatePath('/business');
+  revalidatePath('/readiness');
+  revalidatePath('/documents');
+  revalidatePath('/shipments');
+
+  redirect('/dashboard');
 }

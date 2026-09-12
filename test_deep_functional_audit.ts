@@ -83,6 +83,7 @@ async function runAudit() {
           legalName: 'Audit Exporter Pvt Ltd',
           displayName: 'Audit Exporter',
           businessType: 'Food & Agricultural Processed Goods',
+          location: 'Plot 10, SEZ Zone',
           city: 'Mumbai',
           state: 'Maharashtra',
         },
@@ -233,7 +234,7 @@ async function runAudit() {
       include: { businesses: true },
     });
     if (!userB) {
-      userB = await prisma.user.create({
+      const createdUser = await prisma.user.create({
         data: {
           email: `tenant_b_${Date.now()}@vyaparflow.app`,
           name: 'Tenant B Exporter',
@@ -244,6 +245,7 @@ async function runAudit() {
               legalName: 'Tenant B Global Exports Pvt Ltd',
               displayName: 'Tenant B Global',
               businessType: 'Engineering Goods & Machinery',
+              location: 'MIDC Bhosari',
               city: 'Pune',
               state: 'Maharashtra',
             },
@@ -251,6 +253,7 @@ async function runAudit() {
         },
         include: { businesses: true },
       });
+      userB = createdUser;
     }
 
     const docsForUserA = await prisma.document.findMany({ where: { businessId: userA!.businesses[0].id } });

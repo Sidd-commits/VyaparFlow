@@ -97,7 +97,9 @@ export function getApplicableRequirementsForCorridor(
   ];
 
   // Industry-specific certifications & regulatory requirements
-  if (matchedType === 'Food' || matchedType === 'Agricultural Goods') {
+  const bizStr = `${businessTypeStr} ${productCategoryName}`.toLowerCase();
+
+  if (bizStr.includes('food') || bizStr.includes('agri') || bizStr.includes('spice') || bizStr.includes('tea') || bizStr.includes('beverage')) {
     rules.push(
       {
         title: 'FSSAI Food Export Manufacturing License',
@@ -127,7 +129,7 @@ export function getApplicableRequirementsForCorridor(
         mandatory: true,
       }
     );
-  } else if (matchedType === 'Steel') {
+  } else if (bizStr.includes('steel') || bizStr.includes('metal') || bizStr.includes('iron') || bizStr.includes('alloy') || bizStr.includes('pipe')) {
     rules.push(
       {
         title: 'BIS Quality Certification (Bureau of Indian Standards)',
@@ -148,7 +150,7 @@ export function getApplicableRequirementsForCorridor(
         mandatory: true,
       }
     );
-  } else if (matchedType === 'Gold' || matchedType === 'Diamonds') {
+  } else if (bizStr.includes('gold') || bizStr.includes('jewel') || bizStr.includes('diamond') || bizStr.includes('silver') || bizStr.includes('precious')) {
     rules.push(
       {
         title: 'GJEPC Registration-cum-Membership Certificate (RCMC)',
@@ -160,16 +162,133 @@ export function getApplicableRequirementsForCorridor(
         mandatory: true,
       },
       {
-        title: matchedType === 'Diamonds'
+        title: bizStr.includes('diamond')
           ? 'Kimberley Process Certificate (KPCS)'
           : 'BIS Hallmark & Gold Assaying Certificate',
         type: 'certification',
         priority: 'critical',
         weight: 20,
         blocksDispatch: true,
-        reason: matchedType === 'Diamonds'
+        reason: bizStr.includes('diamond')
           ? 'International conflict-free diamond certification under Kimberley Process.'
           : 'Official purity assay certificate for gold jewellery and precious articles.',
+        mandatory: true,
+      }
+    );
+  } else if (bizStr.includes('textile') || bizStr.includes('apparel') || bizStr.includes('garment') || bizStr.includes('cotton') || bizStr.includes('fabric')) {
+    rules.push(
+      {
+        title: 'AEPC / Texprocil Export Promotion RCMC',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Apparel Export Promotion Council registration for garment and textile consignments.',
+        mandatory: true,
+      },
+      {
+        title: 'OEKO-TEX Standard 100 & AZO-Free Dye Lab Report',
+        type: 'certification',
+        priority: 'high',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Laboratory test verifying absence of harmful carcinogenic aromatic amines and AZO dyes.',
+        mandatory: true,
+      }
+    );
+  } else if (bizStr.includes('chemical') || bizStr.includes('pharma') || bizStr.includes('drug') || bizStr.includes('medicine')) {
+    rules.push(
+      {
+        title: 'Pharmexcil / CHEMEXCIL Registration (RCMC)',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Statutory Export Promotion Council registration for pharmaceuticals and chemicals.',
+        mandatory: true,
+      },
+      {
+        title: 'Certificate of Analysis (CoA) & GMP Compliance Declaration',
+        type: 'certification',
+        priority: 'critical',
+        weight: 20,
+        blocksDispatch: true,
+        reason: 'Batch chemical purity assay and Good Manufacturing Practice compliance documentation.',
+        mandatory: true,
+      }
+    );
+  } else if (bizStr.includes('engineer') || bizStr.includes('machin') || bizStr.includes('electric') || bizStr.includes('auto')) {
+    rules.push(
+      {
+        title: 'EEPC India Registration-cum-Membership Certificate (RCMC)',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Engineering Export Promotion Council registration for industrial machinery and parts.',
+        mandatory: true,
+      },
+      {
+        title: 'CE Conformity & Industrial Safety Declaration',
+        type: 'certification',
+        priority: 'high',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'International safety and electromagnetic compatibility compliance certificate.',
+        mandatory: true,
+      }
+    );
+  } else if (bizStr.includes('leather') || bizStr.includes('footwear')) {
+    rules.push(
+      {
+        title: 'Council for Leather Exports (CLE) RCMC',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Statutory registration for finished leather and footwear exports.',
+        mandatory: true,
+      },
+      {
+        title: 'Chromium VI & Chemical Safety Test Certificate',
+        type: 'certification',
+        priority: 'high',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Laboratory analytical test report verifying compliance with international restricted substance limits.',
+        mandatory: true,
+      }
+    );
+  } else if (bizStr.includes('handicraft') || bizStr.includes('wood') || bizStr.includes('carpet')) {
+    rules.push(
+      {
+        title: 'EPCH Export Promotion Council for Handicrafts RCMC',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Handicrafts export registration for artisanal and cultural craft consignments.',
+        mandatory: true,
+      },
+      {
+        title: 'VRIKSH Timber Legality & Origin Verification',
+        type: 'certification',
+        priority: 'high',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'CITES-compliant timber legality verification for wooden handicrafts and furniture.',
+        mandatory: true,
+      }
+    );
+  } else {
+    rules.push(
+      {
+        title: 'Federation of Indian Export Organisations (FIEO) RCMC',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Apex Indian trade promotion body membership for general merchandise exporters.',
         mandatory: true,
       }
     );
