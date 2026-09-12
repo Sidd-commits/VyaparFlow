@@ -13,6 +13,7 @@ import {
   validateIEC,
   type BusinessType,
 } from '@/lib/businessTypeConfig';
+import { syncBusinessRequirements } from '@/lib/services/applicability';
 
 async function saveFileLocally(file: File | null, prefix: string): Promise<{ storageKey: string, size: number, name: string } | null> {
   if (!file || file.size === 0) return null;
@@ -255,15 +256,25 @@ export async function uploadDocumentAction(formData: FormData): Promise<void> {
   const file = formData.get('file') as File | null;
   const notes = formData.get('notes') as string;
 
+  const { user } = await getActiveUser();
+  if (!user) {
+    throw new Error('Unauthorized: You must be logged in to upload compliance documents.');
+  }
+
   if (!businessId) {
     throw new Error('Business ID is required for document upload');
+  }
+
+  // Enforce 10 MB maximum file size limit
+  if (file && file.size > 10 * 1024 * 1024) {
+    throw new Error('File size exceeds the 10 MB limit. Please upload a compressed document.');
   }
 
   const saved = await saveFileLocally(file, docType || 'doc');
   const filename = saved?.name || file?.name || `${docType}_Sample_Evidence.pdf`;
   const storageKey = saved?.storageKey || `uploads/${Date.now()}_${filename.replace(/\s+/g, '_')}`;
 
-  await prisma.document.create({
+  const createdDoc = await prisma.document.create({
     data: {
       businessId,
       requirementId: requirementId || null,
@@ -275,61 +286,149 @@ export async function uploadDocumentAction(formData: FormData): Promise<void> {
       issueDate: new Date(),
       expiryDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       status: 'under_review',
-      notes: notes || 'Uploaded for export readiness verification.',
+      notes: notes || 'Submitted for platform verification. Awaiting authorized service provider review.',
     },
   });
 
   if (requirementId) {
-    await prisma.requirement.update({
+    const req = await prisma.requirement.update({
       where: { id: requirementId },
       data: {
         status: 'under_review',
-        reason: 'Document uploaded successfully. Awaiting platform verification.',
+        completedAt: null,
+        reason: 'Document submitted successfully. Platform verification pending by authorized review partner.',
       },
     });
+
+    // Create / assign provider verification task
+    const provider = await prisma.provider.findFirst({
+      where: {
+        type: req.type === 'certification' ? 'CERTIFICATION' : 'CUSTOMS_CHA',
+      },
+    }) || await prisma.provider.findFirst();
+
+    if (provider) {
+      await prisma.providerTask.create({
+        data: {
+          providerId: provider.id,
+          requirementId: req.id,
+          type: req.type === 'certification' ? 'CERTIFICATION' : 'CUSTOMS_CHA',
+          status: 'in_progress',
+          notes: `Document verification queued for ${req.title} (${filename}). Exporter submitted evidence for compliance audit.`,
+        },
+      });
+    }
   }
 
-  revalidatePath('/dashboard');
-  revalidatePath('/documents');
-  revalidatePath('/readiness');
-}
-
-export async function verifyDocumentAction(documentId: string, status: 'verified' | 'rejected', notes?: string): Promise<void> {
-  const doc = await prisma.document.update({
-    where: { id: documentId },
+  // Audit Log for document submission
+  await prisma.auditLog.create({
     data: {
-      status,
-      notes: notes || (status === 'verified' ? 'Document verified by Platform Admin.' : 'Rejected due to legibility/format error.'),
+      actorId: user.id,
+      entityType: 'Document',
+      entityId: createdDoc.id,
+      action: 'SUBMIT_DOCUMENT',
+      newValueJson: JSON.stringify({
+        status: 'under_review',
+        originalName: filename,
+        requirementId,
+        businessId,
+        submittedBy: user.name,
+      }),
     },
   });
 
-  if (doc.requirementId) {
+  revalidatePath('/dashboard');
+  revalidatePath('/documents');
+  revalidatePath('/readiness');
+  revalidatePath('/provider');
+  revalidatePath('/admin');
+}
+
+export async function verifyDocumentAction(
+  documentId: string,
+  status: 'verified' | 'rejected',
+  notes?: string
+): Promise<void> {
+  const { user, role } = await getActiveUser();
+
+  // Strict Server-Side Role Authorization: Exporters cannot self-approve
+  if (!user || (role !== 'PROVIDER' && role !== 'ADMIN')) {
+    throw new Error('Unauthorized: Exporters cannot self-verify compliance documents. Verification must be performed by an authorized partner or administrator.');
+  }
+
+  // Mandatory rejection reason check
+  if (status === 'rejected' && (!notes || notes.trim().length === 0)) {
+    throw new Error('Rejection reason is mandatory when rejecting an exporter compliance document.');
+  }
+
+  const existingDoc = await prisma.document.findUnique({
+    where: { id: documentId },
+    include: { requirement: true },
+  });
+
+  if (!existingDoc) {
+    throw new Error('Document record not found.');
+  }
+
+  const previousState = existingDoc.status;
+  const finalNotes = notes?.trim() || (status === 'verified'
+    ? `Verified by authorized platform reviewer (${user.name || 'Compliance Officer'}).`
+    : 'Document rejected due to legibility/compliance discrepancies.');
+
+  const updatedDoc = await prisma.document.update({
+    where: { id: documentId },
+    data: {
+      status,
+      notes: finalNotes,
+    },
+  });
+
+  if (updatedDoc.requirementId) {
     await prisma.requirement.update({
-      where: { id: doc.requirementId },
+      where: { id: updatedDoc.requirementId },
       data: {
         status,
-        reason: status === 'verified' ? 'Requirement verified with document proof.' : 'Uploaded document rejected.',
+        reason: status === 'verified'
+          ? 'Verified by authorized platform reviewer.'
+          : `Verification rejected: ${finalNotes}`,
         completedAt: status === 'verified' ? new Date() : null,
+      },
+    });
+
+    // Update any linked provider tasks
+    await prisma.providerTask.updateMany({
+      where: { requirementId: updatedDoc.requirementId },
+      data: {
+        status: status === 'verified' ? 'completed' : 'rejected',
+        completedAt: new Date(),
+        notes: `Review finalized by ${user.name} (${role}): ${finalNotes}`,
       },
     });
   }
 
-  const { user } = await getActiveUser();
-  if (user) {
-    await prisma.auditLog.create({
-      data: {
-        actorId: user.id,
-        entityType: 'Document',
-        entityId: documentId,
-        action: status === 'verified' ? 'VERIFY_DOCUMENT' : 'REJECT_DOCUMENT',
-        newValueJson: JSON.stringify({ status, notes }),
-      },
-    });
-  }
+  // Audit Log with complete traceability
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      entityType: 'Document',
+      entityId: documentId,
+      action: status === 'verified' ? 'APPROVE_DOCUMENT' : 'REJECT_DOCUMENT',
+      oldValueJson: JSON.stringify({ status: previousState }),
+      newValueJson: JSON.stringify({
+        status,
+        notes: finalNotes,
+        reviewerName: user.name,
+        reviewerRole: role,
+        timestamp: new Date().toISOString(),
+      }),
+    },
+  });
 
   revalidatePath('/dashboard');
   revalidatePath('/documents');
   revalidatePath('/readiness');
+  revalidatePath('/provider');
+  revalidatePath('/admin');
 }
 
 export async function requestCertificationAction(requirementId: string, providerId: string): Promise<void> {
@@ -1202,6 +1301,9 @@ export async function updateCompanyProfileAction(formData: FormData): Promise<{ 
       state: state || existingBiz.state,
     },
   });
+
+  // Dynamically sync statutory compliance requirements to the updated business type
+  await syncBusinessRequirements(targetBusinessId);
 
   // Log audit action
   await prisma.auditLog.create({

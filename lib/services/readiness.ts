@@ -19,12 +19,15 @@ export interface ReadinessScoreResult {
     reason: string;
     status: string;
     actionUrl: string;
+    isPendingVerification?: boolean;
+    isRejected?: boolean;
   }>;
   nextActions: Array<{
     id: string;
     title: string;
     type: string;
     actionText: string;
+    status?: string;
     dueDate?: string;
   }>;
 }
@@ -61,21 +64,21 @@ export async function calculateReadinessScore(productCountryId: string): Promise
   if (iecLower.includes('active') || iecLower.includes('verified') || iecLower.includes('registered')) businessPoints += 50;
   const businessScore = Math.min(100, businessPoints);
 
-  // 2. Documents Score (25% max)
+  // 2. Documents Score (25% max) — Only VERIFIED documents receive score points. Uploaded != Approved!
   const docReqs = requirements.filter((r) => r.type === 'document');
   const completedDocReqs = docReqs.filter((r) => r.status === 'verified');
   const docScore = docReqs.length > 0 ? Math.round((completedDocReqs.length / docReqs.length) * 100) : 0;
 
-  // 3. Certifications Score (20% max)
+  // 3. Certifications Score (20% max) — Only VERIFIED certifications receive score points
   const certReqs = requirements.filter((r) => r.type === 'certification');
   const completedCertReqs = certReqs.filter((r) => r.status === 'verified');
   const certScore = certReqs.length > 0 ? Math.round((completedCertReqs.length / certReqs.length) * 100) : 0;
 
-  // 4. Packaging & Labelling Score (15% max)
+  // 4. Packaging & Labelling Score (15% max) — Only completed items count
   const completedPackaging = packagingItems.filter((p) => p.status === 'completed');
   const packagingScore = packagingItems.length > 0 ? Math.round((completedPackaging.length / packagingItems.length) * 100) : 0;
 
-  // 5. Shipment Readiness Score (20% max)
+  // 5. Shipment Prerequisites Score (20% max)
   const shipmentReqs = requirements.filter((r) => r.type === 'shipment' || r.type === 'labelling');
   const completedShipmentReqs = shipmentReqs.filter((r) => r.status === 'verified');
   const shipmentScore = shipmentReqs.length > 0 ? Math.round((completedShipmentReqs.length / shipmentReqs.length) * 100) : 0;
@@ -103,14 +106,23 @@ export async function calculateReadinessScore(productCountryId: string): Promise
         if (req.type === 'certification') actionUrl = `/certifications`;
         if (req.type === 'labelling' || req.type === 'packaging') actionUrl = `/packaging`;
 
+        let reasonText = req.reason || 'Mandatory export compliance prerequisite must be verified prior to port gate-in.';
+        if (req.status === 'under_review') {
+          reasonText = 'Document submitted. Platform verification pending by authorized review partner.';
+        } else if (req.status === 'rejected') {
+          reasonText = `Document rejected: ${req.reason || 'Verification failed'}. Please replace with valid certified document.`;
+        }
+
         blockers.push({
           id: req.id,
           title: req.title,
           type: req.type,
           priority: req.priority,
-          reason: req.reason || `Status is currently '${req.status}'. Action required to complete export compliance.`,
+          reason: reasonText,
           status: req.status,
           actionUrl,
+          isPendingVerification: req.status === 'under_review',
+          isRejected: req.status === 'rejected',
         });
       }
     }
@@ -144,12 +156,30 @@ export async function calculateReadinessScore(productCountryId: string): Promise
   }
 
   // Next actions (prioritized top 5 pending items)
-  const nextActions: ReadinessScoreResult['nextActions'] = blockers.slice(0, 5).map((b) => ({
-    id: b.id,
-    title: b.title,
-    type: b.type,
-    actionText: b.status === 'under_review' ? 'Awaiting Verification' : b.type === 'document' ? 'Upload Document' : b.type === 'certification' ? 'Request Certification' : 'Complete Checklist',
-  }));
+  const nextActions: ReadinessScoreResult['nextActions'] = blockers.slice(0, 5).map((b) => {
+    let actionText = 'Complete Requirement';
+    if (b.status === 'rejected') {
+      actionText = 'Replace Rejected Doc →';
+    } else if (b.status === 'under_review') {
+      actionText = 'Verification Pending ⏳';
+    } else if (b.type === 'document') {
+      actionText = 'Upload Document →';
+    } else if (b.type === 'certification') {
+      actionText = 'Request Lab Cert →';
+    } else if (b.type === 'packaging' || b.type === 'labelling') {
+      actionText = 'Complete Checklist →';
+    } else if (b.type === 'shipment') {
+      actionText = 'Book Freight Cargo →';
+    }
+
+    return {
+      id: b.id,
+      title: b.title,
+      type: b.type,
+      status: b.status,
+      actionText,
+    };
+  });
 
   return {
     totalScore,

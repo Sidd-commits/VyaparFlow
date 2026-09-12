@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShieldAlert, CheckCircle2, ArrowRight } from 'lucide-react';
+import { ShieldAlert, CheckCircle2, ArrowRight, Clock, AlertTriangle, AlertCircle } from 'lucide-react';
 import { ReadinessScoreResult } from '@/lib/services/readiness';
 
 interface CriticalBlockersProps {
@@ -10,9 +10,12 @@ interface CriticalBlockersProps {
 export default function CriticalBlockers({ readinessData }: CriticalBlockersProps) {
   const { blockers, nextActions } = readinessData;
 
+  const pendingCount = blockers.filter((b) => b.isPendingVerification || b.status === 'under_review').length;
+  const rejectedCount = blockers.filter((b) => b.isRejected || b.status === 'rejected').length;
+
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 text-amber-600" />
@@ -21,49 +24,107 @@ export default function CriticalBlockers({ readinessData }: CriticalBlockersProp
             </span>
           </div>
           <p className="text-xs text-slate-500">
-            Direct regulatory bottlenecks preventing cargo release from port customs
+            Direct regulatory bottlenecks preventing cargo release from port customs (Uploaded &ne; Approved)
           </p>
         </div>
-        <span
-          className={`text-xs px-3 py-1 rounded-full font-bold border ${
-            blockers.length === 0
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-              : 'bg-amber-50 text-amber-800 border-amber-200'
-          }`}
-        >
-          {blockers.length} Active Blocker{blockers.length === 1 ? '' : 's'}
-        </span>
+
+        <div className="flex items-center gap-2">
+          {pendingCount > 0 && (
+            <span className="text-[11px] px-2.5 py-1 rounded-full font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1">
+              <Clock className="w-3 h-3 text-amber-600" />
+              {pendingCount} Pending Review
+            </span>
+          )}
+          {rejectedCount > 0 && (
+            <span className="text-[11px] px-2.5 py-1 rounded-full font-bold bg-red-50 text-red-800 border border-red-300 flex items-center gap-1">
+              <AlertCircle className="w-3 h-3 text-red-600" />
+              {rejectedCount} Rejected
+            </span>
+          )}
+          <span
+            className={`text-xs px-3 py-1 rounded-full font-bold border ${
+              blockers.length === 0
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                : 'bg-slate-100 text-slate-800 border-slate-200'
+            }`}
+          >
+            {blockers.length} Total Blocker{blockers.length === 1 ? '' : 's'}
+          </span>
+        </div>
       </div>
 
       {/* Blocker Cards List */}
       {blockers.length > 0 ? (
         <div className="space-y-3">
-          {blockers.map((blocker) => (
-            <div
-              key={blocker.id}
-              className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:bg-amber-50"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-600 text-white">
-                    BLOCKS DISPATCH
-                  </span>
-                  <strong className="text-sm text-slate-900">{blocker.title}</strong>
-                </div>
-                <p className="text-xs text-slate-700 leading-relaxed font-normal">
-                  {blocker.reason || 'Mandatory foreign customs prerequisite must be satisfied prior to port gate-in.'}
-                </p>
-              </div>
+          {blockers.map((blocker) => {
+            const isPending = blocker.isPendingVerification || blocker.status === 'under_review';
+            const isRejected = blocker.isRejected || blocker.status === 'rejected';
 
-              <Link
-                href={blocker.actionUrl || '/readiness'}
-                className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer"
+            return (
+              <div
+                key={blocker.id}
+                className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all ${
+                  isPending
+                    ? 'bg-amber-50/60 border-amber-300 hover:bg-amber-50'
+                    : isRejected
+                    ? 'bg-red-50/60 border-red-300 hover:bg-red-50'
+                    : 'bg-red-50/40 border-red-200/90 hover:bg-red-50/70'
+                }`}
               >
-                <span>Resolve Now</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          ))}
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {isPending ? (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-500 text-white flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        VERIFICATION PENDING
+                      </span>
+                    ) : isRejected ? (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-600 text-white flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        REJECTED — ACTION REQUIRED
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-600 text-white">
+                        BLOCKS DISPATCH
+                      </span>
+                    )}
+
+                    <strong className="text-sm text-slate-900">{blocker.title}</strong>
+                  </div>
+
+                  <p className="text-xs text-slate-700 leading-relaxed font-normal">
+                    {isPending ? (
+                      <span className="text-amber-900 font-medium">
+                        Submitted successfully. Awaiting platform verification by authorized review partner.
+                      </span>
+                    ) : isRejected ? (
+                      <span className="text-red-900 font-medium">
+                        {blocker.reason || 'Document verification rejected. Please review feedback and replace document.'}
+                      </span>
+                    ) : (
+                      blocker.reason || 'Mandatory foreign customs prerequisite must be satisfied prior to port gate-in.'
+                    )}
+                  </p>
+                </div>
+
+                <Link
+                  href={blocker.actionUrl || '/documents'}
+                  className={`px-4 py-2.5 rounded-xl font-bold text-xs shadow-xs transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer ${
+                    isPending
+                      ? 'bg-amber-600 hover:bg-amber-700 text-white'
+                      : isRejected
+                      ? 'bg-red-600 hover:bg-red-700 text-white'
+                      : 'bg-slate-900 hover:bg-slate-800 text-white'
+                  }`}
+                >
+                  <span>
+                    {isPending ? 'View Status' : isRejected ? 'Replace Document' : 'Resolve Now'}
+                  </span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            );
+          })}
         </div>
       ) : (
         <div className="p-6 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-900 space-y-2 text-center">

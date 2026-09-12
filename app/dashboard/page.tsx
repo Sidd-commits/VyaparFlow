@@ -9,9 +9,11 @@ import CriticalBlockers from '@/components/dashboard/CriticalBlockers';
 import ReadinessBreakdown from '@/components/dashboard/ReadinessBreakdown';
 import ActiveShipmentCard from '@/components/dashboard/ActiveShipmentCard';
 import CostTimelineCard from '@/components/dashboard/CostTimelineCard';
+import TariffIntelligenceCard from '@/components/dashboard/TariffIntelligenceCard';
 import { requireAuth } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { calculateReadinessScore } from '@/lib/services/readiness';
+import { getTariffIntelligence } from '@/lib/services/applicability';
 import { ArrowRight } from 'lucide-react';
 
 export default async function DashboardPage() {
@@ -54,6 +56,14 @@ export default async function DashboardPage() {
         orderBy: { createdAt: 'desc' },
       })
     : null;
+
+  // Retrieve indicative tariff intelligence for this export corridor
+  const tariffData = getTariffIntelligence(
+    product?.hsCode || '2008.99.11',
+    product?.name || 'Commercial Export Cargo',
+    destination?.country.isoCode || 'AE',
+    destination?.country.name || 'United Arab Emirates'
+  );
 
   return (
     <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
@@ -117,10 +127,13 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        {/* 4. Active Export Shipment Module */}
+        {/* 4. Tariff & Trade Framework Intelligence */}
+        <TariffIntelligenceCard data={tariffData} />
+
+        {/* 5. Active Export Shipment Module */}
         <ActiveShipmentCard activeShipment={activeShipment} />
 
-        {/* 5. Cost & Timeline Predictive Intelligence */}
+        {/* 6. Cost & Timeline Predictive Intelligence */}
         <CostTimelineCard
           originCity={business?.city ? `${business.city} Origin Factory` : 'Factory Origin'}
           destinationPortName={
