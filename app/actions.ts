@@ -1000,6 +1000,9 @@ export async function updateCompanyProfileAction(formData: FormData): Promise<{ 
     return { success: false, error: 'Unauthorized: You do not have permission to modify this company profile.' };
   }
 
+  const destinationIso = (formData.get('destinationIso') as string)?.trim().toUpperCase();
+  const destinationName = (formData.get('destinationName') as string)?.trim();
+
   await prisma.business.update({
     where: { id: targetBusinessId },
     data: {
@@ -1012,7 +1015,49 @@ export async function updateCompanyProfileAction(formData: FormData): Promise<{ 
     },
   });
 
-  // Dynamically sync statutory compliance requirements to the updated business type
+  if (destinationIso) {
+    let country = await prisma.country.findFirst({
+      where: {
+        OR: [
+          { isoCode: destinationIso },
+          { name: destinationName || destinationIso },
+        ],
+      },
+    });
+
+    if (!country) {
+      country = await prisma.country.create({
+        data: {
+          name: destinationName || destinationIso,
+          isoCode: destinationIso,
+          active: true,
+        },
+      });
+    }
+
+    const bizProducts = await prisma.product.findMany({
+      where: { businessId: targetBusinessId },
+      include: { destinations: true },
+    });
+
+    for (const prod of bizProducts) {
+      if (prod.destinations && prod.destinations.length > 0) {
+        await prisma.productCountry.update({
+          where: { id: prod.destinations[0].id },
+          data: { countryId: country.id },
+        });
+      } else {
+        await prisma.productCountry.create({
+          data: {
+            productId: prod.id,
+            countryId: country.id,
+          },
+        });
+      }
+    }
+  }
+
+  // Dynamically sync statutory compliance requirements to the updated business type & corridor
   await syncBusinessRequirements(targetBusinessId);
 
   // Log audit action

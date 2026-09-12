@@ -182,8 +182,12 @@ async function main() {
 
   // 4. Destination Countries
   console.log('Creating countries...');
-  const uae = await prisma.country.create({
-    data: { name: 'United Arab Emirates', isoCode: 'AE' },
+  const netherlands = await prisma.country.create({
+    data: { name: 'Netherlands', isoCode: 'NL' },
+  });
+
+  const japan = await prisma.country.create({
+    data: { name: 'Japan', isoCode: 'JP' },
   });
 
   const germany = await prisma.country.create({
@@ -196,6 +200,10 @@ async function main() {
 
   const uk = await prisma.country.create({
     data: { name: 'United Kingdom', isoCode: 'GB' },
+  });
+
+  const uae = await prisma.country.create({
+    data: { name: 'United Arab Emirates', isoCode: 'AE' },
   });
 
   // 5. Products
@@ -223,10 +231,10 @@ async function main() {
   });
 
   // 6. ProductCountry Mappings
-  const pcMangoUAE = await prisma.productCountry.create({
+  const pcMangoNL = await prisma.productCountry.create({
     data: {
       productId: productMangoPulp.id,
-      countryId: uae.id,
+      countryId: netherlands.id,
     },
   });
 
@@ -234,6 +242,13 @@ async function main() {
     data: {
       productId: productMangoPulp.id,
       countryId: germany.id,
+    },
+  });
+
+  const pcMangoUAE = await prisma.productCountry.create({
+    data: {
+      productId: productMangoPulp.id,
+      countryId: uae.id,
     },
   });
 

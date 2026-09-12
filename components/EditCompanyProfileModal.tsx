@@ -28,6 +28,8 @@ interface EditCompanyProfileModalProps {
     gstStatus?: string;
     iecStatus?: string;
   };
+  currentDestinationName?: string;
+  currentDestinationIso?: string;
   triggerClassName?: string;
   buttonText?: string;
 }
@@ -42,8 +44,23 @@ const BUSINESS_TYPE_OPTIONS = [
   'Handicrafts, Leather & Consumer Products',
 ];
 
+const TARGET_DESTINATION_OPTIONS = [
+  { name: 'Netherlands', isoCode: 'NL', desc: 'European Union (Rotterdam Port / EU Single Market)' },
+  { name: 'Japan', isoCode: 'JP', desc: 'Asia Pacific (Tokyo / India-Japan CEPA)' },
+  { name: 'Germany', isoCode: 'DE', desc: 'European Union (Hamburg / EU Single Market)' },
+  { name: 'United States', isoCode: 'US', desc: 'North America (New York / US Customs FDA)' },
+  { name: 'United Kingdom', isoCode: 'GB', desc: 'Europe (London / UK Global Tariff)' },
+  { name: 'Australia', isoCode: 'AU', desc: 'Oceania (Sydney / Ind-Aus ECTA Agreement)' },
+  { name: 'Saudi Arabia', isoCode: 'SA', desc: 'Middle East (Jeddah / SASO Saber Corridor)' },
+  { name: 'Vietnam', isoCode: 'VN', desc: 'ASEAN (Cat Lai / AIFTA Trade Framework)' },
+  { name: 'Singapore', isoCode: 'SG', desc: 'ASEAN (PSA Port / AIFTA Framework)' },
+  { name: 'United Arab Emirates', isoCode: 'AE', desc: 'Middle East (Dubai / India-UAE CEPA)' },
+];
+
 export default function EditCompanyProfileModal({
   business,
+  currentDestinationName,
+  currentDestinationIso,
   triggerClassName,
   buttonText = 'Edit Profile',
 }: EditCompanyProfileModalProps) {
@@ -55,6 +72,7 @@ export default function EditCompanyProfileModal({
     displayName: business?.displayName || '',
     legalName: business?.legalName || '',
     businessType: business?.businessType || BUSINESS_TYPE_OPTIONS[0],
+    destinationIso: currentDestinationIso || 'NL',
     location: business?.location || '',
     city: business?.city || 'Mumbai',
     state: business?.state || 'Maharashtra',
@@ -67,6 +85,7 @@ export default function EditCompanyProfileModal({
       displayName: business?.displayName || '',
       legalName: business?.legalName || '',
       businessType: business?.businessType || BUSINESS_TYPE_OPTIONS[0],
+      destinationIso: currentDestinationIso || 'NL',
       location: business?.location || '',
       city: business?.city || 'Mumbai',
       state: business?.state || 'Maharashtra',
@@ -86,11 +105,15 @@ export default function EditCompanyProfileModal({
     e.preventDefault();
     setStatusMessage(null);
 
+    const selectedDest = TARGET_DESTINATION_OPTIONS.find((d) => d.isoCode === formData.destinationIso);
+
     const data = new FormData();
     data.append('businessId', business?.id || '');
     data.append('displayName', formData.displayName);
     data.append('legalName', formData.legalName);
     data.append('businessType', formData.businessType);
+    data.append('destinationIso', formData.destinationIso);
+    data.append('destinationName', selectedDest?.name || formData.destinationIso);
     data.append('location', formData.location);
     data.append('city', formData.city);
     data.append('state', formData.state);
@@ -226,21 +249,40 @@ export default function EditCompanyProfileModal({
                   </div>
                 </div>
 
-                <div>
-                  <label className="block font-semibold text-slate-700 mb-1">
-                    Industry Sector / Business Category <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={formData.businessType}
-                    onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
-                    className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
-                  >
-                    {BUSINESS_TYPE_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">
+                      Industry Sector / Business Category <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={formData.businessType}
+                      onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
+                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                    >
+                      {BUSINESS_TYPE_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-slate-700 mb-1">
+                      Target Export Market / Corridor <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={formData.destinationIso}
+                      onChange={(e) => setFormData({ ...formData, destinationIso: e.target.value })}
+                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
+                    >
+                      {TARGET_DESTINATION_OPTIONS.map((opt) => (
+                        <option key={opt.isoCode} value={opt.isoCode}>
+                          {opt.name} ({opt.isoCode}) — {opt.desc}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 

@@ -11,7 +11,12 @@
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:unit": "jest",
+    "test:integration": "tsx tests/integration/destination_p0.test.ts",
+    "test:switcher": "tsx tests/integration/destination_switcher.test.ts",
+    "test:e2e": "tsx tests/e2e/server_action_e2e.test.ts",
+    "test:all": "jest && tsx tests/run_all_tests.ts",
+    "db:inspect": "tsx tests/utils/inspect_db.ts"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -45,6 +50,7 @@
     "tailwindcss": "^4",
     "ts-jest": "^29.4.12",
     "ts-node": "^10.9.2",
+    "tsx": "^4.23.13",
     "typescript": "^5"
   }
 }

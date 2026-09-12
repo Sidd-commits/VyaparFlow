@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import { requireAuth } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
@@ -22,9 +23,16 @@ import {
 
 export default async function ReadinessPage() {
   const { role, user } = await requireAuth();
-  const business = user?.businesses[0];
-  const product = business?.products[0];
-  const destination = product?.destinations[0];
+  if (role === 'PROVIDER') redirect('/provider');
+  if (role === 'ADMIN') redirect('/admin');
+
+  const business = user?.businesses?.[0];
+  if (!business || (business.profileCompletion && business.profileCompletion < 50) || !business.products || business.products.length === 0) {
+    redirect('/onboarding');
+  }
+
+  const product = business?.products?.[0];
+  const destination = product?.destinations?.[0];
 
   let readiness = null;
   let pcDetails = null;

@@ -29,9 +29,15 @@ export default async function DashboardPage() {
   }
 
   // Scoped strictly to authenticated user's owned business
-  const business = user?.businesses[0];
-  const product = business?.products[0];
-  const destination = product?.destinations[0];
+  const business = user?.businesses?.[0];
+
+  // If the user has not completed onboarding setup, guide them to complete onboarding
+  if (!business || (business.profileCompletion && business.profileCompletion < 50) || !business.products || business.products.length === 0) {
+    redirect('/onboarding');
+  }
+
+  const product = business?.products?.[0];
+  const destination = product?.destinations?.[0];
 
   let readinessData = null;
   if (destination) {
@@ -74,6 +80,7 @@ export default async function DashboardPage() {
           business={business}
           product={product ? { name: product.name, hsCode: product.hsCode } : null}
           destinationCountryName={destination?.country.name}
+          destinationCountryIso={destination?.country.isoCode}
         />
 
         {/* 2. Primary Operational Overview */}

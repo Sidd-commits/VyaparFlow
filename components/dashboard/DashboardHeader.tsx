@@ -27,6 +27,7 @@ interface DashboardHeaderProps {
     hsCode: string;
   } | null;
   destinationCountryName?: string | null;
+  destinationCountryIso?: string | null;
 }
 
 export default function DashboardHeader({
@@ -34,6 +35,7 @@ export default function DashboardHeader({
   business,
   product,
   destinationCountryName,
+  destinationCountryIso,
 }: DashboardHeaderProps) {
   const currentHour = new Date().getHours();
   const greeting =
@@ -67,6 +69,8 @@ export default function DashboardHeader({
             {business && (
               <EditCompanyProfileModal
                 business={business}
+                currentDestinationName={destinationCountryName || undefined}
+                currentDestinationIso={destinationCountryIso || undefined}
                 buttonText="Manage Profile"
                 triggerClassName="px-3 py-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-all flex items-center gap-1.5 border border-slate-300 shadow-2xs cursor-pointer"
               />

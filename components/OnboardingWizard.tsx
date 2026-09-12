@@ -75,12 +75,18 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
   // Form state
   // Step 1
   const [companyName, setCompanyName] = useState<string>(
-    initialBusiness?.displayName || initialBusiness?.legalName || ''
+    (initialBusiness?.profileCompletion && initialBusiness.profileCompletion >= 50)
+      ? (initialBusiness?.displayName || initialBusiness?.legalName || '')
+      : ''
   );
   const [businessType, setBusinessType] = useState<'MANUFACTURER' | 'MERCHANT' | 'BOTH'>('MANUFACTURER');
 
   // Step 2
-  const [legalName, setLegalName] = useState<string>(initialBusiness?.legalName || '');
+  const [legalName, setLegalName] = useState<string>(
+    (initialBusiness?.profileCompletion && initialBusiness.profileCompletion >= 50)
+      ? (initialBusiness?.legalName || '')
+      : ''
+  );
   const [officialEmail, setOfficialEmail] = useState<string>(user.email || '');
   const [phone, setPhone] = useState<string>('');
   const [address, setAddress] = useState<string>(initialBusiness?.location || '');
@@ -95,7 +101,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
   // Step 3
   const [industry, setIndustry] = useState<string>(initialBusiness?.industry || 'Textiles & Garments');
   const [products, setProducts] = useState<ProductItem[]>(
-    initialBusiness?.products && initialBusiness.products.length > 0
+    initialBusiness && initialBusiness.profileCompletion >= 50 && initialBusiness.products && initialBusiness.products.length > 0
       ? initialBusiness.products.map((p: any) => ({
           id: p.id,
           name: p.name,
@@ -108,7 +114,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
           {
             id: 'p1',
             name: '',
-            category: 'Textiles & Garments',
+            category: initialBusiness?.industry || 'Textiles & Garments',
             hsCode: '',
             description: '',
             noHsCodeYet: false,
@@ -118,7 +124,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
 
   // Step 4
   const [selectedDestinations, setSelectedDestinations] = useState<Array<{ name: string; isoCode: string }>>(() => {
-    if (initialBusiness?.products && initialBusiness.products.length > 0) {
+    if (initialBusiness && initialBusiness.profileCompletion >= 50 && initialBusiness.products && initialBusiness.products.length > 0) {
       const dests: Array<{ name: string; isoCode: string }> = [];
       for (const prod of initialBusiness.products) {
         if (prod.destinations) {
@@ -383,7 +389,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                   </label>
                   <input
                     type="text"
-                    name="companyName"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     placeholder="e.g. Apex Global Exports Pvt Ltd"
@@ -446,7 +451,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                       </div>
                     ))}
                   </div>
-                  <input type="hidden" name="businessType" value={businessType} />
                 </div>
               </div>
             </div>
@@ -473,7 +477,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     </label>
                     <input
                       type="text"
-                      name="legalName"
                       value={legalName}
                       onChange={(e) => setLegalName(e.target.value)}
                       placeholder={companyName || 'e.g. Apex Global Exports Pvt Ltd'}
@@ -487,7 +490,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     </label>
                     <input
                       type="email"
-                      name="officialEmail"
                       value={officialEmail}
                       onChange={(e) => setOfficialEmail(e.target.value)}
                       className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
@@ -505,7 +507,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     </label>
                     <input
                       type="text"
-                      name="address"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="e.g. Plot 42, Export Processing Zone, MIDC"
@@ -519,7 +520,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     </label>
                     <input
                       type="tel"
-                      name="phone"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+91 98765 43210"
@@ -533,7 +533,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     <label className="block text-xs font-bold text-slate-900 mb-1">City</label>
                     <input
                       type="text"
-                      name="city"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
@@ -544,7 +543,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     <label className="block text-xs font-bold text-slate-900 mb-1">State</label>
                     <input
                       type="text"
-                      name="state"
                       value={state}
                       onChange={(e) => setState(e.target.value)}
                       className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
@@ -555,7 +553,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     <label className="block text-xs font-bold text-slate-900 mb-1">Country</label>
                     <input
                       type="text"
-                      name="country"
                       value={country}
                       readOnly
                       className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-500 focus:outline-none"
@@ -573,7 +570,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                   </div>
                   <input
                     type="text"
-                    name="gstin"
                     value={gstin}
                     onChange={(e) => setGstin(e.target.value.toUpperCase())}
                     placeholder="27AAAAA0000A1Z5"
@@ -609,13 +605,10 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     </label>
                   </div>
 
-                  <input type="hidden" name="hasIec" value={hasIec ? 'true' : 'false'} />
-
                   {hasIec ? (
                     <div>
                       <input
                         type="text"
-                        name="iec"
                         value={iec}
                         onChange={(e) => setIec(e.target.value.toUpperCase())}
                         placeholder="0301099882"
@@ -645,7 +638,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                   </label>
                   <input
                     type="text"
-                    name="udyamNumber"
                     value={udyamNumber}
                     onChange={(e) => setUdyamNumber(e.target.value.toUpperCase())}
                     placeholder="UDYAM-MH-01-0012345"
@@ -704,7 +696,6 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     </div>
                   ))}
                 </div>
-                <input type="hidden" name="industry" value={industry} />
               </div>
 
               {/* Product Items List */}
@@ -830,6 +821,53 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                   <AlertCircle className="w-3.5 h-3.5" /> {errors.destinations}
                 </p>
               )}
+
+              {/* Active Selected Corridors Header / Pills */}
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                    <Globe2 className="w-3.5 h-3.5 text-orange-600" />
+                    Selected Trade Corridors ({selectedDestinations.length})
+                  </span>
+                  {selectedDestinations.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedDestinations([])}
+                      className="text-[11px] font-bold text-slate-500 hover:text-red-600 transition-colors cursor-pointer"
+                    >
+                      Clear Selection
+                    </button>
+                  )}
+                </div>
+
+                {selectedDestinations.length === 0 ? (
+                  <p className="text-xs text-slate-500 italic">
+                    No export corridors selected yet. Click one or more target markets below (e.g. Netherlands, Japan, USA):
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedDestinations.map((dest) => (
+                      <span
+                        key={dest.name}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-950 border border-orange-300 shadow-2xs"
+                      >
+                        <span>{dest.name}</span>
+                        <span className="text-[10px] font-mono bg-white text-orange-800 px-1 rounded font-semibold">
+                          {dest.isoCode}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => toggleDestination(dest)}
+                          className="w-4 h-4 rounded-full bg-orange-200 hover:bg-orange-300 flex items-center justify-center text-orange-950 ml-0.5 cursor-pointer"
+                          title={`Remove ${dest.name}`}
+                        >
+                          &times;
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               {/* Target Country Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
