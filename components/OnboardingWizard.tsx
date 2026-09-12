@@ -236,24 +236,24 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-emerald-500/30">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col justify-between">
       {/* Top Navigation Bar */}
-      <header className="border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 px-6 py-4">
+      <header className="border-b border-slate-200 bg-white sticky top-0 z-40 px-6 py-4 shadow-sm">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center font-bold text-white shadow-lg shadow-emerald-500/20">
+            <div className="h-9 w-9 rounded-xl bg-orange-600 flex items-center justify-center font-bold text-white shadow-md shadow-orange-500/20">
               VF
             </div>
             <div>
-              <span className="font-bold text-sm tracking-tight text-white flex items-center gap-2">
-                VyaparFlow <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-800/50 px-2 py-0.5 rounded-full">Onboarding</span>
+              <span className="font-bold text-sm tracking-tight text-slate-900 flex items-center gap-2">
+                VyaparFlow <span className="text-[10px] font-bold text-orange-700 bg-orange-100 border border-orange-200 px-2 py-0.5 rounded-full">Onboarding</span>
               </span>
-              <p className="text-[11px] text-slate-400">MSME Exporter Workspace Setup</p>
+              <p className="text-[11px] text-slate-500">MSME Exporter Workspace Setup</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400">Logged in as <span className="text-slate-200 font-medium">{user.email}</span></span>
+            <span className="text-xs text-slate-500">Logged in as <span className="text-slate-900 font-semibold">{user.email}</span></span>
           </div>
         </div>
       </header>
@@ -263,8 +263,8 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
         {/* Progress Tracker */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3 text-xs">
-            <span className="font-semibold text-emerald-400">Step {step} of 6: {stepLabels[step - 1].title}</span>
-            <span className="text-slate-400 font-mono">{Math.round((step / 6) * 100)}% Complete</span>
+            <span className="font-bold text-orange-600">Step {step} of 6: {stepLabels[step - 1].title}</span>
+            <span className="text-slate-500 font-mono font-medium">{Math.round((step / 6) * 100)}% Complete</span>
           </div>
 
           <div className="grid grid-cols-6 gap-2">
@@ -278,21 +278,21 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 disabled={s.num > step}
                 className={`h-2 rounded-full transition-all ${
                   s.num === step
-                    ? 'bg-emerald-500 shadow-md shadow-emerald-500/30 ring-2 ring-emerald-500/20'
+                    ? 'bg-orange-600 shadow-md shadow-orange-500/30 ring-2 ring-orange-500/20'
                     : s.num < step
-                    ? 'bg-emerald-700/80 cursor-pointer hover:bg-emerald-600'
-                    : 'bg-slate-800'
+                    ? 'bg-orange-400 cursor-pointer hover:bg-orange-500'
+                    : 'bg-slate-200'
                 }`}
                 title={`Step ${s.num}: ${s.title}`}
               />
             ))}
           </div>
 
-          <div className="hidden sm:flex justify-between mt-2 text-[11px] text-slate-400">
+          <div className="hidden sm:flex justify-between mt-2 text-[11px] text-slate-500">
             {stepLabels.map((s) => (
               <span
                 key={s.num}
-                className={`${s.num === step ? 'text-emerald-400 font-medium' : s.num < step ? 'text-slate-300' : 'text-slate-600'}`}
+                className={`${s.num === step ? 'text-orange-600 font-bold' : s.num < step ? 'text-slate-700 font-medium' : 'text-slate-400'}`}
               >
                 {s.num}. {s.title}
               </span>
@@ -304,7 +304,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
         <form
           action={completeOnboardingAction}
           onSubmit={() => setIsSubmitting(true)}
-          className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm"
+          className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm"
         >
           {/* Hidden JSON Fields for complex step data */}
           <input type="hidden" name="products" value={JSON.stringify(products)} />
@@ -315,20 +315,20 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
           {/* ========================================================================= */}
           {step === 1 && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-800 pb-5">
-                <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <div className="border-b border-slate-100 pb-5">
+                <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <Building2 className="w-4 h-4" /> Workspace Identity
                 </div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Create your organization</h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Create your organization</h1>
+                <p className="text-slate-500 text-xs sm:text-sm mt-1">
                   Set up your business workspace to manage compliance, certifications, logistics, and shipments.
                 </p>
               </div>
 
               <div className="space-y-5">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-200 mb-1.5">
-                    Company / Organization Name <span className="text-red-400">*</span>
+                  <label className="block text-xs font-bold text-slate-900 mb-1.5">
+                    Company / Organization Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -336,21 +336,21 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     placeholder="e.g. Apex Global Exports Pvt Ltd"
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all font-medium"
                   />
                   {errors.companyName && (
-                    <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                    <p className="text-xs text-red-500 mt-1 flex items-center gap-1 font-medium">
                       <AlertCircle className="w-3.5 h-3.5" /> {errors.companyName}
                     </p>
                   )}
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className="text-[11px] text-slate-500 mt-1">
                     This brand name will appear on your dashboard, client quotes, and platform exports.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-200 mb-2">
-                    Business Operational Model <span className="text-red-400">*</span>
+                  <label className="block text-xs font-bold text-slate-900 mb-2">
+                    Business Operational Model <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {[
@@ -375,23 +375,23 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                         onClick={() => setBusinessType(opt.value as any)}
                         className={`p-4 rounded-xl border cursor-pointer transition-all ${
                           businessType === opt.value
-                            ? 'bg-emerald-950/40 border-emerald-500 ring-1 ring-emerald-500/50 shadow-md shadow-emerald-950/50'
-                            : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                            ? 'bg-orange-50/70 border-orange-500 ring-1 ring-orange-500 shadow-sm'
+                            : 'bg-slate-50/60 border-slate-200 hover:border-slate-300'
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1.5">
-                          <span className="font-semibold text-xs text-white">{opt.title}</span>
+                          <span className={`font-bold text-xs ${businessType === opt.value ? 'text-orange-950' : 'text-slate-900'}`}>{opt.title}</span>
                           <div
                             className={`w-4 h-4 rounded-full flex items-center justify-center border ${
                               businessType === opt.value
-                                ? 'border-emerald-500 bg-emerald-500 text-slate-950'
-                                : 'border-slate-600'
+                                ? 'border-orange-600 bg-orange-600 text-white'
+                                : 'border-slate-300 bg-white'
                             }`}
                           >
                             {businessType === opt.value && <Check className="w-3 h-3 stroke-[3]" />}
                           </div>
                         </div>
-                        <p className="text-[11px] text-slate-400 leading-relaxed">{opt.desc}</p>
+                        <p className="text-[11px] text-slate-500 leading-relaxed">{opt.desc}</p>
                       </div>
                     ))}
                   </div>
@@ -406,12 +406,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
           {/* ========================================================================= */}
           {step === 2 && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-800 pb-5">
-                <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <div className="border-b border-slate-100 pb-5">
+                <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <FileCheck2 className="w-4 h-4" /> Legal & Contact Coordinates
                 </div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Business Details</h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Business Details</h1>
+                <p className="text-slate-500 text-xs sm:text-sm mt-1">
                   Provide registered legal identifiers and facility address. DGFT IEC and Udyam can be completed now or later.
                 </p>
               </div>
@@ -419,7 +419,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-200 mb-1">
+                    <label className="block text-xs font-bold text-slate-900 mb-1">
                       Registered Legal Entity Name
                     </label>
                     <input
@@ -428,30 +428,30 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                       value={legalName}
                       onChange={(e) => setLegalName(e.target.value)}
                       placeholder={companyName || 'e.g. Apex Global Exports Pvt Ltd'}
-                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:border-emerald-500 focus:outline-none"
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-200 mb-1">
-                      Official Export Email <span className="text-red-400">*</span>
+                    <label className="block text-xs font-bold text-slate-900 mb-1">
+                      Official Export Email <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
                       name="officialEmail"
                       value={officialEmail}
                       onChange={(e) => setOfficialEmail(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:border-emerald-500 focus:outline-none"
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
                     />
                     {errors.officialEmail && (
-                      <p className="text-xs text-red-400 mt-1">{errors.officialEmail}</p>
+                      <p className="text-xs text-red-500 mt-1 font-medium">{errors.officialEmail}</p>
                     )}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-slate-200 mb-1">
+                    <label className="block text-xs font-bold text-slate-900 mb-1">
                       Registered Operating Facility / Address
                     </label>
                     <input
@@ -460,12 +460,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="e.g. Plot 42, Export Processing Zone, MIDC"
-                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:border-emerald-500 focus:outline-none"
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-200 mb-1">
+                    <label className="block text-xs font-bold text-slate-900 mb-1">
                       Contact Phone
                     </label>
                     <input
@@ -474,52 +474,52 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+91 98765 43210"
-                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:border-emerald-500 focus:outline-none"
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-200 mb-1">City</label>
+                    <label className="block text-xs font-bold text-slate-900 mb-1">City</label>
                     <input
                       type="text"
                       name="city"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:border-emerald-500 focus:outline-none"
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-200 mb-1">State</label>
+                    <label className="block text-xs font-bold text-slate-900 mb-1">State</label>
                     <input
                       type="text"
                       name="state"
                       value={state}
                       onChange={(e) => setState(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white focus:border-emerald-500 focus:outline-none"
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-200 mb-1">Country</label>
+                    <label className="block text-xs font-bold text-slate-900 mb-1">Country</label>
                     <input
                       type="text"
                       name="country"
                       value={country}
                       readOnly
-                      className="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-400 focus:outline-none"
+                      className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-500 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 {/* GSTIN Field */}
-                <div className="pt-2 border-t border-slate-800">
+                <div className="pt-2 border-t border-slate-100">
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                    <label className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                       GSTIN (Goods and Services Tax Identification Number)
-                      <span className="text-[10px] text-slate-400 font-normal">(Optional for SEZ/unregistered)</span>
+                      <span className="text-[10px] text-slate-500 font-normal">(Optional for SEZ/unregistered)</span>
                     </label>
                   </div>
                   <input
@@ -529,24 +529,24 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     onChange={(e) => setGstin(e.target.value.toUpperCase())}
                     placeholder="27AAAAA0000A1Z5"
                     maxLength={15}
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white font-mono focus:border-emerald-500 focus:outline-none tracking-wider"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 font-mono focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none tracking-wider font-semibold"
                   />
                   {errors.gstin && (
-                    <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                    <p className="text-xs text-red-500 mt-1 flex items-center gap-1 font-medium">
                       <AlertCircle className="w-3.5 h-3.5" /> {errors.gstin}
                     </p>
                   )}
                 </div>
 
                 {/* IEC Section */}
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-semibold text-slate-200">DGFT Import Export Code (IEC)</span>
-                      <p className="text-[11px] text-slate-400">Mandatory 10-digit DGFT code for customs export clearance.</p>
+                      <span className="text-xs font-bold text-slate-900">DGFT Import Export Code (IEC)</span>
+                      <p className="text-[11px] text-slate-500">Mandatory 10-digit DGFT code for customs export clearance.</p>
                     </div>
 
-                    <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700 font-medium">
                       <input
                         type="checkbox"
                         checked={!hasIec}
@@ -554,7 +554,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                           setHasIec(!e.target.checked);
                           if (e.target.checked) setIec('');
                         }}
-                        className="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-900 h-4 w-4"
+                        className="rounded border-slate-300 text-orange-600 focus:ring-orange-500 h-4 w-4"
                       />
                       <span>I don&apos;t have an IEC yet</span>
                     </label>
@@ -571,19 +571,19 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                         onChange={(e) => setIec(e.target.value.toUpperCase())}
                         placeholder="0301099882"
                         maxLength={10}
-                        className="w-full bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-white font-mono focus:border-emerald-500 focus:outline-none tracking-wider"
+                        className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-900 font-mono focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none tracking-wider font-semibold"
                       />
                       {errors.iec && (
-                        <p className="text-xs text-red-400 mt-1 flex items-center gap-1">
+                        <p className="text-xs text-red-500 mt-1 flex items-center gap-1 font-medium">
                           <AlertCircle className="w-3.5 h-3.5" /> {errors.iec}
                         </p>
                       )}
                     </div>
                   ) : (
-                    <div className="p-3 bg-amber-950/30 border border-amber-800/40 rounded-lg text-xs text-amber-300 flex items-start gap-2">
-                      <HelpCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-start gap-2">
+                      <HelpCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
                       <div>
-                        <span className="font-semibold">No problem!</span> VyaparFlow will automatically add DGFT IEC application steps to your readiness checklist once your workspace is live.
+                        <span className="font-bold">No problem!</span> VyaparFlow will automatically add DGFT IEC application steps to your readiness checklist once your workspace is live.
                       </div>
                     </div>
                   )}
@@ -591,8 +591,8 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
 
                 {/* Udyam MSME */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-200 mb-1">
-                    Udyam MSME Registration Number <span className="text-[10px] text-slate-400 font-normal">(Optional)</span>
+                  <label className="block text-xs font-bold text-slate-900 mb-1">
+                    Udyam MSME Registration Number <span className="text-[10px] text-slate-500 font-normal">(Optional)</span>
                   </label>
                   <input
                     type="text"
@@ -600,7 +600,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     value={udyamNumber}
                     onChange={(e) => setUdyamNumber(e.target.value.toUpperCase())}
                     placeholder="UDYAM-MH-01-0012345"
-                    className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white font-mono focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-900 font-mono focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 focus:outline-none"
                   />
                 </div>
               </div>
@@ -612,20 +612,20 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
           {/* ========================================================================= */}
           {step === 3 && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-800 pb-5">
-                <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <div className="border-b border-slate-100 pb-5">
+                <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <Package className="w-4 h-4" /> Personalization Engine
                 </div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Industry & Products</h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Industry & Products</h1>
+                <p className="text-slate-500 text-xs sm:text-sm mt-1">
                   Your selected industry and HS classifications configure statutory testing, certifications (e.g. FSSAI for food vs BIS for metals), and tariff intelligence.
                 </p>
               </div>
 
               {/* Industry Grid */}
               <div className="space-y-3">
-                <label className="block text-xs font-semibold text-slate-200">
-                  Select Primary Industry / Domain <span className="text-red-400">*</span>
+                <label className="block text-xs font-bold text-slate-900">
+                  Select Primary Industry / Domain <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                   {INDUSTRY_OPTIONS.map((ind) => (
@@ -633,28 +633,27 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                       key={ind.id}
                       onClick={() => {
                         setIndustry(ind.id);
-                        // Update category for existing products
                         setProducts(products.map((p) => ({ ...p, category: ind.id })));
                       }}
                       className={`p-3 rounded-xl border cursor-pointer transition-all ${
                         industry === ind.id
-                          ? 'bg-emerald-950/40 border-emerald-500 ring-1 ring-emerald-500/50 shadow-md shadow-emerald-950/50'
-                          : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                          ? 'bg-orange-50/70 border-orange-500 ring-1 ring-orange-500 shadow-sm'
+                          : 'bg-slate-50/60 border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-xs text-white">{ind.label}</span>
+                        <span className={`font-bold text-xs ${industry === ind.id ? 'text-orange-950' : 'text-slate-900'}`}>{ind.label}</span>
                         <div
                           className={`w-3.5 h-3.5 rounded-full flex items-center justify-center border ${
                             industry === ind.id
-                              ? 'border-emerald-500 bg-emerald-500 text-slate-950'
-                              : 'border-slate-600'
+                              ? 'border-orange-600 bg-orange-600 text-white'
+                              : 'border-slate-300 bg-white'
                           }`}
                         >
                           {industry === ind.id && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                         </div>
                       </div>
-                      <p className="text-[10px] text-slate-400 line-clamp-1">{ind.desc}</p>
+                      <p className="text-[10px] text-slate-500 line-clamp-1">{ind.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -662,24 +661,24 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
               </div>
 
               {/* Product Items List */}
-              <div className="space-y-4 pt-4 border-t border-slate-800">
+              <div className="space-y-4 pt-4 border-t border-slate-100">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-semibold text-slate-200">Export Merchandise & Products</span>
-                    <p className="text-[11px] text-slate-400">Add the items you currently export or intend to export.</p>
+                    <span className="text-xs font-bold text-slate-900">Export Merchandise & Products</span>
+                    <p className="text-[11px] text-slate-500">Add the items you currently export or intend to export.</p>
                   </div>
 
                   <button
                     type="button"
                     onClick={addProduct}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 bg-emerald-950/50 border border-emerald-800/60 px-3 py-1.5 rounded-lg transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-bold text-orange-700 hover:text-orange-800 bg-orange-50 border border-orange-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Another Product
                   </button>
                 </div>
 
                 {errors.productName && (
-                  <p className="text-xs text-red-400 flex items-center gap-1">
+                  <p className="text-xs text-red-500 flex items-center gap-1 font-medium">
                     <AlertCircle className="w-3.5 h-3.5" /> {errors.productName}
                   </p>
                 )}
@@ -688,11 +687,11 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                   {products.map((p, idx) => (
                     <div
                       key={p.id}
-                      className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-3 relative group"
+                      className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3 relative group"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-slate-300 flex items-center gap-2">
-                          <span className="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-[10px] text-slate-300">
+                        <span className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] text-slate-700 font-bold">
                             {idx + 1}
                           </span>
                           Product #{idx + 1}
@@ -702,7 +701,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                           <button
                             type="button"
                             onClick={() => removeProduct(p.id)}
-                            className="text-slate-500 hover:text-red-400 transition-colors p-1"
+                            className="text-slate-400 hover:text-red-500 transition-colors p-1 cursor-pointer"
                             title="Remove product"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -712,24 +711,24 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-[11px] font-medium text-slate-300 mb-1">
-                            Product Name / Cargo Title <span className="text-red-400">*</span>
+                          <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                            Product Name / Cargo Title <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="text"
                             value={p.name}
                             onChange={(e) => updateProduct(p.id, 'name', e.target.value)}
                             placeholder="e.g. 100% Cotton Knitted Casual T-Shirts"
-                            className="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
+                            className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/15 focus:outline-none"
                           />
                         </div>
 
                         <div>
                           <div className="flex items-center justify-between mb-1">
-                            <label className="text-[11px] font-medium text-slate-300">
+                            <label className="text-[11px] font-bold text-slate-700">
                               ITC-HS Code (6 or 8 digits)
                             </label>
-                            <label className="flex items-center gap-1.5 cursor-pointer text-[10px] text-slate-400">
+                            <label className="flex items-center gap-1.5 cursor-pointer text-[10px] text-slate-500 font-medium">
                               <input
                                 type="checkbox"
                                 checked={p.noHsCodeYet}
@@ -738,7 +737,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                                   if (e.target.checked) updateProduct(p.id, 'hsCode', 'PENDING');
                                   else updateProduct(p.id, 'hsCode', '');
                                 }}
-                                className="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-900 h-3 w-3"
+                                className="rounded border-slate-300 text-orange-600 focus:ring-orange-500 h-3 w-3"
                               />
                               <span>Not known yet</span>
                             </label>
@@ -750,10 +749,10 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                               value={p.hsCode === 'PENDING' ? '' : p.hsCode}
                               onChange={(e) => updateProduct(p.id, 'hsCode', e.target.value)}
                               placeholder="e.g. 6109.10.00"
-                              className="w-full bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-2 text-xs text-white font-mono focus:border-emerald-500 focus:outline-none"
+                              className="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 font-mono font-semibold focus:border-orange-500 focus:ring-2 focus:ring-orange-500/15 focus:outline-none"
                             />
                           ) : (
-                            <div className="px-3 py-2 bg-slate-900/60 border border-slate-800 rounded-lg text-[11px] text-slate-400 italic">
+                            <div className="px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-[11px] text-slate-500 italic">
                               HS Code will be classified during export readiness workflow.
                             </div>
                           )}
@@ -771,18 +770,18 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
           {/* ========================================================================= */}
           {step === 4 && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-800 pb-5">
-                <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <div className="border-b border-slate-100 pb-5">
+                <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <Globe2 className="w-4 h-4" /> Trade Corridors
                 </div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Export Destinations</h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Export Destinations</h1>
+                <p className="text-slate-500 text-xs sm:text-sm mt-1">
                   Where do you plan to ship your goods? Destination markets determine preferential tariff agreements, destination customs clearance rules, and Certificate of Origin types.
                 </p>
               </div>
 
               {errors.destinations && (
-                <p className="text-xs text-red-400 flex items-center gap-1">
+                <p className="text-xs text-red-500 flex items-center gap-1 font-medium">
                   <AlertCircle className="w-3.5 h-3.5" /> {errors.destinations}
                 </p>
               )}
@@ -797,25 +796,25 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                       onClick={() => toggleDestination({ name: dest.name, isoCode: dest.isoCode })}
                       className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-start justify-between ${
                         isSelected
-                          ? 'bg-emerald-950/40 border-emerald-500 ring-1 ring-emerald-500/50 shadow-md shadow-emerald-950/50'
-                          : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+                          ? 'bg-orange-50/70 border-orange-500 ring-1 ring-orange-500 shadow-sm'
+                          : 'bg-slate-50/60 border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-xs text-white">{dest.name}</span>
-                          <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.2 rounded">
+                          <span className={`font-bold text-xs ${isSelected ? 'text-orange-950' : 'text-slate-900'}`}>{dest.name}</span>
+                          <span className="text-[10px] font-mono text-slate-600 bg-slate-200 px-1.5 py-0.2 rounded font-semibold">
                             {dest.isoCode}
                           </span>
                         </div>
-                        <p className="text-[10px] text-emerald-400/90 font-medium">{dest.badge}</p>
+                        <p className="text-[10px] text-orange-700 font-semibold">{dest.badge}</p>
                       </div>
 
                       <div
                         className={`w-4 h-4 rounded-full flex items-center justify-center border mt-0.5 ${
                           isSelected
-                            ? 'border-emerald-500 bg-emerald-500 text-slate-950'
-                            : 'border-slate-600'
+                            ? 'border-orange-600 bg-orange-600 text-white'
+                            : 'border-slate-300 bg-white'
                         }`}
                       >
                         {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
@@ -826,8 +825,8 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
               </div>
 
               {/* Custom Destination Input */}
-              <div className="pt-3 border-t border-slate-800">
-                <label className="block text-xs font-medium text-slate-300 mb-1.5">
+              <div className="pt-3 border-t border-slate-100">
+                <label className="block text-xs font-bold text-slate-900 mb-1.5">
                   Need another destination not listed above?
                 </label>
                 <div className="flex gap-2">
@@ -836,13 +835,13 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     value={customDestination}
                     onChange={(e) => setCustomDestination(e.target.value)}
                     placeholder="e.g. Canada, France, Kenya, Brazil"
-                    className="flex-1 bg-slate-950 border border-slate-700/80 rounded-xl px-3.5 py-2 text-xs text-white focus:border-emerald-500 focus:outline-none"
+                    className="flex-1 bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/15 focus:outline-none"
                   />
                   <button
                     type="button"
                     onClick={addCustomDestination}
                     disabled={!customDestination.trim()}
-                    className="bg-slate-800 hover:bg-slate-700 disabled:opacity-40 text-slate-200 text-xs px-4 py-2 rounded-xl transition-colors font-semibold"
+                    className="bg-slate-800 hover:bg-slate-900 disabled:opacity-40 text-white text-xs px-4 py-2 rounded-xl transition-colors font-bold cursor-pointer"
                   >
                     Add Country
                   </button>
@@ -856,12 +855,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
           {/* ========================================================================= */}
           {step === 5 && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-800 pb-5">
-                <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <div className="border-b border-slate-100 pb-5">
+                <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <FileUp className="w-4 h-4" /> Document Vault
                 </div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Existing Registrations & Proofs</h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Existing Registrations & Proofs</h1>
+                <p className="text-slate-500 text-xs sm:text-sm mt-1">
                   Upload official certificates you currently hold. Uploaded documents are submitted for platform verification. Unuploaded documents remain active checklist tasks on your dashboard.
                 </p>
               </div>
@@ -869,18 +868,18 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
               {/* Checklist & Dropzones */}
               <div className="space-y-5">
                 {/* GST Registration Certificate */}
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="font-semibold text-xs text-slate-200">1. GSTIN Registration Certificate</span>
-                      <p className="text-[11px] text-slate-400">Form GST REG-06 or official GST registration document.</p>
+                      <span className="font-bold text-xs text-slate-900">1. GSTIN Registration Certificate</span>
+                      <p className="text-[11px] text-slate-500">Form GST REG-06 or official GST registration document.</p>
                     </div>
-                    <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700 font-semibold">
                       <input
                         type="checkbox"
                         checked={selectedDocs.gstDoc}
                         onChange={(e) => setSelectedDocs({ ...selectedDocs, gstDoc: e.target.checked })}
-                        className="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-900 h-4 w-4"
+                        className="rounded border-slate-300 text-orange-600 focus:ring-orange-500 h-4 w-4"
                       />
                       <span>I have this document</span>
                     </label>
@@ -898,18 +897,18 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 </div>
 
                 {/* DGFT IEC Certificate */}
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="font-semibold text-xs text-slate-200">2. DGFT Import Export Code (IEC) Certificate</span>
-                      <p className="text-[11px] text-slate-400">DGFT electronic IEC certificate issued by Regional Authority.</p>
+                      <span className="font-bold text-xs text-slate-900">2. DGFT Import Export Code (IEC) Certificate</span>
+                      <p className="text-[11px] text-slate-500">DGFT electronic IEC certificate issued by Regional Authority.</p>
                     </div>
-                    <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700 font-semibold">
                       <input
                         type="checkbox"
                         checked={selectedDocs.iecDoc}
                         onChange={(e) => setSelectedDocs({ ...selectedDocs, iecDoc: e.target.checked })}
-                        className="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-900 h-4 w-4"
+                        className="rounded border-slate-300 text-orange-600 focus:ring-orange-500 h-4 w-4"
                       />
                       <span>I have this document</span>
                     </label>
@@ -927,18 +926,18 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 </div>
 
                 {/* Udyam Registration */}
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="font-semibold text-xs text-slate-200">3. Udyam MSME Registration Certificate</span>
-                      <p className="text-[11px] text-slate-400">Ministry of Micro, Small and Medium Enterprises certificate.</p>
+                      <span className="font-bold text-xs text-slate-900">3. Udyam MSME Registration Certificate</span>
+                      <p className="text-[11px] text-slate-500">Ministry of Micro, Small and Medium Enterprises certificate.</p>
                     </div>
-                    <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700 font-semibold">
                       <input
                         type="checkbox"
                         checked={selectedDocs.udyamDoc}
                         onChange={(e) => setSelectedDocs({ ...selectedDocs, udyamDoc: e.target.checked })}
-                        className="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-900 h-4 w-4"
+                        className="rounded border-slate-300 text-orange-600 focus:ring-orange-500 h-4 w-4"
                       />
                       <span>I have this document</span>
                     </label>
@@ -956,18 +955,18 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 </div>
 
                 {/* RCMC Certificate */}
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="font-semibold text-xs text-slate-200">4. Export Promotion Council RCMC Membership</span>
-                      <p className="text-[11px] text-slate-400">APEDA, TEXPROCIL, EEPC, FIEO or relevant EPC registration.</p>
+                      <span className="font-bold text-xs text-slate-900">4. Export Promotion Council RCMC Membership</span>
+                      <p className="text-[11px] text-slate-500">APEDA, TEXPROCIL, EEPC, FIEO or relevant EPC registration.</p>
                     </div>
-                    <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                    <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700 font-semibold">
                       <input
                         type="checkbox"
                         checked={selectedDocs.rcmcDoc}
                         onChange={(e) => setSelectedDocs({ ...selectedDocs, rcmcDoc: e.target.checked })}
-                        className="rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-900 h-4 w-4"
+                        className="rounded border-slate-300 text-orange-600 focus:ring-orange-500 h-4 w-4"
                       />
                       <span>I have this document</span>
                     </label>
@@ -992,12 +991,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
           {/* ========================================================================= */}
           {step === 6 && (
             <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="border-b border-slate-800 pb-5">
-                <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <div className="border-b border-slate-100 pb-5">
+                <div className="flex items-center gap-2 text-orange-600 text-xs font-bold uppercase tracking-wider mb-1">
                   <ShieldCheck className="w-4 h-4" /> Ready for Launch
                 </div>
-                <h1 className="text-2xl font-bold text-white tracking-tight">Review & Create Workspace</h1>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Review & Create Workspace</h1>
+                <p className="text-slate-500 text-xs sm:text-sm mt-1">
                   Verify your business profile. Upon completion, VyaparFlow will personalize statutory compliance tasks, tariff intelligence, and export readiness tracking.
                 </p>
               </div>
@@ -1005,67 +1004,67 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
               {/* Review Deck Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Organization Card */}
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2 relative">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 relative">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                      <Building2 className="w-3.5 h-3.5 text-emerald-400" /> Organization Profile
+                    <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5 text-orange-600" /> Organization Profile
                     </span>
                     <button
                       type="button"
                       onClick={() => setStep(1)}
-                      className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1"
+                      className="text-[11px] text-orange-600 hover:underline flex items-center gap-1 font-bold cursor-pointer"
                     >
                       <Edit3 className="w-3 h-3" /> Edit
                     </button>
                   </div>
                   <div className="space-y-1 text-xs">
-                    <p><span className="text-slate-400">Brand Name:</span> <strong className="text-white">{companyName}</strong></p>
-                    <p><span className="text-slate-400">Model:</span> <span className="text-slate-200">{businessType} Exporter</span></p>
-                    <p><span className="text-slate-400">Location:</span> <span className="text-slate-200">{city}, {state}</span></p>
+                    <p><span className="text-slate-500">Brand Name:</span> <strong className="text-slate-900">{companyName}</strong></p>
+                    <p><span className="text-slate-500">Model:</span> <span className="text-slate-800 font-medium">{businessType} Exporter</span></p>
+                    <p><span className="text-slate-500">Location:</span> <span className="text-slate-800 font-medium">{city}, {state}</span></p>
                   </div>
                 </div>
 
                 {/* Registrations Card */}
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2 relative">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 relative">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                      <FileCheck2 className="w-3.5 h-3.5 text-emerald-400" /> Statutory IDs
+                    <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <FileCheck2 className="w-3.5 h-3.5 text-orange-600" /> Statutory IDs
                     </span>
                     <button
                       type="button"
                       onClick={() => setStep(2)}
-                      className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1"
+                      className="text-[11px] text-orange-600 hover:underline flex items-center gap-1 font-bold cursor-pointer"
                     >
                       <Edit3 className="w-3 h-3" /> Edit
                     </button>
                   </div>
                   <div className="space-y-1 text-xs">
-                    <p><span className="text-slate-400">GSTIN:</span> <strong className="text-white font-mono">{gstin || 'Not Provided (Unregistered)'}</strong></p>
-                    <p><span className="text-slate-400">DGFT IEC:</span> <strong className="text-white font-mono">{hasIec && iec ? iec : 'Pending Application'}</strong></p>
-                    <p><span className="text-slate-400">Udyam:</span> <span className="text-slate-200 font-mono">{udyamNumber || 'Not Provided'}</span></p>
+                    <p><span className="text-slate-500">GSTIN:</span> <strong className="text-slate-900 font-mono">{gstin || 'Not Provided (Unregistered)'}</strong></p>
+                    <p><span className="text-slate-500">DGFT IEC:</span> <strong className="text-slate-900 font-mono">{hasIec && iec ? iec : 'Pending Application'}</strong></p>
+                    <p><span className="text-slate-500">Udyam:</span> <span className="text-slate-800 font-mono font-medium">{udyamNumber || 'Not Provided'}</span></p>
                   </div>
                 </div>
 
                 {/* Industry & Products */}
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2 relative">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 relative">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                      <Package className="w-3.5 h-3.5 text-emerald-400" /> Export Products ({products.length})
+                    <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <Package className="w-3.5 h-3.5 text-orange-600" /> Export Products ({products.length})
                     </span>
                     <button
                       type="button"
                       onClick={() => setStep(3)}
-                      className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1"
+                      className="text-[11px] text-orange-600 hover:underline flex items-center gap-1 font-bold cursor-pointer"
                     >
                       <Edit3 className="w-3 h-3" /> Edit
                     </button>
                   </div>
                   <div className="space-y-1 text-xs">
-                    <p><span className="text-slate-400">Industry:</span> <strong className="text-white">{industry}</strong></p>
-                    <ul className="text-slate-300 space-y-1 mt-1 pl-2 border-l border-slate-800">
+                    <p><span className="text-slate-500">Industry:</span> <strong className="text-slate-900">{industry}</strong></p>
+                    <ul className="text-slate-700 space-y-1 mt-1 pl-2 border-l-2 border-orange-200">
                       {products.map((p, idx) => (
                         <li key={idx} className="truncate">
-                          • {p.name} <span className="text-slate-500 font-mono text-[10px]">({p.hsCode || 'HS Pending'})</span>
+                          • <span className="font-medium">{p.name}</span> <span className="text-slate-500 font-mono text-[10px]">({p.hsCode || 'HS Pending'})</span>
                         </li>
                       ))}
                     </ul>
@@ -1073,15 +1072,15 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                 </div>
 
                 {/* Destinations */}
-                <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-2 relative">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2 relative">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                      <Globe2 className="w-3.5 h-3.5 text-emerald-400" /> Corridors ({selectedDestinations.length})
+                    <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                      <Globe2 className="w-3.5 h-3.5 text-orange-600" /> Corridors ({selectedDestinations.length})
                     </span>
                     <button
                       type="button"
                       onClick={() => setStep(4)}
-                      className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1"
+                      className="text-[11px] text-orange-600 hover:underline flex items-center gap-1 font-bold cursor-pointer"
                     >
                       <Edit3 className="w-3 h-3" /> Edit
                     </button>
@@ -1090,7 +1089,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
                     {selectedDestinations.map((d) => (
                       <span
                         key={d.name}
-                        className="text-[11px] bg-slate-800 border border-slate-700 text-slate-200 px-2 py-0.5 rounded-full"
+                        className="text-[11px] bg-orange-100 border border-orange-200 text-orange-950 font-bold px-2 py-0.5 rounded-full"
                       >
                         {d.name} ({d.isoCode})
                       </span>
@@ -1100,12 +1099,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
               </div>
 
               {/* Engine Guarantee Callout */}
-              <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-950/50 to-slate-900 border border-emerald-800/40 text-xs text-slate-300 space-y-1.5">
-                <div className="flex items-center gap-2 text-emerald-400 font-semibold">
+              <div className="p-4 rounded-xl bg-orange-50/80 border border-orange-200 text-xs text-orange-950 space-y-1.5">
+                <div className="flex items-center gap-2 text-orange-700 font-bold">
                   <Sparkles className="w-4 h-4" /> Tailored Requirement Engine
                 </div>
-                <p className="text-[11px] text-slate-400">
-                  Your dashboard will automatically calculate your initial Readiness Score, identify critical export blockers, and load corridor tariff schedules tailored strictly to <strong className="text-white">{industry}</strong> exports to <strong className="text-white">{selectedDestinations.map((d) => d.name).join(', ')}</strong>.
+                <p className="text-[11px] text-orange-900 leading-relaxed">
+                  Your dashboard will automatically calculate your initial Readiness Score, identify critical export blockers, and load corridor tariff schedules tailored strictly to <strong className="text-orange-950">{industry}</strong> exports to <strong className="text-orange-950">{selectedDestinations.map((d) => d.name).join(', ')}</strong>.
                 </p>
               </div>
             </div>
@@ -1114,12 +1113,12 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
           {/* ========================================================================= */}
           {/* NAVIGATION BUTTONS                                                        */}
           {/* ========================================================================= */}
-          <div className="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between">
+          <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
             {step > 1 ? (
               <button
                 type="button"
                 onClick={handleBack}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-200 text-xs font-semibold transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" /> Back
               </button>
@@ -1131,7 +1130,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
               <button
                 type="button"
                 onClick={handleNext}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-lg shadow-emerald-500/20 transition-all ml-auto"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold shadow-md shadow-orange-500/20 transition-all ml-auto cursor-pointer"
               >
                 Continue to Step {step + 1} <ArrowRight className="w-4 h-4" />
               </button>
@@ -1139,11 +1138,11 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-7 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 text-xs sm:text-sm font-bold shadow-xl shadow-emerald-500/25 transition-all disabled:opacity-50 ml-auto"
+                className="flex items-center gap-2 px-7 py-3 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-orange-500/25 transition-all disabled:opacity-50 ml-auto cursor-pointer"
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Launching Workspace...
                   </span>
                 ) : (
@@ -1158,7 +1157,7 @@ export default function OnboardingWizard({ user, initialBusiness }: OnboardingWi
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/80 text-center py-4 text-[11px] text-slate-500">
+      <footer className="border-t border-slate-200 bg-white text-center py-4 text-[11px] text-slate-500">
         VyaparFlow Enterprise Export Readiness &bull; Secure Multi-Tenant Architecture &bull; ISO/IEC 27001 Certified Standards
       </footer>
     </div>

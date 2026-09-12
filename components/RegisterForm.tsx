@@ -113,7 +113,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
             name="password"
             placeholder="Create an account password"
             minLength={6}
-            defaultValue="password123"
+            autoComplete="new-password"
             className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs transition-all"
             required
           />

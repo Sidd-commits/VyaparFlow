@@ -11,9 +11,9 @@ interface CostTimelineCardProps {
 }
 
 export default function CostTimelineCard({
-  originCity = 'Mumbai Factory',
-  destinationPortName = 'Jebel Ali Port (UAE)',
-  cargoMode = 'Sea Freight FCL 20ft Reefer',
+  originCity = 'Origin Factory',
+  destinationPortName = 'Destination Port',
+  cargoMode = 'Sea Freight FCL 20ft Cargo',
   leadTimeDays = '4–6 Days',
   costRange = '₹125,000 – ₹155,000',
   transitTimeDays = '12–15 Days',

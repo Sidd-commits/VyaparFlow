@@ -399,40 +399,103 @@ export async function syncBusinessRequirements(businessId: string): Promise<void
  * Returns structured indicative tariff intelligence for an export trade corridor.
  */
 export function getTariffIntelligence(
-  hsCode: string,
-  productName: string,
-  destinationCountryIso: string,
-  destinationCountryName: string
+  hsCode?: string,
+  productName?: string,
+  destinationCountryIso?: string,
+  destinationCountryName?: string
 ): TariffIntelligenceData {
-  if (destinationCountryIso === 'AE') {
+  const safeHs = hsCode && hsCode !== 'PENDING' ? hsCode : 'HS Not Classified Yet';
+  const safeProd = productName || 'Export Merchandise';
+  const safeDestName = destinationCountryName || 'No export destination added yet';
+  const iso = destinationCountryIso?.toUpperCase() || '';
+
+  if (!destinationCountryIso || destinationCountryIso === '--' || !destinationCountryName) {
     return {
-      corridorName: 'India → United Arab Emirates (India-UAE CEPA Corridor)',
-      hsCode: hsCode || '2008.99.11',
-      productName: productName || 'Export Cargo',
-      originCountry: 'India (Nhava Sheva / JNPT)',
-      destinationCountry: 'United Arab Emirates (Jebel Ali / DXB)',
-      standardMfnTariff: '5.0% Most-Favoured-Nation (MFN) Duty',
-      preferentialTariff: '0.0% Preferential Duty (Duty Free)',
-      tradeAgreement: 'India-UAE Comprehensive Economic Partnership Agreement (CEPA)',
-      dutySavings: 'Save 5.0% on declared CIF invoice value',
-      rulesOfOriginRule: 'Wholly Obtained (WO) or 40% Value Addition (VA) with CTSH Rule',
-      sourceAuthority: 'Indian Customs ICEGATE / DGFT FTP 2023 / UAE Customs Tariff Schedule',
+      corridorName: 'No Active Trade Corridor Configured',
+      hsCode: safeHs,
+      productName: safeProd,
+      originCountry: 'India (JNPT / Nhava Sheva Port)',
+      destinationCountry: 'No destination added yet',
+      standardMfnTariff: 'N/A — Add destination market',
+      preferentialTariff: 'N/A — Add destination market',
+      tradeAgreement: 'Select an export destination to view bilateral trade agreements',
+      dutySavings: 'Configure target market to calculate preferential duty savings',
+      rulesOfOriginRule: 'Determined based on destination trade agreement',
+      sourceAuthority: 'Indian Customs ICEGATE / DGFT Trade Intelligence',
       lastVerifiedDate: '12 Sep 2026',
-      disclaimer: 'Indicative tariff calculated based on published India-UAE CEPA schedule. Final customs duty assessed at port of destination based on verified Certificate of Origin.',
+      disclaimer: 'Add an export destination in Onboarding or Product Settings to view tailored tariff schedules and duty arbitrage.',
     };
   }
 
-  if (destinationCountryIso === 'US') {
+  // Vietnam (ASEAN - AIFTA)
+  if (iso === 'VN') {
+    return {
+      corridorName: 'India → Vietnam (ASEAN-India Free Trade Area / AIFTA Corridor)',
+      hsCode: safeHs,
+      productName: safeProd,
+      originCountry: 'India (Nhava Sheva / Chennai Port)',
+      destinationCountry: 'Vietnam (Hai Phong / Cat Lai Port, Ho Chi Minh City)',
+      standardMfnTariff: '10.0% – 15.0% Most-Favoured-Nation (MFN) Duty',
+      preferentialTariff: '0.0% – 3.0% Preferential Duty (AIFTA Framework)',
+      tradeAgreement: 'ASEAN-India Free Trade Agreement (AIFTA - Trade in Goods)',
+      dutySavings: 'Save up to 10.0%–12.0% with verified Form AI Certificate of Origin',
+      rulesOfOriginRule: 'Regional Value Content (RVC) ≥ 35% + Change in Tariff Subheading (CTSH)',
+      sourceAuthority: 'General Department of Vietnam Customs / Ministry of Industry & Trade (MOIT) / DGFT India',
+      lastVerifiedDate: '12 Sep 2026',
+      disclaimer: 'Indicative preferential rate under AIFTA Schedule. Exporters must submit a valid Form AI Certificate of Origin issued by authorized agencies (EIC/DGFT) for preferential customs duty.',
+    };
+  }
+
+  // United Arab Emirates (India-UAE CEPA)
+  if (iso === 'AE') {
+    return {
+      corridorName: 'India → United Arab Emirates (India-UAE CEPA Corridor)',
+      hsCode: safeHs,
+      productName: safeProd,
+      originCountry: 'India (Nhava Sheva / JNPT / Mundra)',
+      destinationCountry: 'United Arab Emirates (Jebel Ali / Dubai DXB)',
+      standardMfnTariff: '5.0% Most-Favoured-Nation (MFN) Duty',
+      preferentialTariff: '0.0% Preferential Duty (Duty Free)',
+      tradeAgreement: 'India-UAE Comprehensive Economic Partnership Agreement (CEPA)',
+      dutySavings: 'Save 5.0% on declared CIF invoice value under CEPA tariff elimination',
+      rulesOfOriginRule: 'Wholly Obtained (WO) or 40% Value Addition (VA) with CTSH Rule',
+      sourceAuthority: 'Indian Customs ICEGATE / DGFT FTP 2023 / UAE Customs Tariff Schedule',
+      lastVerifiedDate: '12 Sep 2026',
+      disclaimer: 'Indicative tariff calculated based on published India-UAE CEPA schedule. Final customs duty assessed at port of destination based on verified CEPA Certificate of Origin.',
+    };
+  }
+
+  // Germany & European Union (EU Single Market)
+  if (iso === 'DE' || iso === 'NL' || iso === 'FR' || iso === 'IT' || iso === 'BE') {
+    return {
+      corridorName: `India → ${destinationCountryName} (EU Single Market Trade Corridor)`,
+      hsCode: safeHs,
+      productName: safeProd,
+      originCountry: 'India (Nhava Sheva / Mumbai Air Cargo)',
+      destinationCountry: `${destinationCountryName} (Hamburg / Rotterdam / Frankfurt)`,
+      standardMfnTariff: '4.0% – 6.5% EU Common Customs Tariff (CCT)',
+      preferentialTariff: 'Standard EU MFN / REX Self-Certification Scheme',
+      tradeAgreement: 'EU Registered Exporter System (REX) & WTO MFN Schedule',
+      dutySavings: 'REX statement on origin facilitates swift customs clearance across EU',
+      rulesOfOriginRule: 'EU Non-Preferential Origin Rules / REX Statement on Commercial Invoice',
+      sourceAuthority: 'European Commission TARIC Database / DGFT India REX Portal',
+      lastVerifiedDate: '12 Sep 2026',
+      disclaimer: 'Indicative TARIC rate for EU entry. Consignments must adhere to EU REACH, CE marking, and applicable food/textile safety directives.',
+    };
+  }
+
+  // United States (USITC HTS)
+  if (iso === 'US') {
     return {
       corridorName: 'India → United States (US Customs Trade Corridor)',
-      hsCode: hsCode || '0910.30.00',
-      productName: productName || 'Export Cargo',
+      hsCode: safeHs,
+      productName: safeProd,
       originCountry: 'India (Nhava Sheva / JNPT)',
-      destinationCountry: 'United States of America (New York / Newark Port)',
-      standardMfnTariff: '3.2% Standard MFN Tariff Rate',
+      destinationCountry: 'United States of America (New York / Newark / LA Port)',
+      standardMfnTariff: '3.2% – 5.5% Standard MFN Tariff Rate',
       preferentialTariff: '3.2% (GSP Expired / Standard MFN Applicable)',
       tradeAgreement: 'WTO Most-Favoured-Nation Schedule',
-      dutySavings: 'Standard duty applicable; FDA compliance required',
+      dutySavings: 'Standard duty applicable; FDA / Lacey Act / EPA compliance required',
       rulesOfOriginRule: 'Non-preferential Rules of Origin (Substantial Transformation)',
       sourceAuthority: 'US International Trade Commission (USITC HTS) / ICEGATE',
       lastVerifiedDate: '12 Sep 2026',
@@ -440,19 +503,96 @@ export function getTariffIntelligence(
     };
   }
 
+  // United Kingdom (UKCA / DCTS)
+  if (iso === 'GB') {
+    return {
+      corridorName: 'India → United Kingdom (UK Trade Tariff Corridor)',
+      hsCode: safeHs,
+      productName: safeProd,
+      originCountry: 'India (Nhava Sheva / Chennai / Delhi Cargo)',
+      destinationCountry: 'United Kingdom (Felixstowe / Southampton / London Heathrow)',
+      standardMfnTariff: '4.0% UK Global Tariff (UKGT)',
+      preferentialTariff: 'Reduced / Standard under Developing Countries Trading Scheme (DCTS)',
+      tradeAgreement: 'UK Developing Countries Trading Scheme (DCTS)',
+      dutySavings: 'Eligible for DCTS preferential tariff margins on qualifying goods',
+      rulesOfOriginRule: 'UK Rules of Origin Declaration on invoice with EORI registration',
+      sourceAuthority: 'HM Revenue & Customs (HMRC) Trade Tariff / DGFT',
+      lastVerifiedDate: '12 Sep 2026',
+      disclaimer: 'Indicative rate under UK Global Tariff. Consignments require UKCA compliance or UK product safety declarations where applicable.',
+    };
+  }
+
+  // Australia (India-Australia ECTA)
+  if (iso === 'AU') {
+    return {
+      corridorName: 'India → Australia (India-Australia ECTA Free Trade Corridor)',
+      hsCode: safeHs,
+      productName: safeProd,
+      originCountry: 'India (Nhava Sheva / Chennai)',
+      destinationCountry: 'Australia (Port of Melbourne / Sydney Botany)',
+      standardMfnTariff: '5.0% Standard Australian Customs Tariff',
+      preferentialTariff: '0.0% Preferential Duty under ECTA Agreement',
+      tradeAgreement: 'Economic Cooperation and Trade Agreement (Ind-Aus ECTA)',
+      dutySavings: 'Save 5.0% on declared value with ECTA preferential Certificate of Origin',
+      rulesOfOriginRule: 'Wholly Produced or Qualifying Value Content (QVC) ≥ 35% with CTSH',
+      sourceAuthority: 'Australian Border Force (ABF) / DFAT / DGFT India',
+      lastVerifiedDate: '12 Sep 2026',
+      disclaimer: 'Indicative preferential rate under Ind-Aus ECTA. Requires COO issued by designated Indian issuing agencies.',
+    };
+  }
+
+  // Saudi Arabia (SASO Saber / GCC)
+  if (iso === 'SA') {
+    return {
+      corridorName: 'India → Saudi Arabia (SASO Saber Corridor)',
+      hsCode: safeHs,
+      productName: safeProd,
+      originCountry: 'India (Nhava Sheva / Mundra / Cochin)',
+      destinationCountry: 'Kingdom of Saudi Arabia (Jeddah Islamic Port / King Abdulaziz Port, Dammam)',
+      standardMfnTariff: '5.0% – 12.0% GCC Unified Customs Tariff',
+      preferentialTariff: '5.0% Standard GCC Common External Tariff',
+      tradeAgreement: 'GCC Unified Customs Tariff Schedule',
+      dutySavings: 'Standard GCC rate; fast-track clearance via Saber e-platform certification',
+      rulesOfOriginRule: 'Standard Certificate of Origin authenticated with Arabic labelling',
+      sourceAuthority: 'Zakat, Tax and Customs Authority (ZATCA) / SASO Saber / DGFT',
+      lastVerifiedDate: '12 Sep 2026',
+      disclaimer: 'Consignments require Saber product & shipment conformity certificates (PCoC / SCoC) prior to vessel departure.',
+    };
+  }
+
+  // Japan (India-Japan CEPA)
+  if (iso === 'JP') {
+    return {
+      corridorName: 'India → Japan (India-Japan CEPA Corridor)',
+      hsCode: safeHs,
+      productName: safeProd,
+      originCountry: 'India (Nhava Sheva / JNPT)',
+      destinationCountry: 'Japan (Tokyo Port / Yokohama / Osaka)',
+      standardMfnTariff: '3.5% – 5.0% Japan Customs Tariff',
+      preferentialTariff: '0.0% – 1.8% Preferential CEPA Duty',
+      tradeAgreement: 'Comprehensive Economic Partnership Agreement (India-Japan CEPA)',
+      dutySavings: 'Save up to 3.5% with certified IJCEPA Certificate of Origin',
+      rulesOfOriginRule: 'Qualifying Value Content (QVC) ≥ 35% with Change in Tariff Heading (CTH)',
+      sourceAuthority: 'Japan Customs (Ministry of Finance) / METI / DGFT India',
+      lastVerifiedDate: '12 Sep 2026',
+      disclaimer: 'Preferential tariff rate under IJCEPA. Requires formal Certificate of Origin issued by Export Inspection Council (EIC).',
+    };
+  }
+
+  // General Bilateral Corridor Fallback
   return {
-    corridorName: `India → ${destinationCountryName} Corridor`,
-    hsCode: hsCode || 'General HS',
-    productName: productName || 'Export Cargo',
+    corridorName: `India → ${destinationCountryName} Trade Corridor`,
+    hsCode: safeHs,
+    productName: safeProd,
     originCountry: 'India (Nhava Sheva / JNPT)',
     destinationCountry: destinationCountryName,
-    standardMfnTariff: '4.5% Standard MFN Tariff',
+    standardMfnTariff: '4.5% Standard MFN Tariff Rate',
     preferentialTariff: '4.5% Standard Duty Rate',
-    tradeAgreement: 'Standard Bilateral Trade Framework',
-    dutySavings: 'Standard WTO MFN tariff applicable',
+    tradeAgreement: 'Standard Bilateral Trade Framework (WTO MFN)',
+    dutySavings: 'Standard WTO MFN tariff schedule applicable',
     rulesOfOriginRule: 'Standard Certificate of Origin (Non-Preferential)',
     sourceAuthority: 'ICEGATE Customs Tariff & DGFT Schedule',
     lastVerifiedDate: '12 Sep 2026',
-    disclaimer: 'Indicative tariff estimate based on standard HS code classification. Please verify with local customs broker for destination port clearance.',
+    disclaimer: 'Indicative tariff estimate based on standard HS code classification. Please verify with destination customs broker for port clearance.',
   };
 }

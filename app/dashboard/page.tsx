@@ -59,10 +59,10 @@ export default async function DashboardPage() {
 
   // Retrieve indicative tariff intelligence for this export corridor
   const tariffData = getTariffIntelligence(
-    product?.hsCode || '2008.99.11',
-    product?.name || 'Commercial Export Cargo',
-    destination?.country.isoCode || 'AE',
-    destination?.country.name || 'United Arab Emirates'
+    product?.hsCode,
+    product?.name,
+    destination?.country.isoCode,
+    destination?.country.name
   );
 
   return (

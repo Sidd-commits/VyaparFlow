@@ -14,9 +14,9 @@ interface ReadinessHeroProps {
 export default function ReadinessHero({
   readinessData,
   productName = 'Export Commodity',
-  originCity = 'Mumbai',
-  destinationCountryName = 'United Arab Emirates',
-  destinationCountryIso = 'ARE',
+  originCity = 'Factory Origin',
+  destinationCountryName = 'No destination added yet',
+  destinationCountryIso = '--',
 }: ReadinessHeroProps) {
   const isHealthy = readinessData.totalScore >= 85 && readinessData.blockers.length === 0;
 
