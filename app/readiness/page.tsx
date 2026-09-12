@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import { requireAuth, getAllUsers } from '@/app/actions';
+import AppShell from '@/components/AppShell';
+import { requireAuth } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { calculateReadinessScore } from '@/lib/services/readiness';
 import {
@@ -21,7 +21,6 @@ import {
 
 export default async function ReadinessPage() {
   const { role, user } = await requireAuth();
-  const allUsers = await getAllUsers();
   const business = user?.businesses[0];
   const product = business?.products[0];
   const destination = product?.destinations[0];
@@ -49,10 +48,8 @@ export default async function ReadinessPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-xs">
           <div>
@@ -237,7 +234,7 @@ export default async function ReadinessPage() {
             ))}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

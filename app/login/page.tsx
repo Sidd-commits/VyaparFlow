@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import Navbar from '@/components/Navbar';
 import AuthContainer from '@/components/AuthContainer';
-import { getActiveUser, getAllUsers } from '@/app/actions';
+import { getActiveUser } from '@/app/actions';
 import { redirect } from 'next/navigation';
 import { Ship, ShieldCheck, CheckCircle2, TrendingUp, Globe2, Sparkles, Building2, MapPin } from 'lucide-react';
 
@@ -19,8 +19,6 @@ export default async function LoginPage() {
     }
   }
 
-  const allUsers = await getAllUsers();
-
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 flex flex-col font-sans relative overflow-hidden">
       {/* Background ambient lighting effects */}
@@ -28,7 +26,7 @@ export default async function LoginPage() {
       <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Navbar with dark-mode compatibility */}
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
+      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} />
 
       <main className="max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8 w-full flex-1 flex items-start justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start w-full">

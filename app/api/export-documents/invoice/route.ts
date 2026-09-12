@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateCommercialInvoicePDF } from '@/lib/services/documentGenerator';
+import { requireAuth } from '@/app/actions';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET(req: NextRequest) {
+  const { role, user } = await requireAuth();
   const { searchParams } = new URL(req.url);
   const shipmentId = searchParams.get('shipmentId');
 
@@ -24,6 +26,11 @@ export async function GET(req: NextRequest) {
 
   if (!shipment) {
     return NextResponse.json({ error: 'Shipment not found' }, { status: 404 });
+  }
+
+  // Enforce MSME ownership authorization
+  if (role === 'MSME' && shipment.business.ownerUserId !== user?.id) {
+    return NextResponse.json({ error: 'Unauthorized access to shipment document' }, { status: 403 });
   }
 
   const pdfBuffer = generateCommercialInvoicePDF({

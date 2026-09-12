@@ -23,13 +23,6 @@ interface NavbarProps {
   currentRole?: 'MSME' | 'PROVIDER' | 'ADMIN' | null;
   userEmail?: string | null;
   userName?: string | null;
-  allUsers?: Array<{
-    id: string;
-    name: string;
-    email: string;
-    role: 'MSME' | 'PROVIDER' | 'ADMIN';
-    displayName: string;
-  }>;
 }
 
 const NAV_SECTIONS = [

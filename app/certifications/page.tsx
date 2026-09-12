@@ -1,34 +1,33 @@
 import React from 'react';
-import Navbar from '@/components/Navbar';
-import { requireAuth, getAllUsers, requestCertificationAction } from '@/app/actions';
+import AppShell from '@/components/AppShell';
+import { requireAuth, requestCertificationAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { Award, Clock, CheckCircle2, ShieldCheck, ArrowRight, Building } from 'lucide-react';
 
 export default async function CertificationsPage() {
   const { role, user } = await requireAuth();
-  const allUsers = await getAllUsers();
   const business = user?.businesses[0];
 
-  const certRequirements = await prisma.requirement.findMany({
-    where: {
-      productCountry: { product: { businessId: business?.id } },
-      type: 'certification',
-    },
-    include: {
-      rule: true,
-      certificationRequests: { include: { providerTask: { include: { provider: true } } } },
-    },
-  });
+  const certRequirements = business?.id
+    ? await prisma.requirement.findMany({
+        where: {
+          productCountry: { product: { businessId: business.id } },
+          type: 'certification',
+        },
+        include: {
+          rule: true,
+          certificationRequests: { include: { providerTask: { include: { provider: true } } } },
+        },
+      })
+    : [];
 
   const certLabs = await prisma.provider.findMany({
     where: { type: 'CERTIFICATION' },
   });
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         {/* Header */}
         <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -138,7 +137,7 @@ export default async function CertificationsPage() {
             );
           })}
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

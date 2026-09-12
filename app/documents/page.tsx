@@ -1,6 +1,6 @@
 import React from 'react';
-import Navbar from '@/components/Navbar';
-import { requireAuth, getAllUsers, uploadDocumentAction, verifyDocumentAction } from '@/app/actions';
+import AppShell from '@/components/AppShell';
+import { requireAuth, uploadDocumentAction, verifyDocumentAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import {
   FileText,
@@ -17,11 +17,10 @@ import {
 
 export default async function DocumentsPage() {
   const { role, user } = await requireAuth();
-  const allUsers = await getAllUsers();
   const business = user?.businesses?.[0];
 
   const documents = await prisma.document.findMany({
-    where: role === 'MSME' && business?.id ? { businessId: business.id } : {},
+    where: role === 'MSME' ? { businessId: business?.id || 'none' } : {},
     include: {
       requirement: true,
       shipment: true,
@@ -29,18 +28,18 @@ export default async function DocumentsPage() {
     orderBy: { uploadedAt: 'desc' },
   });
 
-  const requirementsNeedingDoc = await prisma.requirement.findMany({
-    where: {
-      productCountry: { product: { businessId: business?.id } },
-      type: 'document',
-    },
-  });
+  const requirementsNeedingDoc = business?.id
+    ? await prisma.requirement.findMany({
+        where: {
+          productCountry: { product: { businessId: business.id } },
+          type: 'document',
+        },
+      })
+    : [];
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-xs">
           <div>
@@ -227,7 +226,7 @@ export default async function DocumentsPage() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

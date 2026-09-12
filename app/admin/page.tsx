@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
-import Navbar from '@/components/Navbar';
-import { requireAuth, getAllUsers, updateRuleAction, deleteUserAction, verifyDocumentAction } from '@/app/actions';
+import AppShell from '@/components/AppShell';
+import { requireAuth, updateRuleAction, deleteUserAction, verifyDocumentAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { ShieldCheck, Sliders, FileText, AlertTriangle, Users, Ship, Trash2, CheckCircle2, XCircle, ExternalLink } from 'lucide-react';
 
@@ -12,8 +12,6 @@ export default async function AdminPage() {
   if (role !== 'ADMIN') {
     redirect('/dashboard');
   }
-
-  const allUsers = await getAllUsers();
 
   const rules = await prisma.rule.findMany({
     include: { category: true, country: true },
@@ -42,10 +40,8 @@ export default async function AdminPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         {/* Header */}
         <div className="bg-slate-900 text-white p-6 md:p-8 rounded-2xl border border-slate-800 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -316,7 +312,7 @@ export default async function AdminPage() {
             ))}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

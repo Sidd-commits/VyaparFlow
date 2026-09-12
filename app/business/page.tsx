@@ -1,33 +1,16 @@
 import React from 'react';
-import Navbar from '@/components/Navbar';
+import AppShell from '@/components/AppShell';
 import BusinessRegistrationsForm from '@/components/BusinessRegistrationsForm';
 import EditCompanyProfileModal from '@/components/EditCompanyProfileModal';
-import { requireAuth, getAllUsers, updateBusinessRegistrationsAction, verifyDocumentAction } from '@/app/actions';
+import { requireAuth, updateBusinessRegistrationsAction, verifyDocumentAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { Building2, MapPin, CheckCircle2, ShieldCheck, Upload, FileText, AlertTriangle, Clock, XCircle, Eye, Edit3 } from 'lucide-react';
 
 export default async function BusinessPage() {
   const { role, user } = await requireAuth();
-  const allUsers = await getAllUsers();
   
-  // If the logged-in user doesn't own a business (e.g. Admin or Provider),
-  // pick the primary demo MSME business so the page renders properly and actions don't fail.
-  let business = user?.businesses?.[0];
-  if (!business) {
-    business = await prisma.business.findFirst({
-      include: {
-        products: {
-          include: {
-            destinations: {
-              include: {
-                country: true,
-              },
-            },
-          },
-        },
-      },
-    }) as any;
-  }
+  // Scoped strictly to the logged in user's owned business
+  const business = user?.businesses?.[0];
 
   const gstDone = business?.gstStatus?.toLowerCase().includes('active') || business?.gstStatus?.toLowerCase().includes('verified');
   const iecDone = business?.iecStatus?.toLowerCase().includes('active') || business?.iecStatus?.toLowerCase().includes('verified');
@@ -82,10 +65,8 @@ export default async function BusinessPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         {/* Header */}
         <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -373,7 +354,7 @@ export default async function BusinessPage() {
             )}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

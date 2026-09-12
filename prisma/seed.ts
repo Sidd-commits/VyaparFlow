@@ -430,7 +430,7 @@ async function main() {
     },
   });
 
-  // Critical Blockers
+  // Critical Blockers for User A
   const reqPhyto = await prisma.requirement.create({
     data: {
       productCountryId: pcMangoUAE.id,
@@ -483,8 +483,85 @@ async function main() {
     },
   });
 
+  // Requirements for Konkan MSME (Turmeric -> USA)
+  console.log('Creating product-country requirements for Konkan MSME (User B)...');
+  const reqSpicesRcmc = await prisma.requirement.create({
+    data: {
+      productCountryId: pcTurmericUS.id,
+      type: 'document',
+      title: 'Spices Board Registration-cum-Membership Certificate (RCMC)',
+      priority: 'critical',
+      status: 'verified',
+      weight: 20,
+      completedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      reason: 'Mandatory Spices Board exporter registration certificate for spice consignments.',
+    },
+  });
+
+  const reqFdaPrior = await prisma.requirement.create({
+    data: {
+      productCountryId: pcTurmericUS.id,
+      type: 'document',
+      title: 'US FDA Prior Notice & Food Facility Registration',
+      priority: 'critical',
+      status: 'under_review',
+      weight: 25,
+      reason: 'Filing of FDA Prior Notice confirmation draft under evaluation before container loading.',
+    },
+  });
+
+  const reqUsdaOrganic = await prisma.requirement.create({
+    data: {
+      productCountryId: pcTurmericUS.id,
+      type: 'certification',
+      title: 'USDA NOP / NPOP Organic Equivalency Certificate',
+      priority: 'critical',
+      status: 'missing',
+      weight: 20,
+      reason: 'Accredited organic certification body assessment required for organic grade claim.',
+    },
+  });
+
+  const reqHeavyMetals = await prisma.requirement.create({
+    data: {
+      productCountryId: pcTurmericUS.id,
+      type: 'certification',
+      title: 'Heavy Metals & Pesticide Residue Analysis (NABL Lab)',
+      priority: 'high',
+      status: 'verified',
+      weight: 15,
+      completedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
+      reason: 'Certified laboratory analysis verifying lead & curcumin content compliance.',
+    },
+  });
+
+  const reqUsInvoice = await prisma.requirement.create({
+    data: {
+      productCountryId: pcTurmericUS.id,
+      type: 'document',
+      title: 'Commercial Export Invoice & Packing Breakdown',
+      priority: 'high',
+      status: 'verified',
+      weight: 10,
+      completedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      reason: 'Itemized commercial invoice with CIF New York valuation.',
+    },
+  });
+
+  const reqUsCoO = await prisma.requirement.create({
+    data: {
+      productCountryId: pcTurmericUS.id,
+      type: 'document',
+      title: 'Certificate of Origin (Non-Preferential)',
+      priority: 'high',
+      status: 'under_review',
+      weight: 10,
+      reason: 'Chamber of Commerce draft certificate pending review.',
+    },
+  });
+
   // 9. Documents
-  console.log('Creating sample uploaded documents...');
+  console.log('Creating sample uploaded documents for User A & User B...');
   await prisma.document.create({
     data: {
       businessId: palgharBusiness.id,
@@ -524,13 +601,58 @@ async function main() {
       size: 320000,
       issueDate: new Date('2026-03-01'),
       expiryDate: new Date('2027-03-01'),
-      status: 'under_review', // Pending Admin review!
+      status: 'under_review',
       notes: 'Uploaded draft CoO issued by Maharashtra Chamber of Commerce for evaluation.',
     },
   });
 
+  // Documents for User B (Konkan Spices)
+  await prisma.document.create({
+    data: {
+      businessId: konkanBusiness.id,
+      requirementId: reqSpicesRcmc.id,
+      type: 'SPICES_BOARD_RCMC',
+      storageKey: 'docs/spices_board_rcmc_konkan.pdf',
+      originalName: 'Spices_Board_RCMC_KonkanSpices.pdf',
+      mimeType: 'application/pdf',
+      size: 380000,
+      issueDate: new Date('2025-06-01'),
+      expiryDate: new Date('2028-05-31'),
+      status: 'verified',
+    },
+  });
+
+  await prisma.document.create({
+    data: {
+      businessId: konkanBusiness.id,
+      requirementId: reqHeavyMetals.id,
+      type: 'LAB_TEST_REPORT',
+      storageKey: 'docs/nabl_heavy_metals_turmeric.pdf',
+      originalName: 'NABL_Lab_Heavy_Metals_Assay_Report.pdf',
+      mimeType: 'application/pdf',
+      size: 490000,
+      issueDate: new Date('2026-02-15'),
+      status: 'verified',
+      notes: 'Curcumin 5.2% assay and heavy metals compliant with US FDA MRLs.',
+    },
+  });
+
+  await prisma.document.create({
+    data: {
+      businessId: konkanBusiness.id,
+      requirementId: reqFdaPrior.id,
+      type: 'FDA_PRIOR_NOTICE',
+      storageKey: 'docs/fda_prior_notice_draft_konkan.pdf',
+      originalName: 'FDA_Prior_Notice_Confirmation_Draft.pdf',
+      mimeType: 'application/pdf',
+      size: 260000,
+      status: 'under_review',
+      notes: 'Draft FDA Prior notice confirmation filed with US Customs border entry.',
+    },
+  });
+
   // 10. Packaging Items
-  console.log('Creating packaging checklist items...');
+  console.log('Creating packaging checklist items for User A & User B...');
   await prisma.packagingItem.create({
     data: {
       productCountryId: pcMangoUAE.id,
@@ -564,6 +686,43 @@ async function main() {
       mandatory: false,
       status: 'completed',
       notes: 'Wooden pallets stamped with ISPM-15 phytosanitary mark.',
+    },
+  });
+
+  // Packaging for User B (Konkan Spices)
+  await prisma.packagingItem.create({
+    data: {
+      productCountryId: pcTurmericUS.id,
+      title: 'US FDA Compliant English Nutrition & Ingredient Labeling',
+      type: 'labelling',
+      priority: 'high',
+      mandatory: true,
+      status: 'incomplete',
+      notes: 'Outer kraft bags must display FDA nutrition panel, net weight in lbs/kg, lot # and processor info.',
+    },
+  });
+
+  await prisma.packagingItem.create({
+    data: {
+      productCountryId: pcTurmericUS.id,
+      title: 'Multi-wall Kraft Bags with Inner Polyliner Moisture Barrier',
+      type: 'packaging',
+      priority: 'high',
+      mandatory: true,
+      status: 'completed',
+      notes: 'Inner 50-micron food-grade polyethylene liner sealed against ambient humidity.',
+    },
+  });
+
+  await prisma.packagingItem.create({
+    data: {
+      productCountryId: pcTurmericUS.id,
+      title: 'Heat-Treated ISPM-15 Wooden Pallets & Shrink Wrap',
+      type: 'packaging',
+      priority: 'medium',
+      mandatory: false,
+      status: 'completed',
+      notes: 'Pallets fumigated and heat-treated with certified ISPM-15 stamp.',
     },
   });
 
@@ -626,8 +785,8 @@ async function main() {
     },
   });
 
-  // 12. Active Demo Shipment for MSME
-  console.log('Creating active demo shipment...');
+  // 12. Active Demo Shipment for MSME User A
+  console.log('Creating active demo shipment for User A...');
   const activeShipment = await prisma.shipment.create({
     data: {
       shipmentNumber: 'SHP-2026-AE-001',
@@ -646,8 +805,8 @@ async function main() {
     },
   });
 
-  // 13. Seeded Quotes for active shipment
-  console.log('Creating logistics quotes...');
+  // 13. Seeded Quotes for User A active shipment
+  console.log('Creating logistics quotes for User A...');
   await prisma.quote.create({
     data: {
       shipmentId: activeShipment.id,
@@ -706,8 +865,78 @@ async function main() {
     },
   });
 
-  // 15. Historical Delivered Shipment (For demonstration of completed timeline & analytics)
-  console.log('Creating historical completed shipment...');
+  // Active Shipment for User B (Konkan Spices)
+  console.log('Creating active demo shipment for User B (Konkan Spices)...');
+  const activeShipmentUserB = await prisma.shipment.create({
+    data: {
+      shipmentNumber: 'SHP-2026-US-002',
+      businessId: konkanBusiness.id,
+      productId: productTurmeric.id,
+      destinationCountryId: usa.id,
+      destinationCity: 'New York (Port of Newark)',
+      value: 800000,
+      currency: 'INR',
+      quantity: 4, // 4 MT
+      weight: 4000, // 4,000 KG
+      packages: 160, // 160 bags
+      mode: 'Sea',
+      status: 'Preparation',
+      eta: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  await prisma.quote.create({
+    data: {
+      shipmentId: activeShipmentUserB.id,
+      providerId: providerFreight1.id,
+      mode: 'Sea Freight FCL (Dry Van 20ft)',
+      cost: 165000,
+      currency: 'INR',
+      transitMin: 22,
+      transitMax: 26,
+      inclusions: 'Port handling, JNPT customs documentation assistance, Bill of Lading filing',
+      exclusions: 'US Destination Customs Entry fee',
+      isSelected: true,
+    },
+  });
+
+  await prisma.quote.create({
+    data: {
+      shipmentId: activeShipmentUserB.id,
+      providerId: providerFreight3.id,
+      mode: 'Air Cargo Express',
+      cost: 340000,
+      currency: 'INR',
+      transitMin: 3,
+      transitMax: 5,
+      inclusions: 'Direct flight BOM -> JFK, Priority airport terminal handling',
+      exclusions: 'US FDA inspection fee',
+      isSelected: false,
+    },
+  });
+
+  // Tracking events for User B active shipment
+  await prisma.trackingEvent.createMany({
+    data: [
+      {
+        shipmentId: activeShipmentUserB.id,
+        status: 'Order Confirmed',
+        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        location: 'MIDC Ratnagiri Facility',
+        note: 'Export shipment order confirmed and packaging batch validated.',
+      },
+      {
+        shipmentId: activeShipmentUserB.id,
+        status: 'Preparation',
+        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+        location: 'Konkan Spices Processing Hub',
+        note: 'Spices Board RCMC verified and draft commercial invoice generated.',
+      },
+    ],
+  });
+
+  // 15. Historical Delivered Shipment for User A
+  console.log('Creating historical completed shipment for User A...');
   const completedShipment = await prisma.shipment.create({
     data: {
       shipmentNumber: 'SHP-2026-DE-088',
@@ -812,6 +1041,12 @@ async function main() {
         title: 'Logistics Quotes Generated',
         message: '3 logistics quotes are ready for comparison on shipment SHP-2026-AE-001.',
       },
+      {
+        userId: msmeUser2.id,
+        type: 'CRITICAL_ACTION',
+        title: 'FDA Prior Notice Required',
+        message: 'Your export consignment to USA requires FDA Prior notice verification before container loading.',
+      },
     ],
   });
 
@@ -830,8 +1065,9 @@ async function main() {
   ══════════════════════════════════════════════════════════
   🚀 VYAPARFLOW DEMO CREDENTIALS:
   ----------------------------------------------------------
-  • MSME Exporter          : msme@apex-exports.com / password123
-  • Service Provider       : provider@freight.com / password123
+  • MSME Exporter 1 (Agro) : msme@apex-exports.com / password123
+  • MSME Exporter 2 (Spice): msme2@konkan-spices.com / password123
+  • Service Provider (Freight): provider@freight.com / password123
   • Certification Lab      : lab@certify.com / password123
   • Customs CHA Agent      : cha@customs.com / password123
   • Admin Platform Operator: admin@vyaparflow.com / password123

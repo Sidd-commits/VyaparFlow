@@ -495,16 +495,35 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                   setPassword('password123');
                 }}
                 className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
-                  selectedRole === 'MSME'
+                  selectedRole === 'MSME' && email === 'msme@apex-exports.com'
                     ? 'border-orange-500 bg-slate-900 ring-1 ring-orange-500/50'
                     : 'border-slate-800 hover:border-orange-500/60 bg-slate-900/60 hover:bg-slate-900'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-white">MSME Exporter</span>
-                  <span className="text-[9px] bg-orange-500/20 text-orange-400 border border-orange-500/30 px-1.5 py-0.2 rounded font-bold">Agri / Food</span>
+                  <span className="font-bold text-xs text-white">MSME Exporter 1 (Agro)</span>
+                  <span className="text-[9px] bg-orange-500/20 text-orange-400 border border-orange-500/30 px-1.5 py-0.2 rounded font-bold">Mango &rarr; UAE</span>
                 </div>
                 <p className="text-[10px] text-slate-400 truncate mt-0.5">msme@apex-exports.com</p>
+              </div>
+
+              <div
+                onClick={() => {
+                  setSelectedRole('MSME');
+                  setEmail('msme2@konkan-spices.com');
+                  setPassword('password123');
+                }}
+                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                  selectedRole === 'MSME' && email === 'msme2@konkan-spices.com'
+                    ? 'border-orange-500 bg-slate-900 ring-1 ring-orange-500/50'
+                    : 'border-slate-800 hover:border-orange-500/60 bg-slate-900/60 hover:bg-slate-900'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-white">MSME Exporter 2 (Spices)</span>
+                  <span className="text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.2 rounded font-bold">Turmeric &rarr; USA</span>
+                </div>
+                <p className="text-[10px] text-slate-400 truncate mt-0.5">msme2@konkan-spices.com</p>
               </div>
 
               <div
@@ -571,7 +590,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                   setPassword('password123');
                 }}
                 className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
-                  selectedRole === 'ADMIN'
+                  selectedRole === 'ADMIN' && email === 'admin@vyaparflow.com'
                     ? 'border-amber-500 bg-slate-900 ring-1 ring-amber-500/50'
                     : 'border-slate-800 hover:border-amber-500/60 bg-slate-900/60 hover:bg-slate-900'
                 }`}

@@ -1,25 +1,24 @@
 import React from 'react';
-import Navbar from '@/components/Navbar';
-import { requireAuth, getAllUsers, updatePackagingItemAction } from '@/app/actions';
+import AppShell from '@/components/AppShell';
+import { requireAuth, updatePackagingItemAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { Box, CheckCircle2, AlertTriangle, Info, AlertOctagon } from 'lucide-react';
 
 export default async function PackagingPage() {
   const { role, user } = await requireAuth();
-  const allUsers = await getAllUsers();
   const business = user?.businesses[0];
   const product = business?.products[0];
   const destination = product?.destinations[0];
 
-  const items = await prisma.packagingItem.findMany({
-    where: { productCountryId: destination?.id },
-  });
+  const items = destination?.id
+    ? await prisma.packagingItem.findMany({
+        where: { productCountryId: destination.id },
+      })
+    : [];
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         {/* Header */}
         <div className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -100,7 +99,7 @@ export default async function PackagingPage() {
             ))}
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

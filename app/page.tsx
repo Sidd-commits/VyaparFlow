@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import HeroExportCockpit from '@/components/HeroExportCockpit';
 import ScrollStorySections from '@/components/ScrollStorySections';
-import { getActiveUser, getAllUsers } from '@/app/actions';
+import { getActiveUser } from '@/app/actions';
 import {
   Ship,
   ArrowRight,
@@ -21,13 +21,12 @@ import {
 
 export default async function LandingPage() {
   const { role, user } = await getActiveUser();
-  const allUsers = await getAllUsers();
   const isLoggedIn = Boolean(user && role);
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-slate-900 flex flex-col font-sans selection:bg-orange-100 selection:text-orange-900">
       {/* Top Navigation */}
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
+      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} />
 
       {/* ─────────────────────────────────────────────────────────────
           HERO SECTION — EDITORIAL NARRATIVE & EXPORT COMMAND CENTER

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import { requireAuth, getAllUsers } from '@/app/actions';
+import AppShell from '@/components/AppShell';
+import { requireAuth } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import {
   Truck,
@@ -23,11 +23,10 @@ import {
 export default async function ShipmentDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: shipmentId } = await params;
   const { role, user } = await requireAuth();
-  const allUsers = await getAllUsers();
 
   let shipment = null;
-  if (shipmentId && shipmentId !== 'demo' && shipmentId !== 'undefined') {
-    shipment = await prisma.shipment.findUnique({
+  if (shipmentId && shipmentId !== 'demo' && shipmentId !== 'latest' && shipmentId !== 'undefined') {
+    const fetched = await prisma.shipment.findUnique({
       where: { id: shipmentId },
       include: {
         business: true,
@@ -39,10 +38,13 @@ export default async function ShipmentDetailsPage({ params }: { params: Promise<
         documents: true,
       },
     });
-  }
 
-  // Fallback if demo id or specific id not found: load latest shipment for this user's business
-  if (!shipment && user?.businesses?.[0]?.id) {
+    // Enforce authorization for MSME role
+    if (fetched && (role !== 'MSME' || fetched.business.ownerUserId === user?.id)) {
+      shipment = fetched;
+    }
+  } else if ((shipmentId === 'demo' || shipmentId === 'latest') && user?.businesses?.[0]?.id) {
+    // Fallback ONLY if explicitly requested via 'demo' or 'latest' alias
     shipment = await prisma.shipment.findFirst({
       where: { businessId: user.businesses[0].id },
       include: {
@@ -60,9 +62,8 @@ export default async function ShipmentDetailsPage({ params }: { params: Promise<
 
   if (!shipment) {
     return (
-      <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-        <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-        <main className="max-w-4xl mx-auto px-4 py-16 text-center space-y-6">
+      <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
+        <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-6">
           <div className="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto shadow-xs">
             <Truck className="w-8 h-8" />
           </div>
@@ -84,8 +85,8 @@ export default async function ShipmentDetailsPage({ params }: { params: Promise<
               Return to Dashboard
             </Link>
           </div>
-        </main>
-      </div>
+        </div>
+      </AppShell>
     );
   }
 
@@ -93,10 +94,8 @@ export default async function ShipmentDetailsPage({ params }: { params: Promise<
   const latestTracking = shipment.trackingEvents[0];
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
           <Link
@@ -374,7 +373,7 @@ export default async function ShipmentDetailsPage({ params }: { params: Promise<
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

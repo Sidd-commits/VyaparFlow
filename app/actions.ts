@@ -58,13 +58,23 @@ export async function getActiveUser(): Promise<{
           where: { id: userIdVal },
           include: { 
             businesses: { 
+              where: { ownerUserId: userIdVal },
               include: { 
                 products: { 
                   include: { 
-                    destinations: { include: { country: true, requirements: true } } 
+                    destinations: { include: { country: true, requirements: { include: { rule: true, documents: true } }, packagingItems: true } } 
                   } 
                 },
-                shipments: true,
+                shipments: {
+                  include: {
+                    product: true,
+                    destinationCountry: true,
+                    quotes: { include: { provider: true } },
+                    trackingEvents: { orderBy: { timestamp: 'desc' } },
+                    providerTasks: true,
+                  },
+                  orderBy: { createdAt: 'desc' },
+                },
               } 
             },
             providers: true 
@@ -80,10 +90,19 @@ export async function getActiveUser(): Promise<{
               include: { 
                 products: { 
                   include: { 
-                    destinations: { include: { country: true, requirements: true } } 
+                    destinations: { include: { country: true, requirements: { include: { rule: true, documents: true } }, packagingItems: true } } 
                   } 
                 },
-                shipments: true,
+                shipments: {
+                  include: {
+                    product: true,
+                    destinationCountry: true,
+                    quotes: { include: { provider: true } },
+                    trackingEvents: { orderBy: { timestamp: 'desc' } },
+                    providerTasks: true,
+                  },
+                  orderBy: { createdAt: 'desc' },
+                },
               } 
             },
             providers: true 
@@ -132,13 +151,23 @@ export async function getActiveUser(): Promise<{
             where: { id: user.id },
             include: { 
               businesses: { 
+                where: { ownerUserId: user.id },
                 include: { 
                   products: { 
                     include: { 
-                      destinations: { include: { country: true, requirements: true } } 
+                      destinations: { include: { country: true, requirements: { include: { rule: true, documents: true } }, packagingItems: true } } 
                     } 
                   },
-                  shipments: true,
+                  shipments: {
+                    include: {
+                      product: true,
+                      destinationCountry: true,
+                      quotes: { include: { provider: true } },
+                      trackingEvents: { orderBy: { timestamp: 'desc' } },
+                      providerTasks: true,
+                    },
+                    orderBy: { createdAt: 'desc' },
+                  },
                 } 
               },
               providers: true 
@@ -159,13 +188,23 @@ export async function getActiveUser(): Promise<{
             where: { id: user.id },
             include: { 
               businesses: { 
+                where: { ownerUserId: user.id },
                 include: { 
                   products: { 
                     include: { 
-                      destinations: { include: { country: true, requirements: true } } 
+                      destinations: { include: { country: true, requirements: { include: { rule: true, documents: true } }, packagingItems: true } } 
                     } 
                   },
-                  shipments: true,
+                  shipments: {
+                    include: {
+                      product: true,
+                      destinationCountry: true,
+                      quotes: { include: { provider: true } },
+                      trackingEvents: { orderBy: { timestamp: 'desc' } },
+                      providerTasks: true,
+                    },
+                    orderBy: { createdAt: 'desc' },
+                  },
                 } 
               },
               providers: true 
@@ -178,7 +217,11 @@ export async function getActiveUser(): Promise<{
     }
 
     return { user: null, role: null };
-  } catch (error) {
+  } catch (error: any) {
+    // Next.js dynamic server usage error should be rethrown
+    if (error?.digest === 'DYNAMIC_SERVER_USAGE') {
+      throw error;
+    }
     console.error('Error fetching active user:', error);
     return { user: null, role: null };
   }
@@ -197,10 +240,10 @@ export async function requireAuth(): Promise<{
 
 export async function logoutUserAction(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.delete(USER_ID_COOKIE);
-  cookieStore.delete(PERSONA_COOKIE);
-  cookieStore.delete(USER_EMAIL_COOKIE);
-  cookieStore.delete(USER_NAME_COOKIE);
+  cookieStore.set(USER_ID_COOKIE, '', { path: '/', maxAge: 0, expires: new Date(0) });
+  cookieStore.set(PERSONA_COOKIE, '', { path: '/', maxAge: 0, expires: new Date(0) });
+  cookieStore.set(USER_EMAIL_COOKIE, '', { path: '/', maxAge: 0, expires: new Date(0) });
+  cookieStore.set(USER_NAME_COOKIE, '', { path: '/', maxAge: 0, expires: new Date(0) });
   revalidatePath('/', 'layout');
   redirect('/login');
 }
@@ -569,10 +612,14 @@ export async function registerUserAction(formData: FormData): Promise<void> {
     }
 
     const cookieStore = await cookies();
-    cookieStore.set(USER_ID_COOKIE, existing.id, { path: '/' });
-    cookieStore.set(PERSONA_COOKIE, role || existing.role, { path: '/' });
+    cookieStore.set(USER_ID_COOKIE, existing.id, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
+    cookieStore.set(PERSONA_COOKIE, role || existing.role, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
+    cookieStore.set(USER_EMAIL_COOKIE, existing.email, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
+    cookieStore.set(USER_NAME_COOKIE, encodeURIComponent(existing.name), { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
     revalidatePath('/', 'layout');
-    redirect('/dashboard');
+    if ((role || existing.role) === 'PROVIDER') redirect('/provider');
+    else if ((role || existing.role) === 'ADMIN') redirect('/admin');
+    else redirect('/dashboard');
   }
 
   if (role === 'MSME') {
@@ -623,8 +670,10 @@ export async function registerUserAction(formData: FormData): Promise<void> {
 
     if (fallbackUser) {
       const cookieStore = await cookies();
-      cookieStore.set(USER_ID_COOKIE, fallbackUser.id, { path: '/' });
-      cookieStore.set(PERSONA_COOKIE, fallbackUser.role, { path: '/' });
+      cookieStore.set(USER_ID_COOKIE, fallbackUser.id, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
+      cookieStore.set(PERSONA_COOKIE, fallbackUser.role, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
+      cookieStore.set(USER_EMAIL_COOKIE, fallbackUser.email, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
+      cookieStore.set(USER_NAME_COOKIE, encodeURIComponent(fallbackUser.name), { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
       revalidatePath('/', 'layout');
       if (fallbackUser.role === 'PROVIDER') redirect('/provider');
       else if (fallbackUser.role === 'ADMIN') redirect('/admin');
@@ -997,11 +1046,22 @@ export async function getAllUsers(): Promise<Array<{
 }
 
 export async function updateBusinessRegistrationsAction(formData: FormData): Promise<void> {
-  const businessId = formData.get('businessId') as string;
-  const gstNumber = formData.get('gstNumber') as string;
-  const iecCode = formData.get('iecCode') as string;
+  const { user } = await getActiveUser();
+  if (!user) {
+    throw new Error('Unauthorized: Please sign in to update business registrations.');
+  }
+
+  const requestedBusinessId = (formData.get('businessId') as string)?.trim();
+  const gstNumber = (formData.get('gstNumber') as string)?.trim();
+  const iecCode = (formData.get('iecCode') as string)?.trim();
   const gstFile = formData.get('gstFile') as File | null;
   const iecFile = formData.get('iecFile') as File | null;
+
+  // Resolve target business strictly owned by authenticated user
+  const targetBusiness = (user.businesses && user.businesses.find((b: any) => b.id === requestedBusinessId)) || user.businesses?.[0];
+  if (!targetBusiness) {
+    throw new Error('No MSME business record found for authenticated user.');
+  }
 
   const updateData: any = {};
   if (gstNumber) {
@@ -1017,43 +1077,13 @@ export async function updateBusinessRegistrationsAction(formData: FormData): Pro
     updateData.profileCompletion = 60;
   }
 
-  let targetBusinessId = businessId;
-
-  // If businessId is missing or empty, try to resolve from active user or fallback business
-  if (!targetBusinessId) {
-    const { user } = await getActiveUser();
-    if (user?.businesses?.[0]?.id) {
-      targetBusinessId = user.businesses[0].id;
-    } else {
-      const fallbackBiz = await prisma.business.findFirst();
-      if (fallbackBiz) targetBusinessId = fallbackBiz.id;
-    }
-  }
-
-  if (!targetBusinessId) {
-    throw new Error('No business record found to update. Please register or select an MSME business account.');
-  }
-
-  const existingBiz = await prisma.business.findUnique({
-    where: { id: targetBusinessId },
-  });
-
-  if (!existingBiz) {
-    const fallbackBiz = await prisma.business.findFirst();
-    if (fallbackBiz) {
-      targetBusinessId = fallbackBiz.id;
-    } else {
-      throw new Error(`Business record '${targetBusinessId}' was not found in the database.`);
-    }
-  }
-
   await prisma.business.update({
-    where: { id: targetBusinessId },
+    where: { id: targetBusiness.id },
     data: updateData,
   });
 
   const business = await prisma.business.findUnique({
-    where: { id: targetBusinessId },
+    where: { id: targetBusiness.id },
     include: { products: { include: { destinations: { include: { requirements: true } } } } },
   });
 
@@ -1071,7 +1101,7 @@ export async function updateBusinessRegistrationsAction(formData: FormData): Pro
 
             await prisma.document.create({
               data: {
-                businessId: targetBusinessId,
+                businessId: targetBusiness.id,
                 requirementId: req.id,
                 type: 'GST_CERTIFICATE',
                 storageKey: gstSaved?.storageKey || `uploads/gst_${Date.now()}.pdf`,
@@ -1094,7 +1124,7 @@ export async function updateBusinessRegistrationsAction(formData: FormData): Pro
 
             await prisma.document.create({
               data: {
-                businessId: targetBusinessId,
+                businessId: targetBusiness.id,
                 requirementId: req.id,
                 type: 'IEC_CERTIFICATE',
                 storageKey: iecSaved?.storageKey || `uploads/iec_${Date.now()}.pdf`,
@@ -1134,27 +1164,20 @@ export async function updateCompanyProfileAction(formData: FormData): Promise<{ 
     return { success: false, error: 'Legal Entity Name is required.' };
   }
 
-  // Authorization check
   const { user } = await getActiveUser();
   if (!user) {
     return { success: false, error: 'Authentication required to update company profile.' };
   }
 
   let targetBusinessId = businessId;
-  if (!targetBusinessId) {
-    if (user.businesses && user.businesses.length > 0) {
-      targetBusinessId = user.businesses[0].id;
-    } else {
-      const fallbackBiz = await prisma.business.findFirst();
-      if (fallbackBiz) targetBusinessId = fallbackBiz.id;
-    }
+  if (!targetBusinessId && user.businesses && user.businesses.length > 0) {
+    targetBusinessId = user.businesses[0].id;
   }
 
   if (!targetBusinessId) {
     return { success: false, error: 'No business profile found to update.' };
   }
 
-  // Ensure user owns this business or is Admin
   const existingBiz = await prisma.business.findUnique({
     where: { id: targetBusinessId },
   });
@@ -1163,12 +1186,9 @@ export async function updateCompanyProfileAction(formData: FormData): Promise<{ 
     return { success: false, error: 'Business profile not found in database.' };
   }
 
+  // Authorization check: User must own this business or be ADMIN
   if (user.role !== 'ADMIN' && existingBiz.ownerUserId !== user.id) {
-    // If not matching directly, check if it's the user's primary business
-    const userOwnsAny = user.businesses?.some((b: any) => b.id === targetBusinessId);
-    if (!userOwnsAny && user.role !== 'ADMIN') {
-      return { success: false, error: 'Unauthorized to modify this company profile.' };
-    }
+    return { success: false, error: 'Unauthorized: You do not have permission to modify this company profile.' };
   }
 
   await prisma.business.update({

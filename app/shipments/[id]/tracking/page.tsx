@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import { requireAuth, getAllUsers, addTrackingEventAction } from '@/app/actions';
+import AppShell from '@/components/AppShell';
+import { requireAuth, addTrackingEventAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import {
   MapPin,
@@ -19,11 +19,11 @@ import {
 export default async function TrackingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: shipmentId } = await params;
   const { role, user } = await requireAuth();
-  const allUsers = await getAllUsers();
 
   const shipment = await prisma.shipment.findUnique({
     where: { id: shipmentId },
     include: {
+      business: true,
       product: true,
       destinationCountry: true,
       trackingEvents: { orderBy: { timestamp: 'desc' } },
@@ -31,14 +31,17 @@ export default async function TrackingPage({ params }: { params: Promise<{ id: s
     },
   });
 
-  if (!shipment) {
+  if (!shipment || (role === 'MSME' && shipment.business.ownerUserId !== user?.id)) {
     return (
-      <div className="min-h-screen bg-[#FAF9F6] p-8 text-center">
-        <h2 className="text-xl font-bold">Shipment Not Found</h2>
-        <Link href="/shipments" className="text-orange-600 underline mt-4 inline-block">
-          Return to Shipments
-        </Link>
-      </div>
+      <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
+        <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
+          <h2 className="text-xl font-bold font-serif text-slate-900">Shipment Not Found</h2>
+          <p className="text-xs text-slate-600">The requested shipment tracking record was not found or you are not authorized to view it.</p>
+          <Link href="/shipments" className="text-xs font-bold text-orange-600 underline mt-2 inline-block">
+            Return to Shipments
+          </Link>
+        </div>
+      </AppShell>
     );
   }
 
@@ -60,10 +63,8 @@ export default async function TrackingPage({ params }: { params: Promise<{ id: s
   ];
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] text-slate-900 pb-16 font-sans">
-      <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} allUsers={allUsers} />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
         <Link href="/shipments" className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900">
           <ArrowLeft className="w-4 h-4" /> Back to Shipments
         </Link>
@@ -227,7 +228,7 @@ export default async function TrackingPage({ params }: { params: Promise<{ id: s
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }
