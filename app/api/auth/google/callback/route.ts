@@ -6,6 +6,7 @@ import {
   USER_EMAIL_COOKIE,
   USER_NAME_COOKIE,
 } from '@/lib/authCookies';
+import { isPlatformAdmin, getPlatformAdminEmail } from '@/lib/authGuards';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -97,13 +98,13 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Parse state parameter if present for preferred role
+    // Parse state parameter if present for preferred role (never allow ADMIN via state)
     const stateParam = searchParams.get('state');
-    let preferredRole: 'MSME' | 'PROVIDER' | 'ADMIN' = 'MSME';
+    let preferredRole: 'MSME' | 'PROVIDER' = 'MSME';
     if (stateParam) {
       try {
         const parsed = JSON.parse(decodeURIComponent(stateParam));
-        if (parsed.role && ['MSME', 'PROVIDER', 'ADMIN'].includes(parsed.role)) {
+        if (parsed.role && (parsed.role === 'MSME' || parsed.role === 'PROVIDER')) {
           preferredRole = parsed.role;
         }
       } catch {
@@ -112,12 +113,15 @@ export async function GET(request: NextRequest) {
     }
 
     if (!user) {
-      // Determine role from preferred role or email hint
-      const role = email.includes('admin')
+      // Determine role: Only the server-configured ADMIN_EMAIL can ever be created as ADMIN
+      const isAdminEmail = email === getPlatformAdminEmail();
+      const isProviderEmail = email.includes('provider') || email.includes('freight') || email.includes('lab') || email.includes('cha');
+      
+      const role = isAdminEmail
         ? 'ADMIN'
-        : email.includes('provider') || email.includes('freight') || email.includes('lab') || email.includes('cha')
+        : isProviderEmail || preferredRole === 'PROVIDER'
         ? 'PROVIDER'
-        : preferredRole;
+        : 'MSME';
 
       user = await prisma.user.create({
         data: {
@@ -144,8 +148,6 @@ export async function GET(request: NextRequest) {
           providers: true,
         },
       });
-
-      // Role-specific setup if needed (MSME will complete real onboarding in wizard)
     } else {
       // Update avatar if not present
       if (picture && !user.avatar) {
@@ -156,12 +158,16 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Determine authorized persona safely
+    const isAuthorizedAdmin = isPlatformAdmin(user);
+    const effectiveRole = isAuthorizedAdmin ? 'ADMIN' : (user.role === 'PROVIDER' ? 'PROVIDER' : 'MSME');
+
     // 4. Set Session Cookies & Redirect
     const targetUrl =
-      user.role === 'PROVIDER'
-        ? '/provider'
-        : user.role === 'ADMIN'
+      isAuthorizedAdmin
         ? '/admin'
+        : effectiveRole === 'PROVIDER'
+        ? '/provider'
         : (user.businesses && user.businesses.length > 0)
         ? '/dashboard'
         : '/onboarding';
@@ -173,7 +179,7 @@ export async function GET(request: NextRequest) {
       sameSite: 'lax',
       maxAge: 60 * 60 * 24 * 30, // 30 days
     });
-    response.cookies.set(PERSONA_COOKIE, user.role, {
+    response.cookies.set(PERSONA_COOKIE, effectiveRole, {
       path: '/',
       httpOnly: false,
       sameSite: 'lax',

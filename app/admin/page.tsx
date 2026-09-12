@@ -5,11 +5,16 @@ import { requireAuth, updateRuleAction, deleteUserAction, verifyDocumentAction }
 import { prisma } from '@/lib/prisma';
 import { ShieldCheck, Sliders, FileText, AlertTriangle, Users, Ship, Trash2, CheckCircle2, XCircle, ExternalLink } from 'lucide-react';
 
+import { isPlatformAdmin } from '@/lib/authGuards';
+
 export default async function AdminPage() {
   const { role, user } = await requireAuth();
 
-  // Enforce strict Role-Based Access Control
-  if (role !== 'ADMIN') {
+  // Enforce strict Platform Administrator Server-Side Access Control
+  if (role !== 'ADMIN' || !isPlatformAdmin(user)) {
+    if (role === 'PROVIDER' || user?.role === 'PROVIDER') {
+      redirect('/provider');
+    }
     redirect('/dashboard');
   }
 

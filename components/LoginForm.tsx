@@ -106,7 +106,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const searchParams = useSearchParams();
   const errorCode = searchParams.get('error');
 
-  const [selectedRole, setSelectedRole] = useState<'MSME' | 'PROVIDER' | 'ADMIN'>('MSME');
+  const [selectedRole, setSelectedRole] = useState<'MSME' | 'PROVIDER'>('MSME');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -120,7 +120,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
 
   const handleSelectEmail = (targetEmail: string, roleHint?: 'MSME' | 'PROVIDER' | 'ADMIN') => {
     setEmail(targetEmail);
-    if (roleHint) {
+    if (roleHint && (roleHint === 'MSME' || roleHint === 'PROVIDER')) {
       setSelectedRole(roleHint);
     }
     const pwdInput = document.getElementById('password-input') as HTMLInputElement;
@@ -185,7 +185,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
             Select Portal to Sign Into:
           </label>
-          <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200">
+          <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200">
             <button
               type="button"
               onClick={() => setSelectedRole('MSME')}
@@ -196,7 +196,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               }`}
             >
               <span className="text-sm">🏢</span>
-              <span className="truncate">MSME</span>
+              <span className="truncate">MSME Exporter</span>
             </button>
 
             <button
@@ -209,20 +209,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               }`}
             >
               <span className="text-sm">🚢</span>
-              <span className="truncate">Provider</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setSelectedRole('ADMIN')}
-              className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                selectedRole === 'ADMIN'
-                  ? 'bg-slate-900 text-orange-400 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
-              }`}
-            >
-              <span className="text-sm">🛡️</span>
-              <span className="truncate">Admin</span>
+              <span className="truncate">Service Provider</span>
             </button>
           </div>
 
@@ -231,24 +218,16 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             className={`p-2.5 rounded-xl border text-[11px] leading-relaxed transition-all ${
               selectedRole === 'MSME'
                 ? 'bg-orange-50/70 border-orange-200/80 text-orange-950'
-                : selectedRole === 'PROVIDER'
-                ? 'bg-blue-50/70 border-blue-200/80 text-blue-950'
-                : 'bg-slate-900 text-slate-200 border-slate-800'
+                : 'bg-blue-50/70 border-blue-200/80 text-blue-950'
             }`}
           >
-            {selectedRole === 'MSME' && (
+            {selectedRole === 'MSME' ? (
               <p>
                 <strong>🏢 Exporter Command Center:</strong> Access factory export readiness, documents, and carrier quotes.
               </p>
-            )}
-            {selectedRole === 'PROVIDER' && (
+            ) : (
               <p>
                 <strong>🚢 Service Provider Desk:</strong> Fulfill freight forwarder bids, quarantine testing, and customs CHA filings.
-              </p>
-            )}
-            {selectedRole === 'ADMIN' && (
-              <p>
-                <strong>🛡️ Platform Admin Operator:</strong> Manage deterministic rules, compliance requirements, and audit logs.
               </p>
             )}
           </div>
@@ -261,14 +240,12 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             className={`w-full py-3.5 px-4 rounded-2xl border-2 transition-all flex items-center justify-center gap-3 shadow-xs hover:shadow-md hover:-translate-y-0.5 cursor-pointer group ${
               selectedRole === 'PROVIDER'
                 ? 'border-slate-200 hover:border-blue-500 bg-white hover:bg-blue-50/20 text-slate-800 font-bold text-sm'
-                : selectedRole === 'ADMIN'
-                ? 'border-slate-200 hover:border-slate-800 bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm'
                 : 'border-slate-200 hover:border-orange-500 bg-white hover:bg-orange-50/20 text-slate-800 font-bold text-sm'
             }`}
           >
             <GoogleIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
             <span>
-              Continue with Google (as {selectedRole === 'PROVIDER' ? 'Provider' : selectedRole === 'ADMIN' ? 'Admin' : 'MSME'})
+              Continue with Google (as {selectedRole === 'PROVIDER' ? 'Service Provider' : 'MSME Exporter'})
             </span>
           </a>
           <p className="text-[11px] text-center text-slate-500 font-medium">
@@ -297,8 +274,6 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               <span className="text-[10px] text-slate-500 font-medium">
                 {selectedRole === 'PROVIDER'
                   ? 'e.g. quotes@freightcorp.com'
-                  : selectedRole === 'ADMIN'
-                  ? 'e.g. admin@vyaparflow.com'
                   : 'e.g. ramesh@exportco.com'}
               </span>
             </div>
@@ -313,8 +288,6 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 placeholder={
                   selectedRole === 'PROVIDER'
                     ? 'Enter service provider email address'
-                    : selectedRole === 'ADMIN'
-                    ? 'Enter admin email address'
                     : 'Enter registered exporter email address'
                 }
                 className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 text-xs transition-all outline-none"
@@ -359,8 +332,6 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             className={`w-full py-3.5 rounded-xl font-bold text-sm text-white shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 disabled:opacity-60 ${
               selectedRole === 'PROVIDER'
                 ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/30 hover:shadow-blue-600/40'
-                : selectedRole === 'ADMIN'
-                ? 'bg-slate-900 hover:bg-slate-800 shadow-slate-900/30'
                 : 'bg-linear-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 shadow-orange-600/30 hover:shadow-orange-600/40'
             }`}
           >
@@ -374,8 +345,6 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 <span>
                   {selectedRole === 'PROVIDER'
                     ? 'Sign In to Service Provider Portal'
-                    : selectedRole === 'ADMIN'
-                    ? 'Sign In to Admin Operations Console'
                     : 'Sign In to Exporter Dashboard'}
                 </span>
                 <ArrowRight className="w-4 h-4" />
@@ -436,17 +405,6 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                   Register as Service Provider →
                 </button>
               </>
-            ) : selectedRole === 'ADMIN' ? (
-              <>
-                Need new platform operator access?{' '}
-                <button
-                  type="button"
-                  onClick={onSwitchToRegister}
-                  className="text-slate-900 font-bold hover:underline cursor-pointer"
-                >
-                  Register Admin Account →
-                </button>
-              </>
             ) : (
               <>
                 Don&apos;t have an exporter account yet?{' '}
@@ -485,7 +443,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         {showHelperAccounts && (
           <div className="p-4 pt-1 border-t border-slate-800 bg-slate-950/60 space-y-2 text-xs animate-in fade-in duration-150">
             <p className="text-[11px] text-slate-400">
-              Click any account below to auto-fill its credentials. Password for all test accounts is <code className="bg-slate-800 px-1.5 py-0.5 rounded font-mono text-orange-300 font-bold border border-slate-700">password123</code>:
+              Click any account below to auto-fill its credentials. Password for test accounts is <code className="bg-slate-800 px-1.5 py-0.5 rounded font-mono text-orange-300 font-bold border border-slate-700">password123</code>:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
               <div
@@ -581,25 +539,6 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                   <span className="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded font-bold">Customs CHA</span>
                 </div>
                 <p className="text-[10px] text-slate-400 truncate mt-0.5">cha@customs.com</p>
-              </div>
-
-              <div
-                onClick={() => {
-                  setSelectedRole('ADMIN');
-                  setEmail('admin@vyaparflow.com');
-                  setPassword('password123');
-                }}
-                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
-                  selectedRole === 'ADMIN' && email === 'admin@vyaparflow.com'
-                    ? 'border-amber-500 bg-slate-900 ring-1 ring-amber-500/50'
-                    : 'border-slate-800 hover:border-amber-500/60 bg-slate-900/60 hover:bg-slate-900'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-white">Platform Admin</span>
-                  <span className="text-[9px] bg-slate-800 text-orange-400 border border-slate-700 px-1.5 py-0.2 rounded font-bold">HQ Operations</span>
-                </div>
-                <p className="text-[10px] text-slate-400 truncate mt-0.5">admin@vyaparflow.com</p>
               </div>
             </div>
           </div>

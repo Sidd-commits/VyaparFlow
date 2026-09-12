@@ -21,6 +21,8 @@ import {
   USER_EMAIL_COOKIE,
   USER_NAME_COOKIE,
 } from '@/lib/authCookies';
+import { hashPassword, verifyPassword } from '@/lib/crypto';
+import { isPlatformAdmin, requireAdmin, getPlatformAdminEmail } from '@/lib/authGuards';
 
 async function saveFileLocally(file: File | null, prefix: string): Promise<{ storageKey: string, size: number, name: string } | null> {
   if (!file || file.size === 0) return null;
@@ -113,7 +115,9 @@ export async function getActiveUser(): Promise<{
       if (!user && (userEmailVal || userIdVal)) {
         const email = userEmailVal || `user_${userIdVal?.slice(0, 8)}@vyaparflow.app`;
         const name = userNameVal || email.split('@')[0];
-        const role = personaVal || 'MSME';
+        // NEVER auto-assign ADMIN for unregistered or synced sessions
+        const isLegitAdmin = email.toLowerCase().trim() === getPlatformAdminEmail();
+        const role = isLegitAdmin ? 'ADMIN' : personaVal === 'PROVIDER' ? 'PROVIDER' : 'MSME';
 
         try {
           user = await prisma.user.create({
@@ -174,7 +178,12 @@ export async function getActiveUser(): Promise<{
       }
 
       if (user) {
-        const activeRole = (user.role || personaVal || 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN';
+        // Enforce server authority: User receives ADMIN role ONLY if verified by isPlatformAdmin
+        const activeRole: 'MSME' | 'PROVIDER' | 'ADMIN' = isPlatformAdmin(user)
+          ? 'ADMIN'
+          : user.role === 'PROVIDER'
+          ? 'PROVIDER'
+          : 'MSME';
         return { user, role: activeRole };
       }
     }
@@ -312,9 +321,9 @@ export async function verifyDocumentAction(
 ): Promise<void> {
   const { user, role } = await getActiveUser();
 
-  // Strict Server-Side Role Authorization: Exporters cannot self-approve
-  if (!user || (role !== 'PROVIDER' && role !== 'ADMIN')) {
-    throw new Error('Unauthorized: Exporters cannot self-verify compliance documents. Verification must be performed by an authorized partner or administrator.');
+  // Strict Server-Side Role Authorization: Only verified Platform Admin OR an authorized Provider can review
+  if (!user || (role !== 'PROVIDER' && !isPlatformAdmin(user))) {
+    throw new Error('Unauthorized: Verification must be performed by an authorized partner or the Platform Administrator.');
   }
 
   // Mandatory rejection reason check
@@ -635,6 +644,13 @@ export async function addTrackingEventAction(shipmentId: string, status: string,
 }
 
 export async function updateRuleAction(ruleId: string, data: { priority?: string; weight?: number; blocksDispatch?: boolean; active?: boolean }): Promise<void> {
+  const { user } = await requireAdmin();
+
+  const existingRule = await prisma.rule.findUnique({ where: { id: ruleId } });
+  if (!existingRule) {
+    throw new Error('Compliance rule not found.');
+  }
+
   await prisma.rule.update({
     where: { id: ruleId },
     data: {
@@ -642,8 +658,21 @@ export async function updateRuleAction(ruleId: string, data: { priority?: string
       version: { increment: 1 },
     },
   });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      entityType: 'Rule',
+      entityId: ruleId,
+      action: 'UPDATE_COMPLIANCE_RULE',
+      oldValueJson: JSON.stringify({ priority: existingRule.priority, weight: existingRule.weight, active: existingRule.active }),
+      newValueJson: JSON.stringify(data),
+    },
+  });
+
   revalidatePath('/admin');
   revalidatePath('/dashboard');
+  revalidatePath('/readiness');
 }
 
 export async function registerUserAction(formData: FormData): Promise<void> {
@@ -651,7 +680,14 @@ export async function registerUserAction(formData: FormData): Promise<void> {
   const rawEmail = ((formData.get('email') as string) || '').trim();
   const email = rawEmail.toLowerCase();
   const password = (formData.get('password') as string) || '';
-  const role = ((formData.get('role') as string) || 'MSME').trim() as 'MSME' | 'PROVIDER' | 'ADMIN';
+  const requestedRole = ((formData.get('role') as string) || 'MSME').trim();
+
+  // P0 SECURITY GUARD: Public registration can NEVER create an ADMIN account
+  if (requestedRole === 'ADMIN' || requestedRole.toLowerCase().includes('admin')) {
+    redirect('/login?tab=register&error=invalid_role');
+  }
+
+  const role: 'MSME' | 'PROVIDER' = requestedRole === 'PROVIDER' ? 'PROVIDER' : 'MSME';
 
   if (!name) {
     redirect('/login?tab=register&error=name_required');
@@ -677,12 +713,15 @@ export async function registerUserAction(formData: FormData): Promise<void> {
     redirect('/login?tab=register&error=email_exists');
   }
 
-  // Create new user account
+  // Cryptographically hash password
+  const passwordHash = hashPassword(password);
+
+  // Create new user account with strictly sanitized role
   const newUser = await prisma.user.create({
     data: {
       name,
       email,
-      passwordHash: password,
+      passwordHash,
       role,
       ...(role === 'PROVIDER'
         ? {
@@ -710,8 +749,6 @@ export async function registerUserAction(formData: FormData): Promise<void> {
   // Jump to appropriate flow based on user's registered role
   if (newUser.role === 'PROVIDER') {
     redirect('/provider');
-  } else if (newUser.role === 'ADMIN') {
-    redirect('/admin');
   } else {
     redirect('/onboarding');
   }
@@ -721,7 +758,6 @@ export async function loginUserAction(formData: FormData): Promise<void> {
   const rawEmail = ((formData.get('email') as string) || '').trim();
   const email = rawEmail.toLowerCase();
   const password = (formData.get('password') as string) || '';
-  const preferredRole = (formData.get('preferredRole') as string)?.trim() as 'MSME' | 'PROVIDER' | 'ADMIN' | undefined;
 
   if (!email) {
     redirect('/login?error=email_required');
@@ -749,36 +785,18 @@ export async function loginUserAction(formData: FormData): Promise<void> {
     redirect('/login?error=use_google_signin');
   }
 
-  // Verify password (allows user's actual password or default password123 for pre-seeded test accounts)
-  const isMatch = user.passwordHash === password || (user.passwordHash === 'password123' && password === 'password123');
+  // Cryptographic password verification
+  const isMatch = verifyPassword(password, user.passwordHash);
   if (!isMatch) {
     redirect('/login?error=invalid_password');
   }
 
-  // If the user selected a specific portal (e.g. PROVIDER or ADMIN) and is permitted, update role
-  let activeRole = user.role;
-  if (preferredRole && preferredRole !== user.role) {
-    // If logging into PROVIDER portal and has no provider profile, ensure one is provisioned
-    if (preferredRole === 'PROVIDER') {
-      const existingProvider = await prisma.provider.findFirst({ where: { userId: user.id } });
-      if (!existingProvider) {
-        await prisma.provider.create({
-          data: {
-            userId: user.id,
-            name: `${user.name} Logistics & Trade Services`,
-            type: 'FREIGHT',
-            serviceArea: 'Pan-India & Global Corridors',
-            contactEmail: user.email,
-          },
-        });
-      }
-    }
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { role: preferredRole },
-    });
-    activeRole = preferredRole;
-  }
+  // Enforce server authority: activeRole is derived strictly from verified database state & isPlatformAdmin
+  const activeRole: 'MSME' | 'PROVIDER' | 'ADMIN' = isPlatformAdmin(user)
+    ? 'ADMIN'
+    : user.role === 'PROVIDER'
+    ? 'PROVIDER'
+    : 'MSME';
 
   const cookieStore = await cookies();
   cookieStore.set(USER_ID_COOKIE, user.id, {
@@ -817,8 +835,33 @@ export async function loginUserAction(formData: FormData): Promise<void> {
 }
 
 export async function deleteUserAction(userId: string): Promise<void> {
+  const { user } = await requireAdmin();
+
+  if (userId === user.id) {
+    throw new Error('Cannot delete the active Platform Administrator account.');
+  }
+
+  const targetUser = await prisma.user.findUnique({ where: { id: userId } });
+  if (!targetUser) {
+    throw new Error('User not found.');
+  }
+
+  if (isPlatformAdmin(targetUser)) {
+    throw new Error('Cannot delete a Platform Administrator account.');
+  }
+
   await prisma.user.delete({
     where: { id: userId },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      entityType: 'User',
+      entityId: userId,
+      action: 'DELETE_USER',
+      oldValueJson: JSON.stringify({ email: targetUser.email, role: targetUser.role }),
+    },
   });
 
   revalidatePath('/admin');
@@ -832,6 +875,7 @@ export async function getAllUsers(): Promise<Array<{
   role: 'MSME' | 'PROVIDER' | 'ADMIN';
   displayName: string;
 }>> {
+  await requireAdmin();
   try {
     const users = await prisma.user.findMany({
       include: {
@@ -845,7 +889,7 @@ export async function getAllUsers(): Promise<Array<{
       id: u.id,
       name: u.name,
       email: u.email,
-      role: u.role as 'MSME' | 'PROVIDER' | 'ADMIN',
+      role: (isPlatformAdmin(u) ? 'ADMIN' : u.role === 'PROVIDER' ? 'PROVIDER' : 'MSME') as 'MSME' | 'PROVIDER' | 'ADMIN',
       displayName: u.businesses[0]?.displayName || u.providers[0]?.name || u.name,
     }));
   } catch (error) {

@@ -30,13 +30,15 @@ prisma/*.db-journal
 public/uploads/*
 !public/uploads/.gitkeep
 
-# Environment Files
+# Environment Files & Local Secrets (NEVER committed to Git)
 .env
 .env*.local
 .env.development
 .env.test
 .env.production
 !.env.example
+*.local
+.secrets*
 
 # IDE & Editor Settings
 .vscode/

@@ -3,6 +3,8 @@ import { runDestinationSwitcherTest } from './integration/destination_switcher.t
 import { runLiveDestinationE2ETest } from './e2e/live_destination_e2e.test';
 import { runServerActionE2ETest } from './e2e/server_action_e2e.test';
 import { runTenantIsolationE2ETest } from './e2e/tenant_isolation_e2e.test';
+import { runAdminAuthorizationSecurityTests } from './security/admin_authorization.test';
+import { runHttpRouteProtectionTests } from './integration/http_route_protection.test';
 
 async function main() {
   console.log('\n================================================================');
@@ -12,13 +14,18 @@ async function main() {
   const startTime = Date.now();
 
   try {
-    // 1. Integration Tests
-    console.log('\n--- 1. RUNNING INTEGRATION TESTS ---');
+    // 1. Security & Route Protection Tests
+    console.log('\n--- 1. RUNNING SECURITY & AUTHORIZATION TESTS ---');
+    await runAdminAuthorizationSecurityTests();
+    await runHttpRouteProtectionTests();
+
+    // 2. Integration Tests
+    console.log('\n--- 2. RUNNING INTEGRATION TESTS ---');
     await runDestinationP0Test();
     await runDestinationSwitcherTest();
 
-    // 2. E2E Tests
-    console.log('\n--- 2. RUNNING E2E TESTS ---');
+    // 3. E2E Tests
+    console.log('\n--- 3. RUNNING E2E TESTS ---');
     await runTenantIsolationE2ETest();
     await runLiveDestinationE2ETest();
     await runServerActionE2ETest();
