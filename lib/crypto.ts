@@ -48,10 +48,5 @@ export function verifyPassword(password: string, storedHash: string): boolean {
     return crypto.timingSafeEqual(originalBuffer, computedBuffer);
   }
 
-  // Backward-compatibility fallback for pre-seeded development test fixtures
-  if (storedHash === password || (storedHash === 'password123' && password === 'password123')) {
-    return true;
-  }
-
   return false;
 }

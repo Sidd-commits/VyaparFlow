@@ -20,7 +20,10 @@ import {
   USER_ID_COOKIE,
   USER_EMAIL_COOKIE,
   USER_NAME_COOKIE,
+  SESSION_COOKIE,
+  SECURE_SESSION_COOKIE_OPTIONS,
 } from '@/lib/authCookies';
+import { createSessionToken, verifySessionToken } from '@/lib/session';
 import { hashPassword, verifyPassword } from '@/lib/crypto';
 import { isPlatformAdmin, requireAdmin, getPlatformAdminEmail } from '@/lib/authGuards';
 
@@ -46,11 +49,14 @@ export async function getActiveUser(): Promise<{
 }> {
   try {
     const cookieStore = await cookies();
-    const userIdVal = cookieStore.get(USER_ID_COOKIE)?.value;
-    const userEmailVal = cookieStore.get(USER_EMAIL_COOKIE)?.value;
+    const sessionCookieVal = cookieStore.get(SESSION_COOKIE)?.value;
+    const verifiedSession = verifySessionToken(sessionCookieVal);
+
+    const userIdVal = verifiedSession?.userId || cookieStore.get(USER_ID_COOKIE)?.value;
+    const userEmailVal = verifiedSession?.email || cookieStore.get(USER_EMAIL_COOKIE)?.value;
     const rawName = cookieStore.get(USER_NAME_COOKIE)?.value;
-    const userNameVal = rawName ? decodeURIComponent(rawName) : null;
-    const personaVal = cookieStore.get(PERSONA_COOKIE)?.value as 'MSME' | 'PROVIDER' | 'ADMIN' | undefined;
+    const userNameVal = verifiedSession?.name || (rawName ? decodeURIComponent(rawName) : null);
+    const personaVal = (verifiedSession?.role || cookieStore.get(PERSONA_COOKIE)?.value) as 'MSME' | 'PROVIDER' | 'ADMIN' | undefined;
 
     if (userIdVal || userEmailVal) {
       let user = null;
@@ -211,6 +217,7 @@ export async function requireAuth(): Promise<{
 
 export async function logoutUserAction(): Promise<void> {
   const cookieStore = await cookies();
+  cookieStore.set(SESSION_COOKIE, '', { path: '/', maxAge: 0, expires: new Date(0) });
   cookieStore.set(USER_ID_COOKIE, '', { path: '/', maxAge: 0, expires: new Date(0) });
   cookieStore.set(PERSONA_COOKIE, '', { path: '/', maxAge: 0, expires: new Date(0) });
   cookieStore.set(USER_EMAIL_COOKIE, '', { path: '/', maxAge: 0, expires: new Date(0) });
@@ -233,6 +240,18 @@ export async function uploadDocumentAction(formData: FormData): Promise<void> {
 
   if (!businessId) {
     throw new Error('Business ID is required for document upload');
+  }
+
+  const targetBusiness = await prisma.business.findUnique({
+    where: { id: businessId },
+  });
+
+  if (!targetBusiness) {
+    throw new Error('Target business record not found.');
+  }
+
+  if (!isPlatformAdmin(user) && targetBusiness.ownerUserId !== user.id) {
+    throw new Error('Unauthorized: You do not have permission to upload documents for this business.');
   }
 
   // Enforce 10 MB maximum file size limit
@@ -448,6 +467,24 @@ export async function requestCertificationAction(requirementId: string, provider
 }
 
 export async function updatePackagingItemAction(itemId: string, status: 'completed' | 'incomplete'): Promise<void> {
+  const { user } = await getActiveUser();
+  if (!user) {
+    throw new Error('Unauthorized: Authentication required.');
+  }
+
+  const item = await prisma.packagingItem.findUnique({
+    where: { id: itemId },
+    include: { productCountry: { include: { product: { include: { business: true } } } } },
+  });
+
+  if (!item) {
+    throw new Error('Packaging item not found.');
+  }
+
+  if (!isPlatformAdmin(user) && item.productCountry.product.business.ownerUserId !== user.id) {
+    throw new Error('Unauthorized: You do not have permission to update packaging compliance for this business.');
+  }
+
   await prisma.packagingItem.update({
     where: { id: itemId },
     data: { status },
@@ -459,7 +496,28 @@ export async function updatePackagingItemAction(itemId: string, status: 'complet
 }
 
 export async function createShipmentAction(formData: FormData): Promise<void> {
+  const { user } = await getActiveUser();
+  if (!user) {
+    throw new Error('Unauthorized: You must be logged in to create shipments.');
+  }
+
   const businessId = formData.get('businessId') as string;
+  if (!businessId) {
+    throw new Error('Business ID is required to create a shipment.');
+  }
+
+  const targetBusiness = await prisma.business.findUnique({
+    where: { id: businessId },
+  });
+
+  if (!targetBusiness) {
+    throw new Error('Target business record not found.');
+  }
+
+  if (!isPlatformAdmin(user) && targetBusiness.ownerUserId !== user.id) {
+    throw new Error('Unauthorized: You do not have permission to create shipments for this business.');
+  }
+
   const productName = formData.get('productName') as string;
 
   let product = await prisma.product.findFirst({
@@ -482,7 +540,10 @@ export async function createShipmentAction(formData: FormData): Promise<void> {
   const packages = parseInt((formData.get('packages') as string) || '500', 10);
   const mode = (formData.get('mode') as string) || 'Sea';
 
-  const shipmentNumber = `SHP-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`;
+  // High-entropy collision-free unique shipment number
+  const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+  const timeHex = Date.now().toString(36).toUpperCase();
+  const shipmentNumber = `SHP-${new Date().getFullYear()}-${timeHex}-${randomSuffix}`;
 
   const shipment = await prisma.shipment.create({
     data: {
@@ -554,6 +615,24 @@ export async function createShipmentAction(formData: FormData): Promise<void> {
 }
 
 export async function selectQuoteAction(shipmentId: string, quoteId: string): Promise<void> {
+  const { user } = await getActiveUser();
+  if (!user) {
+    throw new Error('Unauthorized: Authentication required.');
+  }
+
+  const shipment = await prisma.shipment.findUnique({
+    where: { id: shipmentId },
+    include: { business: true },
+  });
+
+  if (!shipment) {
+    throw new Error('Shipment not found.');
+  }
+
+  if (!isPlatformAdmin(user) && shipment.business.ownerUserId !== user.id) {
+    throw new Error('Unauthorized: You do not have permission to accept quotes for this shipment.');
+  }
+
   await prisma.quote.updateMany({
     where: { shipmentId },
     data: { isSelected: false },
@@ -568,6 +647,16 @@ export async function selectQuoteAction(shipmentId: string, quoteId: string): Pr
   await prisma.shipment.update({
     where: { id: shipmentId },
     data: { status: 'Preparation' },
+  });
+
+  await prisma.trackingEvent.create({
+    data: {
+      shipmentId,
+      status: 'Preparation',
+      location: 'Freight Booking Operations Desk',
+      note: `Freight quote accepted: ${selectedQuote.provider.name} (${selectedQuote.mode}) - ₹${selectedQuote.cost.toLocaleString('en-IN')}`,
+      actorId: user.id,
+    },
   });
 
   await prisma.providerTask.create({
@@ -593,54 +682,248 @@ export async function selectQuoteAction(shipmentId: string, quoteId: string): Pr
     });
   }
 
+  // Create notifications
+  try {
+    await prisma.notification.create({
+      data: {
+        userId: shipment.business.ownerUserId,
+        type: 'QUOTE_ACCEPTED',
+        title: `Quote Accepted: #${shipment.shipmentNumber}`,
+        message: `Accepted ${selectedQuote.provider.name} (${selectedQuote.mode}) at ₹${selectedQuote.cost.toLocaleString('en-IN')}. Preparation underway.`,
+      },
+    });
+
+    if (selectedQuote.provider.userId) {
+      await prisma.notification.create({
+        data: {
+          userId: selectedQuote.provider.userId,
+          type: 'BOOKING_RECEIVED',
+          title: `New Shipment Booking: #${shipment.shipmentNumber}`,
+          message: `Exporter selected your freight rate of ₹${selectedQuote.cost.toLocaleString('en-IN')}.`,
+        },
+      });
+    }
+  } catch (notifErr) {
+    console.error('Notification dispatch failed:', notifErr);
+  }
+
   revalidatePath('/shipments');
   revalidatePath(`/shipments/${shipmentId}`);
+  revalidatePath(`/shipments/${shipmentId}/quotes`);
+  revalidatePath(`/shipments/${shipmentId}/tracking`);
+  revalidatePath('/dashboard');
 }
 
 export async function updateProviderTaskAction(taskId: string, status: string, notes?: string): Promise<void> {
-  const task = await prisma.providerTask.update({
+  const { user, role } = await getActiveUser();
+  if (!user || (role !== 'PROVIDER' && !isPlatformAdmin(user))) {
+    throw new Error('Unauthorized: Only authorized providers or Platform Administrators can update service tasks.');
+  }
+
+  const task = await prisma.providerTask.findUnique({
+    where: { id: taskId },
+    include: {
+      provider: true,
+      shipment: { include: { business: true } },
+      requirement: {
+        include: {
+          productCountry: {
+            include: {
+              product: { include: { business: true } },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!task) {
+    throw new Error('Provider task not found.');
+  }
+
+  if (!isPlatformAdmin(user) && task.provider.userId && task.provider.userId !== user.id) {
+    throw new Error('Unauthorized: This task is assigned to another service provider.');
+  }
+
+  const updatedTask = await prisma.providerTask.update({
     where: { id: taskId },
     data: {
       status,
-      notes,
+      notes: notes || undefined,
       completedAt: status === 'completed' ? new Date() : null,
     },
   });
 
-  if (task.requirementId && status === 'completed') {
-    await prisma.requirement.update({
-      where: { id: task.requirementId },
-      data: {
-        status: 'verified',
-        completedAt: new Date(),
-        reason: 'Requirement completed & verified by service provider.',
-      },
-    });
+  const businessOwnerUserId =
+    task.shipment?.business?.ownerUserId ||
+    task.requirement?.productCountry?.product?.business?.ownerUserId;
+
+  if (updatedTask.requirementId) {
+    if (status === 'completed') {
+      await prisma.requirement.update({
+        where: { id: updatedTask.requirementId },
+        data: {
+          status: 'verified',
+          completedAt: new Date(),
+          reason: notes || 'Requirement completed & verified by service provider.',
+        },
+      });
+      await prisma.document.updateMany({
+        where: { requirementId: updatedTask.requirementId },
+        data: {
+          status: 'verified',
+          notes: notes || 'Verified by accredited service provider.',
+        },
+      });
+
+      if (businessOwnerUserId) {
+        try {
+          await prisma.notification.create({
+            data: {
+              userId: businessOwnerUserId,
+              type: 'TASK_VERIFIED',
+              title: `Compliance Item Cleared: ${task.requirement?.title || task.type}`,
+              message: notes || `Service provider ${task.provider.name} verified and approved this compliance item.`,
+            },
+          });
+        } catch (e) {}
+      }
+    } else if (status === 'rejected') {
+      await prisma.requirement.update({
+        where: { id: updatedTask.requirementId },
+        data: {
+          status: 'rejected',
+          completedAt: null,
+          reason: notes || 'Evidence rejected by service provider during audit.',
+        },
+      });
+      await prisma.document.updateMany({
+        where: { requirementId: updatedTask.requirementId },
+        data: {
+          status: 'rejected',
+          notes: notes || 'Rejected by service provider.',
+        },
+      });
+
+      if (businessOwnerUserId) {
+        try {
+          await prisma.notification.create({
+            data: {
+              userId: businessOwnerUserId,
+              type: 'TASK_REJECTED',
+              title: `Compliance Discrepancy: ${task.requirement?.title || task.type}`,
+              message: notes || `Service provider ${task.provider.name} rejected submitted evidence. Action required.`,
+            },
+          });
+        } catch (e) {}
+      }
+    }
   }
+
+  // Create audit log
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      entityType: 'ProviderTask',
+      entityId: taskId,
+      action: `TASK_${status.toUpperCase()}`,
+      oldValueJson: JSON.stringify({ status: task.status }),
+      newValueJson: JSON.stringify({ status, notes }),
+    },
+  });
 
   revalidatePath('/provider');
   revalidatePath('/dashboard');
   revalidatePath('/readiness');
+  revalidatePath('/documents');
 }
 
-export async function addTrackingEventAction(shipmentId: string, status: string, location: string, note?: string): Promise<void> {
-  await prisma.trackingEvent.create({
-    data: {
-      shipmentId,
-      status,
-      location,
-      note,
+export async function addTrackingEventAction(
+  shipmentId: string,
+  status: string,
+  location: string,
+  note?: string
+): Promise<void> {
+  const { user, role } = await getActiveUser();
+  if (!user) {
+    throw new Error('Unauthorized: Authentication required.');
+  }
+
+  const shipment = await prisma.shipment.findUnique({
+    where: { id: shipmentId },
+    include: {
+      business: true,
+      quotes: { where: { isSelected: true }, include: { provider: true } },
     },
   });
 
+  if (!shipment) {
+    throw new Error('Shipment record not found.');
+  }
+
+  // Authorization: MSME owner, Assigned Carrier, or Admin
+  const isOwner = shipment.business.ownerUserId === user.id;
+  const isCarrier = shipment.quotes.some((q) => q.provider.userId === user.id);
+  const isAdmin = isPlatformAdmin(user);
+
+  if (!isOwner && !isCarrier && !isAdmin) {
+    throw new Error('Unauthorized: You do not have permission to log tracking milestones for this shipment.');
+  }
+
+  if (!status || status.trim().length === 0) {
+    throw new Error('Tracking status milestone is required.');
+  }
+
+  if (!location || location.trim().length === 0) {
+    throw new Error('Location description is required.');
+  }
+
+  await prisma.trackingEvent.create({
+    data: {
+      shipmentId,
+      status: status.trim(),
+      location: location.trim(),
+      note: note?.trim() || null,
+      actorId: user.id,
+    },
+  });
+
+  const previousStatus = shipment.status;
   await prisma.shipment.update({
     where: { id: shipmentId },
-    data: { status },
+    data: { status: status.trim() },
+  });
+
+  // Create Notification for MSME business owner
+  try {
+    await prisma.notification.create({
+      data: {
+        userId: shipment.business.ownerUserId,
+        type: 'TRACKING_UPDATE',
+        title: `Shipment #${shipment.shipmentNumber} → ${status}`,
+        message: `Milestone event at ${location.trim()}${note ? `: ${note.trim()}` : ''}`,
+      },
+    });
+  } catch (notifErr) {
+    console.error('Tracking notification failed:', notifErr);
+  }
+
+  // Audit Log
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      entityType: 'Shipment',
+      entityId: shipmentId,
+      action: `TRACKING_${status.toUpperCase().replace(/\s+/g, '_')}`,
+      oldValueJson: JSON.stringify({ status: previousStatus }),
+      newValueJson: JSON.stringify({ status, location, note }),
+    },
   });
 
   revalidatePath('/shipments');
   revalidatePath(`/shipments/${shipmentId}`);
   revalidatePath(`/shipments/${shipmentId}/tracking`);
+  revalidatePath('/dashboard');
 }
 
 export async function updateRuleAction(ruleId: string, data: { priority?: string; weight?: number; blocksDispatch?: boolean; active?: boolean }): Promise<void> {
@@ -739,7 +1022,15 @@ export async function registerUserAction(formData: FormData): Promise<void> {
   });
 
   // Switch role and log in with the newly created user account
+  const sessionToken = createSessionToken({
+    userId: newUser.id,
+    email: newUser.email,
+    role: (newUser.role as 'MSME' | 'PROVIDER' | 'ADMIN') || 'MSME',
+    name: newUser.name,
+  });
+
   const cookieStore = await cookies();
+  cookieStore.set(SESSION_COOKIE, sessionToken, SECURE_SESSION_COOKIE_OPTIONS);
   cookieStore.set(USER_ID_COOKIE, newUser.id, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
   cookieStore.set(PERSONA_COOKIE, newUser.role, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
   cookieStore.set(USER_EMAIL_COOKIE, newUser.email, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
@@ -798,7 +1089,15 @@ export async function loginUserAction(formData: FormData): Promise<void> {
     ? 'PROVIDER'
     : 'MSME';
 
+  const sessionToken = createSessionToken({
+    userId: user.id,
+    email: user.email,
+    role: activeRole,
+    name: user.name,
+  });
+
   const cookieStore = await cookies();
+  cookieStore.set(SESSION_COOKIE, sessionToken, SECURE_SESSION_COOKIE_OPTIONS);
   cookieStore.set(USER_ID_COOKIE, user.id, {
     path: '/',
     httpOnly: false,

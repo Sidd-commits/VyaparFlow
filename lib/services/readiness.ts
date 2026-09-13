@@ -67,21 +67,21 @@ export async function calculateReadinessScore(productCountryId: string): Promise
   // 2. Documents Score (25% max) — Only VERIFIED documents receive score points. Uploaded != Approved!
   const docReqs = requirements.filter((r) => r.type === 'document');
   const completedDocReqs = docReqs.filter((r) => r.status === 'verified');
-  const docScore = docReqs.length > 0 ? Math.round((completedDocReqs.length / docReqs.length) * 100) : 0;
+  const docScore = docReqs.length > 0 ? Math.round((completedDocReqs.length / docReqs.length) * 100) : 100;
 
   // 3. Certifications Score (20% max) — Only VERIFIED certifications receive score points
   const certReqs = requirements.filter((r) => r.type === 'certification');
   const completedCertReqs = certReqs.filter((r) => r.status === 'verified');
-  const certScore = certReqs.length > 0 ? Math.round((completedCertReqs.length / certReqs.length) * 100) : 0;
+  const certScore = certReqs.length > 0 ? Math.round((completedCertReqs.length / certReqs.length) * 100) : 100;
 
   // 4. Packaging & Labelling Score (15% max) — Only completed items count
   const completedPackaging = packagingItems.filter((p) => p.status === 'completed');
-  const packagingScore = packagingItems.length > 0 ? Math.round((completedPackaging.length / packagingItems.length) * 100) : 0;
+  const packagingScore = packagingItems.length > 0 ? Math.round((completedPackaging.length / packagingItems.length) * 100) : 100;
 
   // 5. Shipment Prerequisites Score (20% max)
   const shipmentReqs = requirements.filter((r) => r.type === 'shipment' || r.type === 'labelling');
   const completedShipmentReqs = shipmentReqs.filter((r) => r.status === 'verified');
-  const shipmentScore = shipmentReqs.length > 0 ? Math.round((completedShipmentReqs.length / shipmentReqs.length) * 100) : 0;
+  const shipmentScore = shipmentReqs.length > 0 ? Math.round((completedShipmentReqs.length / shipmentReqs.length) * 100) : 100;
 
   // Weighted overall calculation:
   // Business (20%) + Documents (25%) + Certifications (20%) + Packaging (15%) + Shipment (20%)

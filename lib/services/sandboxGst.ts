@@ -274,7 +274,7 @@ export async function fetchGSTDetailsFromSandbox(gstin: string): Promise<{
             gstin: cleanGst,
             legalName: legalName.toUpperCase(),
             tradeName: tradeName ? tradeName.toUpperCase() : undefined,
-            status: (status.toLowerCase().includes('act') ? 'Active' : status) as any,
+            status: (status.toLowerCase().includes('act') ? 'Active' : status.toLowerCase().includes('canc') ? 'Cancelled' : status.toLowerCase().includes('susp') ? 'Suspended' : 'Inactive') as GSTDetails['status'],
             constitutionOfBusiness: payload.constitution_of_business || payload.ctb,
             taxpayerType: payload.taxpayer_type || payload.dty,
             registrationDate: payload.registration_date || payload.rgdt,

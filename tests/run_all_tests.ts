@@ -4,7 +4,9 @@ import { runLiveDestinationE2ETest } from './e2e/live_destination_e2e.test';
 import { runServerActionE2ETest } from './e2e/server_action_e2e.test';
 import { runTenantIsolationE2ETest } from './e2e/tenant_isolation_e2e.test';
 import { runAdminAuthorizationSecurityTests } from './security/admin_authorization.test';
+import { runPhase2SessionSecurityTests } from './security/phase2_session_security.test';
 import { runHttpRouteProtectionTests } from './integration/http_route_protection.test';
+import { runPhase3ShipmentWorkflowTests } from './integration/phase3_shipment_workflow.test';
 
 async function main() {
   console.log('\n================================================================');
@@ -16,11 +18,13 @@ async function main() {
   try {
     // 1. Security & Route Protection Tests
     console.log('\n--- 1. RUNNING SECURITY & AUTHORIZATION TESTS ---');
+    await runPhase2SessionSecurityTests();
     await runAdminAuthorizationSecurityTests();
     await runHttpRouteProtectionTests();
 
-    // 2. Integration Tests
-    console.log('\n--- 2. RUNNING INTEGRATION TESTS ---');
+    // 2. Integration & Operations Tests
+    console.log('\n--- 2. RUNNING INTEGRATION & OPERATIONS TESTS ---');
+    await runPhase3ShipmentWorkflowTests();
     await runDestinationP0Test();
     await runDestinationSwitcherTest();
 

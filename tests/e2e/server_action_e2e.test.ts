@@ -48,7 +48,7 @@ export async function runServerActionE2ETest() {
 
   const cookieHeader = `vyaparflow_active_user_id=${testUser.id}; vyaparflow_active_user_email=${encodeURIComponent(testUser.email)}; vyaparflow_active_user_name=${encodeURIComponent(testUser.name)}; vyaparflow_active_role=MSME`;
 
-  let business = await prisma.business.create({
+  const business = await prisma.business.create({
     data: {
       ownerUserId: testUser.id,
       displayName: 'Bc Quality Agro Exporters',
@@ -68,7 +68,7 @@ export async function runServerActionE2ETest() {
     catFood = await prisma.productCategory.create({ data: { name: 'Food & Processed Agri' } });
   }
 
-  let prod = await prisma.product.create({
+  const prod = await prisma.product.create({
     data: {
       businessId: business.id,
       categoryId: catFood.id,

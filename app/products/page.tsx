@@ -38,45 +38,64 @@ export default async function ProductsPage() {
         </div>
 
         {/* Product Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {products.map((p) => (
-            <div key={p.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-              <div className="flex justify-between items-start">
-                <div className="space-y-1">
-                  <span className="text-xs font-bold text-orange-600 uppercase">{p.category.name}</span>
-                  <h3 className="text-xl font-bold text-slate-900 font-serif">{p.name}</h3>
-                  <span className="inline-block text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-md">
-                    HS Code: {p.hsCode}
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-[#FAF9F6] p-4 rounded-xl border border-slate-200 space-y-2 text-xs">
-                <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                  <Globe className="w-4 h-4 text-orange-600" /> Target Destination Countries
-                </span>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {p.destinations.map((d) => (
-                    <span
-                      key={d.id}
-                      className="bg-white text-slate-800 font-bold px-3 py-1 rounded-lg border border-slate-300 flex items-center gap-1.5"
-                    >
-                      <Globe className="w-3.5 h-3.5 text-orange-600" />
-                      <span>{d.country.name} ({d.country.isoCode})</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <Link
-                href="/readiness"
-                className="block w-full py-2.5 text-center bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors"
-              >
-                Run Readiness Assessment for Product →
-              </Link>
+        {products.length === 0 ? (
+          <div className="bg-white p-12 rounded-2xl border border-slate-200 shadow-xs text-center space-y-4 max-w-lg mx-auto">
+            <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto">
+              <Package className="w-6 h-6" />
             </div>
-          ))}
-        </div>
+            <h3 className="text-xl font-bold text-slate-900 font-serif">No Export Products Configured</h3>
+            <p className="text-xs text-slate-600">
+              You haven&apos;t added any products or export destination markets to your catalog yet.
+            </p>
+            <Link
+              href="/onboarding"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors"
+            >
+              <span>Setup Export Products in Onboarding</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {products.map((p) => (
+              <div key={p.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-1">
+                    <span className="text-xs font-bold text-orange-600 uppercase">{p.category.name}</span>
+                    <h3 className="text-xl font-bold text-slate-900 font-serif">{p.name}</h3>
+                    <span className="inline-block text-xs font-bold bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-md">
+                      HS Code: {p.hsCode}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-[#FAF9F6] p-4 rounded-xl border border-slate-200 space-y-2 text-xs">
+                  <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <Globe className="w-4 h-4 text-orange-600" /> Target Destination Countries
+                  </span>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {p.destinations.map((d) => (
+                      <span
+                        key={d.id}
+                        className="bg-white text-slate-800 font-bold px-3 py-1 rounded-lg border border-slate-300 flex items-center gap-1.5"
+                      >
+                        <Globe className="w-3.5 h-3.5 text-orange-600" />
+                        <span>{d.country.name} ({d.country.isoCode})</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <Link
+                  href="/readiness"
+                  className="block w-full py-2.5 text-center bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors"
+                >
+                  Run Readiness Assessment for Product →
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </AppShell>
   );

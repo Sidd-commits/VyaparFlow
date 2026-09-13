@@ -24,7 +24,9 @@
 *.sqlite-journal
 prisma/*.db-journal
 *.db
-!prisma/dev.db
+*.sqlite
+prisma/*.db
+prisma/*.sqlite
 
 # Runtime Uploads & Generated Media
 public/uploads/*

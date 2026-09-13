@@ -1,6 +1,6 @@
 import assert from 'assert';
 import { prisma } from '../../lib/prisma';
-import { isPlatformAdmin, getPlatformAdminEmail, requireAdmin } from '../../lib/authGuards';
+import { isPlatformAdmin, getPlatformAdminEmail } from '../../lib/authGuards';
 import { hashPassword, verifyPassword } from '../../lib/crypto';
 import { updateRuleAction, deleteUserAction, getAllUsers } from '../../app/actions';
 
@@ -102,11 +102,12 @@ export async function runAdminAuthorizationSecurityTests() {
   let threwUpdateRule = false;
   try {
     await updateRuleAction('non-existent-rule-id', { priority: 'critical', active: false });
-  } catch (err: any) {
+  } catch (err: unknown) {
     threwUpdateRule = true;
+    const msg = (err as Error).message || '';
     assert.ok(
-      err.message.includes('Forbidden') || err.message.includes('Unauthorized'),
-      `Expected Forbidden/Unauthorized error, got: ${err.message}`
+      msg.includes('Forbidden') || msg.includes('Unauthorized'),
+      `Expected Forbidden/Unauthorized error, got: ${msg}`
     );
   }
   assert.ok(threwUpdateRule, 'updateRuleAction must block unauthorized execution');
@@ -115,11 +116,12 @@ export async function runAdminAuthorizationSecurityTests() {
   let threwDeleteUser = false;
   try {
     await deleteUserAction(attackerExporter.id);
-  } catch (err: any) {
+  } catch (err: unknown) {
     threwDeleteUser = true;
+    const msg = (err as Error).message || '';
     assert.ok(
-      err.message.includes('Forbidden') || err.message.includes('Unauthorized'),
-      `Expected Forbidden/Unauthorized error, got: ${err.message}`
+      msg.includes('Forbidden') || msg.includes('Unauthorized'),
+      `Expected Forbidden/Unauthorized error, got: ${msg}`
     );
   }
   assert.ok(threwDeleteUser, 'deleteUserAction must block unauthorized execution');
@@ -128,11 +130,12 @@ export async function runAdminAuthorizationSecurityTests() {
   let threwGetAllUsers = false;
   try {
     await getAllUsers();
-  } catch (err: any) {
+  } catch (err: unknown) {
     threwGetAllUsers = true;
+    const msg = (err as Error).message || '';
     assert.ok(
-      err.message.includes('Forbidden') || err.message.includes('Unauthorized'),
-      `Expected Forbidden/Unauthorized error, got: ${err.message}`
+      msg.includes('Forbidden') || msg.includes('Unauthorized'),
+      `Expected Forbidden/Unauthorized error, got: ${msg}`
     );
   }
   assert.ok(threwGetAllUsers, 'getAllUsers must block unauthorized execution');

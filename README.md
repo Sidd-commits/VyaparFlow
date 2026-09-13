@@ -1,7 +1,7 @@
 # VyaparFlow — Export Logistics Readiness Platform
 
 > **Deterministic Export Compliance, Readiness Scoring & Multi-Carrier Logistics SaaS for Indian MSMEs**  
-> *Pan-India Operating System for Global Trade Corridors (USA, EU, UAE, UK, ASEAN)*
+> *Pan-India Operating System for Global Trade Corridors (USA, EU, UAE, UK, Japan, Australia)*
 
 ---
 
@@ -43,20 +43,23 @@ graph TD
   - **Logistics & Carrier Readiness (20%)**: Final booking confirmation, container allocation, dispatch readiness.
 - **Critical Dispatch Blockers**: Mandatory missing prerequisites instantly throttle the dispatch status regardless of raw aggregate score.
 
-### 2. 📑 Automated Export Document Engine
+### 2. 🔒 Enterprise Security & Session Hardening
+- **HMAC-SHA256 Cryptographic Sessions**: Tamper-proof, signed JWT session tokens stored in secure `httpOnly` cookies.
+- **Sliding-Window API Rate Limiting**: Built-in in-memory rate limiting on authentication and sensitive verification endpoints (`/api/gst/verify`).
+- **Production HTTP Security Headers**: Configured HSTS, CSP, Anti-Clickjacking (`X-Frame-Options: DENY`), and MIME sniffing protection (`X-Content-Type-Options: nosniff`).
+
+### 3. 🚢 Multi-Carrier Freight & Real-Time Tracking
+- Multi-carrier rate quotes comparison across Sea, Air, and Express Courier modes.
+- Real-time GPS and port milestone tracking (`Order Confirmed` → `Preparation` → `Pickup Scheduled` → `Picked Up` → `Export Customs` → `Dispatched` → `In Transit` → `Destination Customs` → `Delivered`).
+- Automated notification dispatch and audit logging for all shipment events.
+
+### 4. 📑 Automated Export Document Engine
 - Server-side PDF generation for **Commercial Invoices** and **Packing Lists** with automated HS code lookup, INR/USD/EUR currency handling, and standard invoice nomenclature.
-
-### 3. 🚢 Multi-Carrier Freight Rate Engine
-- Instant rate and transit time comparisons across air, ocean (FCL/LCL), and road modes.
-- Transparent breakdowns of port handling charges, customs clearance (CHA), fuel surcharges, and exclusions.
-
-### 4. 📍 Milestone Tracking & Audit Trail
-- Real-time timestamped event stream from factory pickup, CFS/ICD arrival, customs clearance, vessel loading, to destination delivery.
 
 ### 5. 👥 Multi-Stakeholder Role Architecture
 - **MSME Exporters**: End-to-end dashboard, product catalog, compliance checklists, document generation, and quote acceptance.
-- **Service Providers (CHA / Freight Forwarders / Labs)**: Submit bids, review documents, issue certifications, and log milestones.
-- **Platform Admins**: Live compliance rules configurator, country-product requirement mapping, and audit logging.
+- **Service Providers (CHA / Freight Forwarders / Labs)**: Submit bids, review documents, verify certifications, and log milestones.
+- **Platform Admins**: Live compliance rules configurator, country-product requirement mapping, user management, and audit trail.
 
 ---
 
@@ -80,29 +83,30 @@ VyaparFlow/
 │   ├── shipments/              # Shipment Booking, Quotes & Milestone Tracking
 │   ├── provider/               # Freight Forwarder & CHA Bid Portal
 │   ├── admin/                  # Compliance Rules Configurator & Audit Logs
-│   └── api/                    # REST Endpoints (PDF Stream, GST Sandbox proxy)
+│   └── api/                    # REST Endpoints (Health, PDF Stream, GST Sandbox proxy)
 ├── components/                 # Reusable UI & Client Components
-│   ├── Navbar.tsx              # Global Navigation with Active Persona Switcher
-│   ├── LoginForm.tsx           # Authentication Form
-│   ├── RegisterForm.tsx        # Registration with Persona Role Selector
-│   ├── BusinessRegistrationsForm.tsx # GST/IEC Form with Live Validation
-│   └── GSTLookupButton.tsx     # GSTIN Auto-fetch Button with Feedback
+│   └── AppShell.tsx            # Global Navigation with Active Persona Switcher
 ├── lib/                        # Core Domain Logic & Utilities
-│   ├── prisma.ts               # Prisma Client Singleton & Connection Pool
-│   ├── recentAccounts.ts       # Client-side multi-account switcher utility
-│   ├── businessTypeConfig.ts   # Business entity registration rules
+│   ├── prisma.ts               # Prisma Client Singleton with Connection Pooling
+│   ├── session.ts              # HMAC-SHA256 Cryptographic Session Tokens
+│   ├── rateLimit.ts            # Sliding-Window In-Memory Rate Limiter
+│   ├── authCookies.ts          # Secure Cookie Configuration
+│   ├── authGuards.ts           # Server-side Authorization Guards
+│   ├── crypto.ts               # PBKDF2 Password Hashing
 │   └── services/
 │       ├── readiness.ts        # Deterministic Scoring & Blocker Calculations
 │       ├── documentGenerator.ts# jsPDF-based Trade Document Generator
 │       └── sandboxGst.ts       # Sandbox.co.in GST API client with offline fallback
 ├── prisma/                     # Database Layer
-│   ├── schema.prisma           # Prisma Data Model (12 Relational Entities)
+│   ├── schema.prisma           # Prisma Data Model (PostgreSQL / Supabase)
 │   └── seed.ts                 # Golden Demo Seed Data (Agro & Industrial Exports)
-├── public/                     # Static Assets & Storage
-│   └── uploads/                # Local runtime upload destination (.gitkeep)
-├── __tests__/                  # Unit & Integration Test Suites
-│   ├── readiness.test.ts       # Readiness Scorer & Blocker Unit Tests
-│   └── services.test.ts        # Database & Service Integration Tests
+├── tests/                      # Automated Test Suites
+│   ├── security/               # Session & Admin Authorization Security Tests
+│   ├── integration/            # Phase 3 Shipment Workflow & Route Protection Tests
+│   ├── e2e/                    # Comprehensive Diagnostics (26 Live Endpoints)
+│   └── run_all_tests.ts        # Automated Master Test Runner
+├── Dockerfile                  # Multi-stage production container build
+├── docker-compose.yml          # Container orchestration template
 ├── .env.example                # Environment variables template
 ├── jest.config.js              # Jest configuration for TypeScript
 ├── package.json                # Project dependencies & scripts
@@ -116,11 +120,12 @@ VyaparFlow/
 - **Framework**: [Next.js 16 (App Router)](https://nextjs.org/) + [React 19](https://react.dev/)
 - **Language**: [TypeScript 5](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **ORM & Database**: [Prisma ORM 5](https://www.prisma.io/) with SQLite (configurable to PostgreSQL)
+- **ORM & Database**: [Prisma ORM 5](https://www.prisma.io/) + [Supabase PostgreSQL](https://supabase.com/)
 - **PDF Generation**: [jsPDF](https://github.com/parallax/jsPDF) + [jspdf-autotable](https://github.com/simonbengtsson/jsPDF-AutoTable)
 - **Charts & Visualizations**: [Recharts](https://recharts.org/)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Testing**: [Jest](https://jestjs.io/) + [ts-jest](https://kulshekhar.github.io/ts-jest/)
+- **Testing**: [Jest](https://jestjs.io/) + [ts-jest](https://kulshekhar.github.io/ts-jest/) + [tsx](https://github.com/privatenumber/tsx)
+- **Containerization**: [Docker](https://www.docker.com/) (Multi-stage Node 20 Alpine)
 
 ---
 
@@ -129,6 +134,7 @@ VyaparFlow/
 ### Prerequisites
 - **Node.js**: `v20.x` or higher
 - **npm**: `v10.x` or higher
+- **PostgreSQL Database** (e.g. Supabase)
 
 ### 1. Clone & Install Dependencies
 ```bash
@@ -142,14 +148,14 @@ Copy `.env.example` to create your local `.env`:
 ```bash
 cp .env.example .env
 ```
+Fill in your `DATABASE_URL`, `DIRECT_URL`, and `SESSION_SECRET`.
 
-### 3. Initialize & Seed Database
-Synchronize the Prisma schema and seed golden demo records:
+### 3. Synchronize Database & Seed
 ```bash
-# Push schema to SQLite
+# Push schema to live PostgreSQL
 npx prisma db push
 
-# Populate with demo dataset
+# Populate with golden dataset
 npx prisma db seed
 ```
 
@@ -161,33 +167,46 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
+## 🐳 Docker Deployment
+
+To build and run the production container locally or in staging:
+```bash
+# Build & Start Container
+docker compose up --build -d
+
+# Check Container Health Status
+curl http://localhost:3000/api/health
+```
+
+---
+
 ## 🧪 Running Automated Tests
 
-Run the full unit and service integration test suite:
 ```bash
-# Run tests once
+# 1. Run Jest Unit Tests
 npm test
 
-# Run tests in watch mode
-npm run test:watch
+# 2. Run Automated Master Test Suite (Security, Auth, Workflow & E2E)
+npx tsx tests/run_all_tests.ts
+
+# 3. Run Live Comprehensive 26-Point Endpoint Diagnostics
+npx tsx tests/e2e/comprehensive_diagnostics.ts
 ```
 
 ---
 
 ## 🔑 Demo Personas & Credentials
 
-The platform includes test credentials to evaluate all three core workflows:
-
 | Persona | Email | Password | Primary Role & Workflow |
 | :--- | :--- | :--- | :--- |
-| **MSME Exporter** | `msme@apex-exports.com` | `password123` | Apex Agro Processing & Exports — Mango pulp export to UAE |
-| **Logistics / CHA Provider** | `provider@freight.com` | `password123` | SwiftGlobe Freight — Quote submission & milestone updates |
-| **Platform Administrator** | `admin@vyaparflow.com` | `password123` | Compliance Officer — Rules configurator & audit log viewer |
+| **MSME Exporter** | `msme@apex-exports.com` | `password123` | Exporter Dashboard, Readiness Scoring, Shipments, Packaging |
+| **Logistics / CHA Provider** | `provider@freight.com` | `password123` | Service Provider Queue, Document Verification, Bids |
+| **Platform Administrator** | `admin@vyaparflow.com` | `admin123` | Platform Admin Console, Compliance Rules, Audit Trail |
 
 ---
 
 ## 🔒 Security & Contribution Guidelines
 
-- **Never commit `.env` or sensitive API keys**: Use [.env.example](.env.example) as reference.
-- **Never commit SQLite database binaries (`*.db`)**: Always use `npx prisma db seed` for reproducible state.
-- **Clean builds**: Ensure `npm test` and `npm run build` pass before submitting pull requests.
+- **Never commit `.env` or secrets**: Use [.env.example](.env.example) as reference.
+- **Strict type checking**: Always ensure `npx tsc --noEmit` returns 0 errors.
+- **Clean builds**: Ensure `npm test` and `npx next build` pass before submitting pull requests.

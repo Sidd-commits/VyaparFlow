@@ -5,7 +5,10 @@ import {
   USER_ID_COOKIE,
   USER_EMAIL_COOKIE,
   USER_NAME_COOKIE,
+  SESSION_COOKIE,
+  SECURE_SESSION_COOKIE_OPTIONS,
 } from '@/lib/authCookies';
+import { createSessionToken } from '@/lib/session';
 import { isPlatformAdmin, getPlatformAdminEmail } from '@/lib/authGuards';
 
 export const dynamic = 'force-dynamic';
@@ -173,6 +176,17 @@ export async function GET(request: NextRequest) {
         : '/onboarding';
 
     const response = NextResponse.redirect(new URL(targetUrl, request.url));
+
+    // Cryptographic Session Token (httpOnly, tamper-proof)
+    const sessionToken = createSessionToken({
+      userId: user.id,
+      email: user.email,
+      role: effectiveRole,
+      name: user.name,
+    });
+    response.cookies.set(SESSION_COOKIE, sessionToken, SECURE_SESSION_COOKIE_OPTIONS);
+
+    // Legacy client cookies for backward compatibility
     response.cookies.set(USER_ID_COOKIE, user.id, {
       path: '/',
       httpOnly: false,

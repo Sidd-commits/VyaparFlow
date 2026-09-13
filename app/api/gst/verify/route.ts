@@ -1,11 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchGSTDetailsFromSandbox } from '@/lib/services/sandboxGst';
 import { validateGSTIN } from '@/lib/businessTypeConfig';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET(req: NextRequest) {
+  // Rate limiting: 20 requests per minute per IP
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`gst_verify:${clientIp}`, 20, 60 * 1000);
+  if (!rateLimit.success) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: `Rate limit exceeded. Too many GST verification requests. Please retry in ${rateLimit.resetSeconds}s.`,
+      },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': rateLimit.resetSeconds.toString(),
+          'X-RateLimit-Limit': rateLimit.limit.toString(),
+          'X-RateLimit-Remaining': '0',
+        },
+      }
+    );
+  }
+
   const { searchParams } = new URL(req.url);
   const gstin = searchParams.get('gstin');
 
@@ -37,3 +58,4 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+

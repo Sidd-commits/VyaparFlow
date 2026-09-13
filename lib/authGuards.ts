@@ -25,7 +25,10 @@ export function isPlatformAdmin(
  * Strict server-side authorization guard for administrative actions and mutations.
  * Throws an explicit error if the authenticated user is not the Platform Administrator.
  */
-export async function requireAdmin(): Promise<{ user: any; role: 'ADMIN' }> {
+export async function requireAdmin(): Promise<{
+  user: NonNullable<Awaited<ReturnType<typeof getActiveUser>>['user']>;
+  role: 'ADMIN';
+}> {
   const { user, role } = await getActiveUser();
 
   if (!user || !role) {
