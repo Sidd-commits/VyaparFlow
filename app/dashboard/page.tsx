@@ -14,6 +14,8 @@ import { calculateReadinessScore } from '@/lib/services/readiness';
 import { getTariffIntelligence } from '@/lib/services/applicability';
 import { ArrowRight, Plus } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const { role, user } = await requireAuth();
 
@@ -37,29 +39,33 @@ export default async function DashboardPage() {
   const product = business?.products?.[0];
   const destination = product?.destinations?.[0];
 
-  let readinessData = null;
-  if (destination) {
-    try {
-      readinessData = await calculateReadinessScore(destination.id);
-    } catch (e) {
-      console.error('Error calculating readiness score:', e);
-    }
-  }
+  // Fetch readiness score and active shipment in parallel for sub-second dashboard rendering
+  let readinessData: any = null;
+  let activeShipment: any = null;
 
-  // Get active shipment for this business
-  const activeShipment = business?.id
-    ? await prisma.shipment.findFirst({
-        where: { businessId: business.id },
-        include: {
-          product: true,
-          destinationCountry: true,
-          quotes: { include: { provider: true } },
-          trackingEvents: { orderBy: { timestamp: 'desc' } },
-          providerTasks: true,
-        },
-        orderBy: { createdAt: 'desc' },
-      })
-    : null;
+  const [readinessResult, shipmentResult] = await Promise.allSettled([
+    destination ? calculateReadinessScore(destination.id) : Promise.resolve(null),
+    business?.id
+      ? prisma.shipment.findFirst({
+          where: { businessId: business.id },
+          include: {
+            product: true,
+            destinationCountry: true,
+            quotes: { include: { provider: true } },
+            trackingEvents: { orderBy: { timestamp: 'desc' } },
+            providerTasks: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        })
+      : Promise.resolve(null),
+  ]);
+
+  if (readinessResult.status === 'fulfilled') {
+    readinessData = readinessResult.value;
+  }
+  if (shipmentResult.status === 'fulfilled') {
+    activeShipment = shipmentResult.value;
+  }
 
   // Retrieve indicative tariff intelligence for this export corridor
   const tariffData = getTariffIntelligence(

@@ -65,62 +65,71 @@ export async function getActiveUser(): Promise<{
     }
     const personaVal = (verifiedSession?.role || cookieStore.get(PERSONA_COOKIE)?.value) as 'MSME' | 'PROVIDER' | 'ADMIN' | undefined;
 
+    const USER_AUTH_SELECT = {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      avatar: true,
+      passwordHash: true,
+      businesses: {
+        select: {
+          id: true,
+          legalName: true,
+          displayName: true,
+          businessType: true,
+          location: true,
+          city: true,
+          state: true,
+          gstStatus: true,
+          iecStatus: true,
+          profileCompletion: true,
+          ownerUserId: true,
+          products: {
+            select: {
+              id: true,
+              name: true,
+              hsCode: true,
+              destinations: {
+                select: {
+                  id: true,
+                  country: {
+                    select: {
+                      id: true,
+                      name: true,
+                      isoCode: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      providers: {
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          serviceArea: true,
+          contactEmail: true,
+        },
+      },
+    };
+
     if (userIdVal || userEmailVal) {
       let user = null;
       if (userIdVal) {
         user = await prisma.user.findUnique({
           where: { id: userIdVal },
-          include: { 
-            businesses: { 
-              where: { ownerUserId: userIdVal },
-              include: { 
-                products: { 
-                  include: { 
-                    destinations: { include: { country: true, requirements: { include: { rule: true, documents: true } }, packagingItems: true } } 
-                  } 
-                },
-                shipments: {
-                  include: {
-                    product: true,
-                    destinationCountry: true,
-                    quotes: { include: { provider: true } },
-                    trackingEvents: { orderBy: { timestamp: 'desc' } },
-                    providerTasks: true,
-                  },
-                  orderBy: { createdAt: 'desc' },
-                },
-              } 
-            },
-            providers: true 
-          },
+          select: USER_AUTH_SELECT,
         });
       }
 
       if (!user && userEmailVal) {
         user = await prisma.user.findFirst({
           where: { email: userEmailVal },
-          include: { 
-            businesses: { 
-              include: { 
-                products: { 
-                  include: { 
-                    destinations: { include: { country: true, requirements: { include: { rule: true, documents: true } }, packagingItems: true } } 
-                  } 
-                },
-                shipments: {
-                  include: {
-                    product: true,
-                    destinationCountry: true,
-                    quotes: { include: { provider: true } },
-                    trackingEvents: { orderBy: { timestamp: 'desc' } },
-                    providerTasks: true,
-                  },
-                  orderBy: { createdAt: 'desc' },
-                },
-              } 
-            },
-            providers: true 
-          },
+          select: USER_AUTH_SELECT,
         });
       }
 
@@ -153,37 +162,7 @@ export async function getActiveUser(): Promise<{
                   }
                 : {}),
             },
-            include: {
-              businesses: true,
-              providers: true,
-            },
-          });
-
-          user = await prisma.user.findUnique({
-            where: { id: user.id },
-            include: { 
-              businesses: { 
-                where: { ownerUserId: user.id },
-                include: { 
-                  products: { 
-                    include: { 
-                      destinations: { include: { country: true, requirements: { include: { rule: true, documents: true } }, packagingItems: true } } 
-                    } 
-                  },
-                  shipments: {
-                    include: {
-                      product: true,
-                      destinationCountry: true,
-                      quotes: { include: { provider: true } },
-                      trackingEvents: { orderBy: { timestamp: 'desc' } },
-                      providerTasks: true,
-                    },
-                    orderBy: { createdAt: 'desc' },
-                  },
-                } 
-              },
-              providers: true 
-            },
+            select: USER_AUTH_SELECT,
           });
         } catch (syncErr) {
           console.error('Auto-syncing session user to local lambda failed:', syncErr);
@@ -1042,7 +1021,6 @@ export async function registerUserAction(formData: FormData): Promise<void> {
   cookieStore.set(PERSONA_COOKIE, newUser.role, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
   cookieStore.set(USER_EMAIL_COOKIE, newUser.email, { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
   cookieStore.set(USER_NAME_COOKIE, encodeURIComponent(newUser.name), { path: '/', httpOnly: false, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
-  revalidatePath('/', 'layout');
 
   // Jump to appropriate flow based on user's registered role
   if (newUser.role === 'PROVIDER') {
@@ -1129,7 +1107,6 @@ export async function loginUserAction(formData: FormData): Promise<void> {
     sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 30,
   });
-  revalidatePath('/', 'layout');
 
   if (activeRole === 'PROVIDER') {
     redirect('/provider');
