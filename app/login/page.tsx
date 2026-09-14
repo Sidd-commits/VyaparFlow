@@ -5,8 +5,16 @@ import { getActiveUser } from '@/app/actions';
 import { redirect } from 'next/navigation';
 import { Ship, ShieldCheck, CheckCircle2, TrendingUp, Globe2, Sparkles, Building2, MapPin } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function LoginPage() {
-  const { role, user } = await getActiveUser();
+  let activeUserResult = { role: null as 'MSME' | 'PROVIDER' | 'ADMIN' | null, user: null as any };
+  try {
+    activeUserResult = await getActiveUser();
+  } catch (e) {
+    console.warn('LoginPage: Unable to retrieve active user during SSR, defaulting to guest:', e);
+  }
+  const { role, user } = activeUserResult;
 
   // If already authenticated, redirect straight to the user's role dashboard
   if (user && role) {

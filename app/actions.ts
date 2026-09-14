@@ -55,7 +55,14 @@ export async function getActiveUser(): Promise<{
     const userIdVal = verifiedSession?.userId || cookieStore.get(USER_ID_COOKIE)?.value;
     const userEmailVal = verifiedSession?.email || cookieStore.get(USER_EMAIL_COOKIE)?.value;
     const rawName = cookieStore.get(USER_NAME_COOKIE)?.value;
-    const userNameVal = verifiedSession?.name || (rawName ? decodeURIComponent(rawName) : null);
+    let userNameVal: string | null = verifiedSession?.name || null;
+    if (!userNameVal && rawName) {
+      try {
+        userNameVal = decodeURIComponent(rawName);
+      } catch {
+        userNameVal = rawName;
+      }
+    }
     const personaVal = (verifiedSession?.role || cookieStore.get(PERSONA_COOKIE)?.value) as 'MSME' | 'PROVIDER' | 'ADMIN' | undefined;
 
     if (userIdVal || userEmailVal) {

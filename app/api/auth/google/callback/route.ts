@@ -10,23 +10,10 @@ import {
 } from '@/lib/authCookies';
 import { createSessionToken } from '@/lib/session';
 import { isPlatformAdmin, getPlatformAdminEmail } from '@/lib/authGuards';
+import { getAppOrigin } from '@/lib/appOrigin';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-function getAppOrigin(request: NextRequest): string {
-  if (process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('http')) {
-    return process.env.NEXT_PUBLIC_APP_URL.trim().replace(/\/$/, '');
-  }
-  const forwardedHost = (request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.host)
-    .split(',')[0]
-    .trim();
-  const forwardedProto = (request.headers.get('x-forwarded-proto') || (forwardedHost.includes('localhost') ? 'http' : 'https'))
-    .split(',')[0]
-    .trim();
-  
-  return `${forwardedProto}://${forwardedHost}`;
-}
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -86,9 +73,14 @@ export async function GET(request: NextRequest) {
     }
 
     const profile = await userinfoResponse.json();
-    const email = (profile.email as string).toLowerCase().trim();
-    const name = profile.name || email.split('@')[0];
-    const picture = profile.picture || null;
+    if (!profile || !profile.email) {
+      console.error('Google profile missing email field:', profile);
+      return NextResponse.redirect(new URL('/login?error=google_profile_failed', request.url));
+    }
+
+    const email = String(profile.email).toLowerCase().trim();
+    const name = profile.name ? String(profile.name).trim() : email.split('@')[0];
+    const picture = profile.picture ? String(profile.picture) : null;
 
     // 3. Find or Create User in Prisma
     let user = await prisma.user.findFirst({
@@ -154,10 +146,14 @@ export async function GET(request: NextRequest) {
     } else {
       // Update avatar if not present
       if (picture && !user.avatar) {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { avatar: picture },
-        });
+        try {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { avatar: picture },
+          });
+        } catch (avatarErr) {
+          console.warn('Failed to update user avatar:', avatarErr);
+        }
       }
     }
 

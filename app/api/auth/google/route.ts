@@ -1,21 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAppOrigin } from '@/lib/appOrigin';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-function getAppOrigin(request: NextRequest): string {
-  if (process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL.startsWith('http')) {
-    return process.env.NEXT_PUBLIC_APP_URL.trim().replace(/\/$/, '');
-  }
-  const forwardedHost = (request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.host)
-    .split(',')[0]
-    .trim();
-  const forwardedProto = (request.headers.get('x-forwarded-proto') || (forwardedHost.includes('localhost') ? 'http' : 'https'))
-    .split(',')[0]
-    .trim();
-  
-  return `${forwardedProto}://${forwardedHost}`;
-}
 
 export async function GET(request: NextRequest) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
