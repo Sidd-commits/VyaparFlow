@@ -35,16 +35,59 @@ export interface ReadinessScoreResult {
 export async function calculateReadinessScore(productCountryId: string): Promise<ReadinessScoreResult> {
   const pc = await prisma.productCountry.findUnique({
     where: { id: productCountryId },
-    include: {
-      product: { include: { business: true } },
-      country: true,
-      requirements: {
-        include: {
-          documents: true,
-          rule: true,
+    select: {
+      id: true,
+      product: {
+        select: {
+          business: {
+            select: {
+              gstStatus: true,
+              iecStatus: true,
+            },
+          },
         },
       },
-      packagingItems: true,
+      country: {
+        select: {
+          id: true,
+          name: true,
+          isoCode: true,
+        },
+      },
+      requirements: {
+        select: {
+          id: true,
+          type: true,
+          priority: true,
+          status: true,
+          weight: true,
+          title: true,
+          reason: true,
+          completedAt: true,
+          rule: {
+            select: {
+              blocksDispatch: true,
+            },
+          },
+          documents: {
+            select: {
+              id: true,
+              status: true,
+            },
+          },
+        },
+      },
+      packagingItems: {
+        select: {
+          id: true,
+          title: true,
+          type: true,
+          priority: true,
+          mandatory: true,
+          status: true,
+          notes: true,
+        },
+      },
     },
   });
 

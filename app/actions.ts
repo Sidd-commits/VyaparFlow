@@ -1050,6 +1050,13 @@ export async function loginUserAction(formData: FormData): Promise<void> {
         { email: rawEmail },
       ],
     },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      passwordHash: true,
+    },
   });
 
   if (!user) {

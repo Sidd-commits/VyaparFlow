@@ -6,6 +6,7 @@ import { loginUserAction } from '@/app/actions';
 import {
   getRecentAccounts,
   removeRecentAccount,
+  saveRecentAccount,
   type SavedAccount,
 } from '@/lib/recentAccounts';
 import {
@@ -133,6 +134,21 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
     e.stopPropagation();
     const updated = removeRecentAccount(targetEmail);
     setSavedAccounts(updated);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    if (email) {
+      saveRecentAccount({
+        email,
+        name: email.split('@')[0],
+        role: selectedRole,
+      });
+    }
+    startTransition(async () => {
+      await loginUserAction(formData);
+    });
   };
 
   const errorInfo = errorCode ? ERROR_MESSAGES[errorCode] : null;
@@ -263,7 +279,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         </div>
 
         {/* EMAIL & PASSWORD LOGIN FORM */}
-        <form action={loginUserAction} className="space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <input type="hidden" name="preferredRole" value={selectedRole} />
 
           <div>
