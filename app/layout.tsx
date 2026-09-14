@@ -38,13 +38,21 @@ export const metadata: Metadata = {
   ],
 };
 
+import { Suspense } from "react";
+import TopProgressIndicator from "@/components/TopProgressIndicator";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} ${plusJakarta.variable} h-full antialiased scroll-smooth`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <Suspense fallback={null}>
+          <TopProgressIndicator />
+        </Suspense>
+        {children}
+      </body>
     </html>
   );
 }

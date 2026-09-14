@@ -21,6 +21,8 @@ import {
   AlertCircle,
 } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ReadinessPage() {
   const { role, user } = await requireAuth();
   if (role === 'PROVIDER') redirect('/provider');
@@ -38,22 +40,26 @@ export default async function ReadinessPage() {
   let pcDetails = null;
 
   if (destination) {
-    readiness = await calculateReadinessScore(destination.id);
-    pcDetails = await prisma.productCountry.findUnique({
-      where: { id: destination.id },
-      include: {
-        product: { include: { category: true } },
-        country: true,
-        requirements: {
-          include: {
-            rule: true,
-            documents: true,
+    const [scoreRes, detailsRes] = await Promise.all([
+      calculateReadinessScore(destination.id),
+      prisma.productCountry.findUnique({
+        where: { id: destination.id },
+        include: {
+          product: { include: { category: true } },
+          country: true,
+          requirements: {
+            include: {
+              rule: true,
+              documents: true,
+            },
+            orderBy: { priority: 'asc' },
           },
-          orderBy: { priority: 'asc' },
+          packagingItems: true,
         },
-        packagingItems: true,
-      },
-    });
+      }),
+    ]);
+    readiness = scoreRes;
+    pcDetails = detailsRes;
   }
 
   return (

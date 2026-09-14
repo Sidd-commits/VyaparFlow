@@ -7,6 +7,8 @@ import { ShieldCheck, Sliders, FileText, AlertTriangle, Users, Ship, Trash2, Che
 
 import { isPlatformAdmin } from '@/lib/authGuards';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPage() {
   const { role, user } = await requireAuth();
 
@@ -18,31 +20,38 @@ export default async function AdminPage() {
     redirect('/dashboard');
   }
 
-  const rules = await prisma.rule.findMany({
-    include: { category: true, country: true },
-    orderBy: { updatedAt: 'desc' },
-  });
-
-  const usersList = await prisma.user.findMany({
-    include: { businesses: true },
-    orderBy: { createdAt: 'desc' },
-  });
-
-  const totalMsmes = await prisma.business.count();
-  const totalShipments = await prisma.shipment.count();
-  const activeBlockersCount = await prisma.requirement.count({
-    where: { priority: 'critical', status: { not: 'verified' } },
-  });
-  const auditLogs = await prisma.auditLog.findMany({
-    take: 5,
-    orderBy: { createdAt: 'desc' },
-  });
-
-  const pendingDocs = await prisma.document.findMany({
-    where: { status: 'under_review' },
-    include: { business: true },
-    orderBy: { uploadedAt: 'desc' },
-  });
+  const [
+    rules,
+    usersList,
+    totalMsmes,
+    totalShipments,
+    activeBlockersCount,
+    auditLogs,
+    pendingDocs,
+  ] = await Promise.all([
+    prisma.rule.findMany({
+      include: { category: true, country: true },
+      orderBy: { updatedAt: 'desc' },
+    }),
+    prisma.user.findMany({
+      include: { businesses: true },
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.business.count(),
+    prisma.shipment.count(),
+    prisma.requirement.count({
+      where: { priority: 'critical', status: { not: 'verified' } },
+    }),
+    prisma.auditLog.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.document.findMany({
+      where: { status: 'under_review' },
+      include: { business: true },
+      orderBy: { uploadedAt: 'desc' },
+    }),
+  ]);
 
   return (
     <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>

@@ -6,6 +6,8 @@ import { requireAuth, updateBusinessRegistrationsAction, verifyDocumentAction } 
 import { prisma } from '@/lib/prisma';
 import { Building2, MapPin, CheckCircle2, ShieldCheck, Upload, FileText, AlertTriangle, Clock, XCircle, Eye, Edit3 } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function BusinessPage() {
   const { role, user } = await requireAuth();
   
@@ -15,28 +17,29 @@ export default async function BusinessPage() {
   const gstDone = business?.gstStatus?.toLowerCase().includes('active') || business?.gstStatus?.toLowerCase().includes('verified');
   const iecDone = business?.iecStatus?.toLowerCase().includes('active') || business?.iecStatus?.toLowerCase().includes('verified');
 
-  // Fetch GSTIN and IEC proof documents for this business
-  const gstProofDocs = business
-    ? await prisma.document.findMany({
-        where: {
-          businessId: business.id,
-          type: 'GST_CERTIFICATE',
-        },
-        include: { requirement: true },
-        orderBy: { uploadedAt: 'desc' },
-      })
-    : [];
-
-  const iecProofDocs = business
-    ? await prisma.document.findMany({
-        where: {
-          businessId: business.id,
-          type: 'IEC_CERTIFICATE',
-        },
-        include: { requirement: true },
-        orderBy: { uploadedAt: 'desc' },
-      })
-    : [];
+  // Fetch GSTIN and IEC proof documents for this business in parallel
+  const [gstProofDocs, iecProofDocs] = await Promise.all([
+    business
+      ? prisma.document.findMany({
+          where: {
+            businessId: business.id,
+            type: 'GST_CERTIFICATE',
+          },
+          include: { requirement: true },
+          orderBy: { uploadedAt: 'desc' },
+        })
+      : Promise.resolve([]),
+    business
+      ? prisma.document.findMany({
+          where: {
+            businessId: business.id,
+            type: 'IEC_CERTIFICATE',
+          },
+          include: { requirement: true },
+          orderBy: { uploadedAt: 'desc' },
+        })
+      : Promise.resolve([]),
+  ]);
 
   const statusBadge = (status: string) => {
     if (status === 'verified')

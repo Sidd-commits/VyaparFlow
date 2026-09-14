@@ -4,26 +4,29 @@ import { requireAuth, requestCertificationAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { Award, Clock, CheckCircle2, ShieldCheck, ArrowRight, Building } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function CertificationsPage() {
   const { role, user } = await requireAuth();
   const business = user?.businesses[0];
 
-  const certRequirements = business?.id
-    ? await prisma.requirement.findMany({
-        where: {
-          productCountry: { product: { businessId: business.id } },
-          type: 'certification',
-        },
-        include: {
-          rule: true,
-          certificationRequests: { include: { providerTask: { include: { provider: true } } } },
-        },
-      })
-    : [];
-
-  const certLabs = await prisma.provider.findMany({
-    where: { type: 'CERTIFICATION' },
-  });
+  const [certRequirements, certLabs] = await Promise.all([
+    business?.id
+      ? prisma.requirement.findMany({
+          where: {
+            productCountry: { product: { businessId: business.id } },
+            type: 'certification',
+          },
+          include: {
+            rule: true,
+            certificationRequests: { include: { providerTask: { include: { provider: true } } } },
+          },
+        })
+      : Promise.resolve([]),
+    prisma.provider.findMany({
+      where: { type: 'CERTIFICATION' },
+    }),
+  ]);
 
   return (
     <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>

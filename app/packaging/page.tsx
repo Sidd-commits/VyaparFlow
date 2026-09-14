@@ -9,6 +9,8 @@ interface PackagingPageProps {
   searchParams?: Promise<{ destId?: string }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function PackagingPage({ searchParams }: PackagingPageProps) {
   const { role, user } = await requireAuth();
   const business = user?.businesses[0];

@@ -6,28 +6,29 @@ import { prisma } from '@/lib/prisma';
 import { calculateReadinessScore } from '@/lib/services/readiness';
 import { Truck, Plus, CheckCircle2, AlertOctagon, ArrowRight, MapPin, ExternalLink } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ShipmentsPage() {
   const { role, user } = await requireAuth();
   const business = user?.businesses?.[0];
   const products = business?.products || [];
-  const countries = await prisma.country.findMany({ where: { active: true } });
 
-  const shipments = await prisma.shipment.findMany({
-    where: role === 'MSME' ? { businessId: business?.id || 'none' } : {},
-    include: {
-      product: true,
-      destinationCountry: true,
-      quotes: true,
-      trackingEvents: { orderBy: { timestamp: 'desc' }, take: 1 },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
-
-  // Evaluate readiness for product destination
-  let readiness = null;
-  if (products[0]?.destinations[0]) {
-    readiness = await calculateReadinessScore(products[0].destinations[0].id);
-  }
+  const [countries, shipments, readiness] = await Promise.all([
+    prisma.country.findMany({ where: { active: true } }),
+    prisma.shipment.findMany({
+      where: role === 'MSME' ? { businessId: business?.id || 'none' } : {},
+      include: {
+        product: true,
+        destinationCountry: true,
+        quotes: true,
+        trackingEvents: { orderBy: { timestamp: 'desc' }, take: 1 },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+    products[0]?.destinations[0]
+      ? calculateReadinessScore(products[0].destinations[0].id)
+      : Promise.resolve(null),
+  ]);
 
   return (
     <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>

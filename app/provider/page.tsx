@@ -18,6 +18,8 @@ import {
   Package,
 } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProviderPage() {
   const { role, user } = await requireAuth();
 

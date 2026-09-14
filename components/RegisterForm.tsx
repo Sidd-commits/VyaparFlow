@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import { Building2, Truck, ArrowRight, UserPlus, Sparkles } from 'lucide-react';
 import { saveRecentAccount } from '@/lib/recentAccounts';
 
@@ -10,9 +10,12 @@ interface RegisterFormProps {
 
 export default function RegisterForm({ action }: RegisterFormProps) {
   const [role, setRole] = useState<'MSME' | 'PROVIDER'>('MSME');
+  const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     const form = e.currentTarget;
+    const formData = new FormData(form);
     const emailInput = form.elements.namedItem('email') as HTMLInputElement;
     const nameInput = form.elements.namedItem('name') as HTMLInputElement;
     const roleSelect = form.elements.namedItem('role') as HTMLSelectElement;
@@ -26,6 +29,10 @@ export default function RegisterForm({ action }: RegisterFormProps) {
         companyName: businessNameInput?.value,
       });
     }
+
+    startTransition(async () => {
+      await action(formData);
+    });
   };
 
   return (
@@ -56,7 +63,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
         </div>
       </div>
 
-      <form action={action} onSubmit={handleSubmit} className="space-y-4 text-xs">
+      <form onSubmit={handleSubmit} className="space-y-4 text-xs">
         {/* Full Name */}
         <div>
           <label className="block font-bold text-slate-900 mb-1">Full Name *</label>
@@ -98,55 +105,64 @@ export default function RegisterForm({ action }: RegisterFormProps) {
           <input
             type="password"
             name="password"
-            placeholder="Create an account password"
-            minLength={6}
-            autoComplete="new-password"
+            placeholder="Choose a strong password"
             className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs transition-all"
             required
           />
         </div>
 
-        {/* Account Role Selector */}
+        {/* Role Persona Selection */}
         <div>
           <label className="block font-bold text-slate-900 mb-1">Account Role *</label>
           <select
             name="role"
             value={role}
-            onChange={(e) => setRole(e.target.value as 'MSME' | 'PROVIDER')}
-            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 font-bold cursor-pointer focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs"
-            required
+            onChange={(e) => setRole(e.target.value as any)}
+            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 font-bold text-xs"
           >
-            <option value="MSME">🏢 MSME Exporter (Configure Business Profile)</option>
-            <option value="PROVIDER">🚢 Service Provider (Freight / Lab / CHA)</option>
+            <option value="MSME">MSME Exporter (Evaluate readiness, upload docs, book freight)</option>
+            <option value="PROVIDER">Service Provider (Fulfill testing, CHA clearance, logistics)</option>
           </select>
         </div>
 
-        {/* MSME Setup Notice Banner */}
-        {role === 'MSME' && (
-          <div className="p-3.5 bg-orange-50/70 border border-orange-200/80 rounded-xl flex items-start gap-2.5 text-xs text-orange-950">
-            <Sparkles className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
-            <div className="space-y-0.5">
-              <span className="font-bold">Next: Multi-Step Business Onboarding</span>
-              <p className="text-[11px] text-orange-800 leading-normal">
-                After creating your account, our structured 6-step onboarding wizard will guide you to set up your company profile, products, export destinations, and registrations.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Provider Specific Inputs */}
-        {role === 'PROVIDER' && (
-          <div className="space-y-3 pt-1">
+        {/* Conditional Role Fields */}
+        {role === 'MSME' ? (
+          <div className="space-y-4 pt-2 border-t border-slate-100">
             <div>
-              <label className="block font-bold text-slate-900 mb-1">Agency / Provider Name *</label>
+              <label className="block font-bold text-slate-900 mb-1">Legal Company / Business Name *</label>
               <input
                 type="text"
                 name="businessName"
-                placeholder="e.g. SwiftGlobe Freight Logistics Pvt Ltd"
-                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-2 focus:ring-orange-500 outline-none"
+                placeholder="e.g. Acme Organic Exports Pvt Ltd"
+                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none transition-all"
                 required
               />
             </div>
+
+            <div>
+              <label className="block font-bold text-slate-900 mb-1">Primary Export Product / Commodity *</label>
+              <input
+                type="text"
+                name="productName"
+                placeholder="e.g. Organic Alphonso Mangoes"
+                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none transition-all"
+                required
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4 pt-2 border-t border-slate-100">
+            <div>
+              <label className="block font-bold text-slate-900 mb-1">Provider / Agency Legal Name *</label>
+              <input
+                type="text"
+                name="providerName"
+                placeholder="e.g. Apex International Logistics Ltd"
+                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none transition-all"
+                required
+              />
+            </div>
+
             <div>
               <label className="block font-bold text-slate-900 mb-1">Service Domain *</label>
               <select
@@ -165,13 +181,19 @@ export default function RegisterForm({ action }: RegisterFormProps) {
         {/* Submit Button */}
         <button
           type="submit"
-          className={`w-full py-3.5 rounded-xl text-white font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99] ${
+          disabled={isPending}
+          className={`w-full py-3.5 rounded-xl text-white font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-60 ${
             role === 'PROVIDER'
               ? 'bg-blue-600 hover:bg-blue-700'
               : 'bg-orange-600 hover:bg-orange-700'
           }`}
         >
-          {role === 'PROVIDER' ? (
+          {isPending ? (
+            <span className="flex items-center gap-2">
+              <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+              Creating account...
+            </span>
+          ) : role === 'PROVIDER' ? (
             <>
               <Truck className="w-4 h-4" />
               Register Service Partner Account →

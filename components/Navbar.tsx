@@ -107,7 +107,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     : '/dashboard'
                   : '/'
               }
-              className="flex items-center gap-2.5 group"
+              prefetch={true}
+              className="flex items-center gap-2.5 group active:scale-[0.98] transition-transform"
             >
               <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white font-black shadow-md shadow-orange-600/20 group-hover:scale-105 transition-transform">
                 <Ship className="w-6 h-6" />
@@ -130,7 +131,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                 <>
                   <Link
                     href="/dashboard"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    prefetch={true}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/dashboard'
                         ? 'bg-orange-50 text-orange-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -142,7 +144,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
 
                   <Link
                     href="/readiness"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    prefetch={true}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/readiness'
                         ? 'bg-orange-50 text-orange-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -154,7 +157,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
 
                   <Link
                     href="/documents"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    prefetch={true}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/documents'
                         ? 'bg-orange-50 text-orange-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -166,7 +170,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
 
                   <Link
                     href="/certifications"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    prefetch={true}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/certifications'
                         ? 'bg-orange-50 text-orange-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -178,7 +183,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
 
                   <Link
                     href="/packaging"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    prefetch={true}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/packaging'
                         ? 'bg-orange-50 text-orange-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -190,7 +196,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
 
                   <Link
                     href="/shipments"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    prefetch={true}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname.startsWith('/shipments')
                         ? 'bg-orange-50 text-orange-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -206,7 +213,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                 <>
                   <Link
                     href="/provider"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    prefetch={true}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/provider'
                         ? 'bg-blue-50 text-blue-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -218,7 +226,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
 
                   <Link
                     href="/shipments"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    prefetch={true}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname.startsWith('/shipments')
                         ? 'bg-blue-50 text-blue-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -234,7 +243,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                 <>
                   <Link
                     href="/admin"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    prefetch={true}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/admin'
                         ? 'bg-orange-50 text-orange-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -246,7 +256,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
 
                   <Link
                     href="/documents"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+                    prefetch={true}
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/documents'
                         ? 'bg-orange-50 text-orange-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -267,7 +278,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     key={sec.id}
                     href={`/#${sec.id}`}
                     onClick={(e) => handleNavClick(e, sec.id)}
-                    className={`px-3 py-1.5 rounded-xl transition-all ${
+                    className={`px-3 py-1.5 rounded-xl transition-all active:scale-[0.98] ${
                       isActive
                         ? 'bg-orange-50 text-orange-600 font-bold border border-orange-200/80 shadow-xs'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
@@ -287,7 +298,8 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                 {/* User Profile Badge */}
                 <Link
                   href={currentRole === 'MSME' ? '/business' : currentRole === 'PROVIDER' ? '/provider' : '/admin'}
-                  className="flex items-center gap-2.5 pl-3 border-l border-slate-200 hover:opacity-85 transition-opacity group"
+                  prefetch={true}
+                  className="flex items-center gap-2.5 pl-3 border-l border-slate-200 hover:opacity-85 transition-opacity active:scale-[0.98] group"
                   title="View & manage company profile and registrations"
                 >
                   <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-xs group-hover:bg-orange-600 transition-colors">
@@ -325,7 +337,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                   onClick={handleSignOut}
                   disabled={isPending}
                   title="Sign out of current account"
-                  className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 hover:border-red-200 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 hover:border-red-200 transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.98] disabled:opacity-50"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Sign Out</span>
@@ -335,14 +347,16 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
               <div className="flex items-center gap-2">
                 <Link
                   href="/login"
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 transition-all flex items-center gap-1.5"
+                  prefetch={true}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 transition-all active:scale-[0.98] flex items-center gap-1.5"
                 >
                   <LogIn className="w-3.5 h-3.5 text-slate-600" />
                   Sign In
                 </Link>
                 <Link
                   href="/login?tab=register"
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-linear-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 shadow-md shadow-orange-600/20 transition-all flex items-center gap-1.5"
+                  prefetch={true}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-linear-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 shadow-md shadow-orange-600/20 transition-all active:scale-[0.98] flex items-center gap-1.5"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
                   Register MSME

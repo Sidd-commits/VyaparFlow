@@ -20,35 +20,38 @@ import {
   Building,
 } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DocumentsPage() {
   const { role, user } = await requireAuth();
   const business = user?.businesses?.[0];
 
   // Scoped strictly to authenticated user's business for MSME; all for Admin/Provider
-  const documents = await prisma.document.findMany({
-    where: role === 'MSME' ? { businessId: business?.id || 'none' } : {},
-    include: {
-      requirement: true,
-      shipment: true,
-      business: true,
-    },
-    orderBy: { uploadedAt: 'desc' },
-  });
-
-  const requirementsNeedingDoc = business?.id
-    ? await prisma.requirement.findMany({
-        where: {
-          productCountry: { product: { businessId: business.id } },
-          type: { in: ['document', 'certification'] },
-        },
-        select: {
-          id: true,
-          title: true,
-          status: true,
-          priority: true,
-        },
-      })
-    : [];
+  const [documents, requirementsNeedingDoc] = await Promise.all([
+    prisma.document.findMany({
+      where: role === 'MSME' ? { businessId: business?.id || 'none' } : {},
+      include: {
+        requirement: true,
+        shipment: true,
+        business: true,
+      },
+      orderBy: { uploadedAt: 'desc' },
+    }),
+    business?.id
+      ? prisma.requirement.findMany({
+          where: {
+            productCountry: { product: { businessId: business.id } },
+            type: { in: ['document', 'certification'] },
+          },
+          select: {
+            id: true,
+            title: true,
+            status: true,
+            priority: true,
+          },
+        })
+      : Promise.resolve([]),
+  ]);
 
   return (
     <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>

@@ -5,6 +5,8 @@ import { requireAuth } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { Package, Globe, ArrowRight } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProductsPage() {
   const { role, user } = await requireAuth();
   const business = user?.businesses[0];

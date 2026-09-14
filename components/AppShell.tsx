@@ -142,6 +142,7 @@ export default function AppShell({
                   ? '/admin'
                   : '/dashboard'
               }
+              prefetch={true}
               className="flex items-center gap-3 group"
             >
               <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white font-black shadow-md shadow-orange-600/20 group-hover:scale-105 transition-transform shrink-0">
@@ -173,7 +174,8 @@ export default function AppShell({
                       <Link
                         key={item.name}
                         href={item.href}
-                        className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors ${
+                        prefetch={true}
+                        className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-all active:scale-[0.98] ${
                           active
                             ? 'bg-orange-50 text-orange-700 font-bold border border-orange-200/70 shadow-2xs'
                             : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 font-medium'
@@ -317,8 +319,9 @@ export default function AppShell({
                         <Link
                           key={item.name}
                           href={item.href}
+                          prefetch={true}
                           onClick={() => setMobileMenuOpen(false)}
-                          className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                          className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.98] ${
                             active
                               ? 'bg-orange-50 text-orange-600 font-bold border border-orange-200'
                               : 'text-slate-600 hover:bg-slate-50'
