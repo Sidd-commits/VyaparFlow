@@ -11,7 +11,7 @@
 
 ---
 
-## 🏗️ System Architecture
+##  🏗️ System Architecture
 
 ```mermaid
 graph TD
