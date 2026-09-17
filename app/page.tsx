@@ -31,7 +31,7 @@ export default async function LandingPage() {
       {/* ─────────────────────────────────────────────────────────────
           HERO SECTION — EDITORIAL NARRATIVE & EXPORT COMMAND CENTER
       ───────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-3 sm:pt-5 pb-10 sm:pb-14 border-b border-slate-200 bg-linear-to-b from-white via-orange-50/20 to-[#FAF9F6] bg-trade-grid-light">
+      <section className="relative overflow-hidden pt-6 sm:pt-10 pb-14 sm:pb-20 border-b border-slate-200 bg-linear-to-b from-white via-orange-50/20 to-[#FAF9F6] bg-trade-grid-light">
         {/* Ambient background light gradients */}
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none -mt-20" />
         <div className="absolute bottom-6 left-10 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl pointer-events-none" />
@@ -39,9 +39,9 @@ export default async function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Left Column: Editorial Headline & Actions */}
-            <div className="lg:col-span-6 space-y-4 text-left">
+            <div className="lg:col-span-6 space-y-5 text-left">
               {/* Top Integrated Corridor Ribbon */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-950 text-xs font-semibold shadow-xs">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-950 text-xs font-semibold shadow-2xs">
                 <span className="flex h-2 w-2 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600" />
@@ -60,7 +60,7 @@ export default async function LandingPage() {
               </h1>
 
               {/* Subtitle */}
-              <p className="text-base text-slate-700 max-w-xl font-normal leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-700 max-w-xl font-normal leading-relaxed">
                 VyaparFlow converts complex multi-agency Indian export regulations (DGFT, CBIC, FSSAI, APEDA) into one clear, deterministic, and trackable digital operating system for Tier-2 &amp; Tier-3 MSMEs.
               </p>
 
@@ -70,14 +70,14 @@ export default async function LandingPage() {
                   <>
                     <Link
                       href={role === 'PROVIDER' ? '/provider' : role === 'ADMIN' ? '/admin' : '/dashboard'}
-                      className="px-7 py-3.5 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-base shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 group cursor-pointer hover:-translate-y-0.5"
+                      className="px-7 py-3.5 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm sm:text-base shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 group cursor-pointer hover:-translate-y-0.5 active:scale-[0.98]"
                     >
                       <span>Go to Your Active Dashboard</span>
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                     <Link
                       href="/readiness"
-                      className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-base border border-slate-300 transition-all flex items-center gap-2 cursor-pointer shadow-xs hover:-translate-y-0.5"
+                      className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm sm:text-base border border-slate-300 transition-all flex items-center gap-2 cursor-pointer shadow-xs hover:-translate-y-0.5 active:scale-[0.98]"
                     >
                       <Compass className="w-5 h-5 text-orange-600" />
                       <span>Regulatory Engine</span>
@@ -87,7 +87,7 @@ export default async function LandingPage() {
                   <>
                     <Link
                       href="/login"
-                      className="px-7 py-3.5 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-base shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 group cursor-pointer hover:-translate-y-0.5"
+                      className="px-7 py-3.5 rounded-2xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm sm:text-base shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 group cursor-pointer hover:-translate-y-0.5 active:scale-[0.98]"
                     >
                       <LogIn className="w-5 h-5" />
                       <span>Sign In to Portal</span>
@@ -96,7 +96,7 @@ export default async function LandingPage() {
 
                     <Link
                       href="/login?tab=register"
-                      className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-base border border-slate-300 transition-all flex items-center gap-2 cursor-pointer shadow-xs hover:-translate-y-0.5"
+                      className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm sm:text-base border border-slate-300 transition-all flex items-center gap-2 cursor-pointer shadow-xs hover:-translate-y-0.5 active:scale-[0.98]"
                     >
                       <UserPlus className="w-5 h-5 text-orange-600" />
                       <span>Register MSME / Provider</span>
@@ -107,22 +107,22 @@ export default async function LandingPage() {
 
               {/* Feature Highlights Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-700 font-semibold pt-1">
-                <div className="flex items-center gap-2 bg-white/90 p-2.5 rounded-xl border border-slate-200 shadow-xs">
+                <div className="flex items-center gap-2 bg-white/90 p-2.5 rounded-xl border border-slate-200 shadow-2xs">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>Deterministic Rules</span>
                 </div>
-                <div className="flex items-center gap-2 bg-white/90 p-2.5 rounded-xl border border-slate-200 shadow-xs">
+                <div className="flex items-center gap-2 bg-white/90 p-2.5 rounded-xl border border-slate-200 shadow-2xs">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span>0–100 Score Audits</span>
                 </div>
-                <div className="flex items-center gap-2 bg-white/90 p-2.5 rounded-xl border border-slate-200 shadow-xs">
+                <div className="flex items-center gap-2 bg-white/90 p-2.5 rounded-xl border border-slate-200 shadow-2xs">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>Integrated CHA & Carrier</span>
+                  <span>Integrated CHA &amp; Carrier</span>
                 </div>
               </div>
 
               {/* Exporter Trust & Metrics Micro-Bar */}
-              <div className="flex flex-wrap items-center gap-4 pt-1 text-[11px] text-slate-500 font-mono border-t border-slate-200/80">
+              <div className="flex flex-wrap items-center gap-4 pt-2 text-[11px] text-slate-500 font-mono border-t border-slate-200/80">
                 <span>₹14.2 Cr+ Cargo Processed</span>
                 <span>&bull;</span>
                 <span>0 Customs Detentions</span>
@@ -142,7 +142,7 @@ export default async function LandingPage() {
       {/* ─────────────────────────────────────────────────────────────
           MAIN SCROLL STORY SECTIONS (SECTIONS 01 TO 10)
       ───────────────────────────────────────────────────────────── */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <ScrollStorySections isLoggedIn={isLoggedIn} />
       </main>
 
@@ -194,4 +194,5 @@ export default async function LandingPage() {
     </div>
   );
 }
+
 

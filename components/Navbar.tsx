@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useTransition } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { logoutUserAction } from '@/app/actions';
 import {
   Ship,
@@ -16,7 +16,9 @@ import {
   UserPlus,
   LogOut,
   LogIn,
-  Building2,
+  Menu,
+  X,
+  Compass,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -35,15 +37,18 @@ const NAV_SECTIONS = [
 
 export default function Navbar({ currentRole, userEmail, userName }: NavbarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [activeSection, setActiveSection] = useState<string>('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
+  // Scrollspy observer for active section on the landing page
   useEffect(() => {
     if (pathname !== '/') return;
 
     const observerOptions = {
       root: null,
-      rootMargin: '-20% 0px -60% 0px',
+      rootMargin: '-15% 0px -65% 0px',
       threshold: 0,
     };
 
@@ -65,20 +70,40 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
     return () => observer.disconnect();
   }, [pathname]);
 
+  // Handle direct hash navigation on initial load or back/forward
+  useEffect(() => {
+    if (pathname === '/' && typeof window !== 'undefined' && window.location.hash) {
+      const hashId = window.location.hash.replace('#', '');
+      if (hashId) {
+        setTimeout(() => {
+          scrollToElementId(hashId);
+        }, 150);
+      }
+    }
+  }, [pathname]);
+
+  const scrollToElementId = (id: string) => {
+    setActiveSection(id);
+    const targetElement = document.getElementById(id);
+    if (targetElement) {
+      const navOffset = 80;
+      const elementPosition = targetElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - navOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth',
+      });
+      window.history.replaceState(null, '', `#${id}`);
+    }
+  };
+
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     if (pathname === '/') {
       e.preventDefault();
-      setActiveSection(id);
-      const targetElement = document.getElementById(id);
-      if (targetElement) {
-        const navHeight = 70;
-        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navHeight;
-        window.scrollTo({
-          top: targetPosition,
-          behavior: 'smooth',
-        });
-        window.history.replaceState(null, '', `#${id}`);
-      }
+      scrollToElementId(id);
+      setMobileMenuOpen(false);
+    } else {
+      setMobileMenuOpen(false);
     }
   };
 
@@ -91,7 +116,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
   const isLoggedIn = Boolean(currentRole && userEmail);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-2xs">
       {/* Main Navbar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -108,6 +133,12 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                   : '/'
               }
               prefetch={true}
+              onClick={() => {
+                if (pathname === '/') {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  window.history.replaceState(null, '', '/');
+                }
+              }}
               className="flex items-center gap-2.5 group active:scale-[0.98] transition-transform"
             >
               <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white font-black shadow-md shadow-orange-600/20 group-hover:scale-105 transition-transform">
@@ -124,7 +155,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
             </Link>
           </div>
 
-          {/* Navigation Links — Strictly Tailored to Current Role or Landing Scrollspy */}
+          {/* Navigation Links — Role Specific or Landing Scrollspy */}
           {isLoggedIn ? (
             <nav className="hidden lg:flex items-center gap-1">
               {currentRole === 'MSME' && (
@@ -278,7 +309,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     key={sec.id}
                     href={`/#${sec.id}`}
                     onClick={(e) => handleNavClick(e, sec.id)}
-                    className={`px-3 py-1.5 rounded-xl transition-all active:scale-[0.98] ${
+                    className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer active:scale-[0.98] ${
                       isActive
                         ? 'bg-orange-50 text-orange-600 font-bold border border-orange-200/80 shadow-xs'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
@@ -292,7 +323,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
           )}
 
           {/* User Profile / Auth Action Buttons */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {isLoggedIn ? (
               <div className="flex items-center gap-3">
                 {/* User Profile Badge */}
@@ -344,11 +375,11 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2">
                 <Link
                   href="/login"
                   prefetch={true}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 transition-all active:scale-[0.98] flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 transition-all active:scale-[0.98] flex items-center gap-1.5 cursor-pointer"
                 >
                   <LogIn className="w-3.5 h-3.5 text-slate-600" />
                   Sign In
@@ -356,16 +387,96 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                 <Link
                   href="/login?tab=register"
                   prefetch={true}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-linear-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 shadow-md shadow-orange-600/20 transition-all active:scale-[0.98] flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-linear-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 shadow-md shadow-orange-600/20 transition-all active:scale-[0.98] flex items-center gap-1.5 cursor-pointer"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
                   Register MSME
                 </Link>
               </div>
             )}
+
+            {/* Mobile Hamburger Toggle Button */}
+            <div className="flex md:hidden items-center gap-2">
+              {!isLoggedIn && (
+                <Link
+                  href="/login"
+                  className="sm:hidden px-3 py-1.5 rounded-lg text-xs font-bold bg-orange-600 text-white"
+                >
+                  Sign In
+                </Link>
+              )}
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors"
+                aria-label="Toggle navigation menu"
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Mobile Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-3 shadow-lg animate-in slide-in-from-top-2 duration-150">
+          {!isLoggedIn ? (
+            <>
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 px-2 block">
+                  Platform Sections
+                </span>
+                {NAV_SECTIONS.map((sec) => (
+                  <Link
+                    key={sec.id}
+                    href={`/#${sec.id}`}
+                    onClick={(e) => handleNavClick(e, sec.id)}
+                    className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-orange-50 hover:text-orange-600 transition-colors"
+                  >
+                    {sec.label}
+                  </Link>
+                ))}
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-2.5 px-3 rounded-xl border border-slate-300 text-slate-700 text-center text-xs font-bold hover:bg-slate-50"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/login?tab=register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-2.5 px-3 rounded-xl bg-orange-600 text-white text-center text-xs font-bold hover:bg-orange-700 shadow-xs"
+                >
+                  Register MSME
+                </Link>
+              </div>
+            </>
+          ) : (
+            <div className="space-y-2">
+              <Link
+                href={currentRole === 'PROVIDER' ? '/provider' : currentRole === 'ADMIN' ? '/admin' : '/dashboard'}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block w-full py-2.5 px-3 rounded-xl bg-orange-600 text-white text-center text-xs font-bold"
+              >
+                Go to Dashboard
+              </Link>
+              <button
+                onClick={handleSignOut}
+                disabled={isPending}
+                className="block w-full py-2 px-3 rounded-xl border border-slate-200 text-slate-700 hover:bg-red-50 hover:text-red-600 text-center text-xs font-semibold cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 }
+

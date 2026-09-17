@@ -849,49 +849,53 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             {activePersona === 'msme' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
-                  <span className="px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold font-mono">
-                    ROLE: MSME EXPORTER
-                  </span>
-                  <h3 className="text-2xl font-bold font-serif text-slate-900">
-                    Factory Readiness & Instant Export Documentation
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-800 text-xs font-bold font-mono shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-600 shrink-0" />
+                    <span>ROLE: MSME EXPORTER</span>
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 tracking-tight leading-snug">
+                    Factory Readiness &amp; Instant Export Documentation
                   </h3>
                   <p className="text-slate-600 text-sm leading-relaxed">
                     Input your product specifications once. The engine immediately checks HS chapters, validates compliance requirements against foreign customs mandates, calculates FTA duty advantages, and auto-generates Commercial Invoices and Packing Lists.
                   </p>
                   <ul className="space-y-2 text-xs text-slate-700 font-medium">
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>Explainable 0–100 Readiness Score with zero hidden traps</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>Compare transparent ocean and air freight quotes</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>End-to-end GPS and EDI milestone telemetry</span>
                     </li>
                   </ul>
                 </div>
-                <div className="bg-slate-950 text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
-                  <div className="flex justify-between items-center text-xs text-slate-400 font-mono">
-                    <span>LIVE WORKSPACE WIDGET</span>
-                    <span className="text-emerald-400">STATUS: 92% PASS</span>
+
+                <div className="bg-[#090D16] text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
+                  <div className="flex justify-between items-center text-xs font-mono border-b border-slate-800 pb-3">
+                    <span className="font-bold tracking-wider text-slate-400">LIVE WORKSPACE WIDGET</span>
+                    <span className="text-emerald-400 font-bold bg-emerald-950/60 px-2.5 py-0.5 rounded-md border border-emerald-800/60">
+                      STATUS: 92% PASS
+                    </span>
                   </div>
-                  <div className="p-4 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
-                    <span className="text-xs font-bold block">Organic Alphonso Mango Pulp → Rotterdam (EU)</span>
+                  <div className="p-4 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2.5">
+                    <span className="text-xs font-bold block text-white">Organic Alphonso Mango Pulp &rarr; Rotterdam (EU)</span>
                     <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                      <div className="bg-emerald-500 h-full w-[92%]" />
+                      <div className="bg-emerald-500 h-full w-[92%] rounded-full" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                    <div className="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-                      <span className="text-slate-400 block">HS Code</span>
-                      <strong className="text-white">2008.99.11</strong>
+                  <div className="grid grid-cols-2 gap-2.5 text-[11px] font-mono">
+                    <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800">
+                      <span className="text-slate-400 block text-[10px] uppercase font-bold">HS Code</span>
+                      <strong className="text-white block mt-0.5 text-xs">2008.99.11</strong>
                     </div>
-                    <div className="p-2.5 bg-slate-900 rounded-lg border border-slate-800">
-                      <span className="text-slate-400 block">EU Preferential</span>
-                      <strong className="text-emerald-400">0% REX Preferential</strong>
+                    <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800">
+                      <span className="text-slate-400 block text-[10px] uppercase font-bold">EU Preferential</span>
+                      <strong className="text-emerald-400 block mt-0.5 text-xs">0% REX Tariff</strong>
                     </div>
                   </div>
                 </div>
@@ -901,39 +905,43 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             {activePersona === 'forwarder' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
-                  <span className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold font-mono">
-                    ROLE: FREIGHT FORWARDER & CARRIER
-                  </span>
-                  <h3 className="text-2xl font-bold font-serif text-slate-900">
-                    Pre-Verified Cargo Bookings & Zero Detention Risk
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold font-mono shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0" />
+                    <span>ROLE: FREIGHT FORWARDER &amp; CARRIER</span>
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 tracking-tight leading-snug">
+                    Pre-Verified Cargo Bookings &amp; Zero Detention Risk
                   </h3>
                   <p className="text-slate-600 text-sm leading-relaxed">
                     Bid transparently on pre-cleared MSME export bookings with verified weights, dimensions, and HS classifications. Fulfill shipping line container bookings, gate-in, and vessel tracking.
                   </p>
                   <ul className="space-y-2 text-xs text-slate-700 font-medium">
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>Direct access to verified MSME export demand across Indian clusters</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>Zero cargo detention risk with pre-vetted compliance checks</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>Live milestone telemetry updates synced with shipping lines</span>
                     </li>
                   </ul>
                 </div>
-                <div className="bg-slate-950 text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
-                  <div className="flex justify-between items-center text-xs text-slate-400 font-mono">
-                    <span>PROVIDER CONSOLE</span>
-                    <span className="text-blue-400">SwiftGlobe Logistics</span>
+
+                <div className="bg-[#090D16] text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
+                  <div className="flex justify-between items-center text-xs font-mono border-b border-slate-800 pb-3">
+                    <span className="font-bold tracking-wider text-slate-400">PROVIDER CONSOLE</span>
+                    <span className="text-blue-400 font-bold bg-blue-950/60 px-2.5 py-0.5 rounded-md border border-blue-800/60">
+                      SwiftGlobe Logistics
+                    </span>
                   </div>
-                  <div className="p-4 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                  <div className="p-4 bg-slate-900/90 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
                     <div>
                       <strong className="block text-white">40ft HC Reefer Container</strong>
-                      <span className="text-slate-400 text-[11px]">JNPT Port → Jebel Ali (UAE)</span>
+                      <span className="text-slate-400 text-[11px]">JNPT Port &rarr; Jebel Ali (UAE)</span>
                     </div>
                     <span className="px-3 py-1 rounded-lg bg-blue-500/20 text-blue-400 font-mono font-bold border border-blue-500/30">
                       ₹1,24,000
@@ -949,45 +957,49 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             {activePersona === 'lab' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
-                  <span className="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold font-mono">
-                    ROLE: NABL & APEDA QUALITY LAB
-                  </span>
-                  <h3 className="text-2xl font-bold font-serif text-slate-900">
-                    Digital Lab Certificates & Tamper-Proof Test Reports
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold font-mono shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                    <span>ROLE: NABL &amp; APEDA QUALITY LAB</span>
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 tracking-tight leading-snug">
+                    Digital Lab Certificates &amp; Tamper-Proof Test Reports
                   </h3>
                   <p className="text-slate-600 text-sm leading-relaxed">
                     Receive sample testing requests directly from MSME manufacturers. Upload digital test certificates, chemical safety reports (EU REACH/RoHS), and pesticide residue analysis straight to the shipment audit vault.
                   </p>
                   <ul className="space-y-2 text-xs text-slate-700 font-medium">
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>NABL-accredited digital report uploads with tamper-proof IDs</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>Automatic readiness score unlock upon test certification</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>Instant integration with customs e-Sanchit vault</span>
                     </li>
                   </ul>
                 </div>
-                <div className="bg-slate-950 text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
-                  <div className="flex justify-between items-center text-xs text-slate-400 font-mono">
-                    <span>QUALITY TESTING PORTAL</span>
-                    <span className="text-emerald-400">CertifyLab India (NABL)</span>
+
+                <div className="bg-[#090D16] text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
+                  <div className="flex justify-between items-center text-xs font-mono border-b border-slate-800 pb-3">
+                    <span className="font-bold tracking-wider text-slate-400">QUALITY TESTING PORTAL</span>
+                    <span className="text-emerald-400 font-bold bg-emerald-950/60 px-2.5 py-0.5 rounded-md border border-emerald-800/60">
+                      CertifyLab India (NABL)
+                    </span>
                   </div>
-                  <div className="p-4 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+                  <div className="p-4 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1.5 text-xs">
                     <div className="flex justify-between font-bold">
-                      <span>Phytosanitary & Pesticide Residue</span>
+                      <span>Phytosanitary &amp; Pesticide Residue</span>
                       <span className="text-emerald-400 font-mono">PASSED ✓</span>
                     </div>
                     <p className="text-[11px] text-slate-400 font-sans">
                       MRL compliance verified under EU Regulation 396/2005
                     </p>
                   </div>
-                  <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-300 flex items-center justify-between font-mono">
+                  <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-xs text-slate-300 flex items-center justify-between font-mono">
                     <span>Cert #NABL-2026-8941</span>
                     <span className="text-emerald-400 font-bold">Vault Synced ✓</span>
                   </div>
@@ -998,36 +1010,40 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             {activePersona === 'cha' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
-                  <span className="px-3 py-1 rounded-full bg-slate-100 border border-slate-300 text-slate-800 text-xs font-bold font-mono">
-                    ROLE: CUSTOMS HOUSE AGENT (CHA)
-                  </span>
-                  <h3 className="text-2xl font-bold font-serif text-slate-900">
-                    ICEGATE Shipping Bill Filing & Port Customs Clearance
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-300 text-slate-800 text-xs font-bold font-mono shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-700 shrink-0" />
+                    <span>ROLE: CUSTOMS HOUSE AGENT (CHA)</span>
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 tracking-tight leading-snug">
+                    ICEGATE Shipping Bill Filing &amp; Port Customs Clearance
                   </h3>
                   <p className="text-slate-600 text-sm leading-relaxed">
                     Execute ICEGATE Shipping Bill filings, claim duty drawback / RoDTEP rebates, and coordinate port customs clearance with zero manual document reconstruction.
                   </p>
                   <ul className="space-y-2 text-xs text-slate-700 font-medium">
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>ICEGATE Shipping Bill generation with pre-validated data</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>Automated RoDTEP & Duty Drawback incentive calculation</span>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <span>Automated RoDTEP &amp; Duty Drawback incentive calculation</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                       <span>Let Export Order (LEO) timestamp audit trail</span>
                     </li>
                   </ul>
                 </div>
-                <div className="bg-slate-950 text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
-                  <div className="flex justify-between items-center text-xs text-slate-400 font-mono">
-                    <span>CUSTOMS CLEARANCE DESK</span>
-                    <span className="text-orange-400">Apex CHA Associates</span>
+
+                <div className="bg-[#090D16] text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
+                  <div className="flex justify-between items-center text-xs font-mono border-b border-slate-800 pb-3">
+                    <span className="font-bold tracking-wider text-slate-400">CUSTOMS CLEARANCE DESK</span>
+                    <span className="text-orange-400 font-bold bg-orange-950/60 px-2.5 py-0.5 rounded-md border border-orange-800/60">
+                      Apex CHA Associates
+                    </span>
                   </div>
-                  <div className="p-4 bg-slate-900 rounded-xl border border-slate-800 space-y-1.5 text-xs">
+                  <div className="p-4 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1.5 text-xs">
                     <div className="flex justify-between font-bold">
                       <span>Shipping Bill #SB-98214-JNPT</span>
                       <span className="text-emerald-400 font-mono">LEO ISSUED ✓</span>
@@ -1036,7 +1052,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                       Port of Loading: Jawaharlal Nehru Port (JNPT), Nhava Sheva
                     </p>
                   </div>
-                  <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-300 flex items-center justify-between font-mono">
+                  <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-xs text-slate-300 flex items-center justify-between font-mono">
                     <span>RoDTEP Rebate: <strong>1.4%</strong></span>
                     <span className="text-emerald-400 font-bold">Customs Cleared ✓</span>
                   </div>
@@ -1052,9 +1068,9 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
       ───────────────────────────────────────────────────────────── */}
       <section className="bg-linear-to-r from-orange-600 via-orange-500 to-amber-600 rounded-3xl p-8 sm:p-14 text-white shadow-2xl space-y-8">
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="px-3.5 py-1 rounded-full bg-white/20 text-white text-xs font-mono font-bold uppercase tracking-wider inline-block">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 border border-white/30 text-white text-xs font-mono font-bold uppercase tracking-wider">
             National Impact Architecture
-          </span>
+          </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-serif tracking-tight">
             Built for India&apos;s $1 Trillion Export Mission
           </h2>
