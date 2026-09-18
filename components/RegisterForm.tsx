@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
-import { Building2, Truck, ArrowRight, UserPlus, Sparkles } from 'lucide-react';
+import { Building2, Truck, ArrowRight, UserPlus, Sparkles, CheckCircle2 } from 'lucide-react';
 import { saveRecentAccount } from '@/lib/recentAccounts';
 
 interface RegisterFormProps {
@@ -18,14 +18,14 @@ export default function RegisterForm({ action }: RegisterFormProps) {
     const formData = new FormData(form);
     const emailInput = form.elements.namedItem('email') as HTMLInputElement;
     const nameInput = form.elements.namedItem('name') as HTMLInputElement;
-    const roleSelect = form.elements.namedItem('role') as HTMLSelectElement;
-    const businessNameInput = form.elements.namedItem('businessName') as HTMLInputElement;
+    const roleInput = form.elements.namedItem('role') as HTMLInputElement;
+    const businessNameInput = (form.elements.namedItem('businessName') || form.elements.namedItem('providerName')) as HTMLInputElement;
 
     if (emailInput?.value) {
       saveRecentAccount({
         email: emailInput.value,
         name: nameInput?.value || emailInput.value.split('@')[0],
-        role: (roleSelect?.value as 'MSME' | 'PROVIDER') || role,
+        role: (roleInput?.value as 'MSME' | 'PROVIDER') || role,
         companyName: businessNameInput?.value,
       });
     }
@@ -40,11 +40,11 @@ export default function RegisterForm({ action }: RegisterFormProps) {
       {/* Header Banner */}
       <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
         {role === 'PROVIDER' ? (
-          <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
             <Truck className="w-5 h-5" />
           </div>
         ) : (
-          <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-orange-600 text-white flex items-center justify-center shrink-0 shadow-sm">
             <Building2 className="w-5 h-5" />
           </div>
         )}
@@ -53,7 +53,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
           <h2 className="text-xl font-bold font-serif text-slate-900">
             {role === 'PROVIDER'
               ? 'Service Provider Partner Registration'
-              : 'Create Exporter Account'}
+              : 'Create MSME Exporter Account'}
           </h2>
           <p className="text-xs text-slate-500">
             {role === 'PROVIDER'
@@ -64,6 +64,85 @@ export default function RegisterForm({ action }: RegisterFormProps) {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+        {/* Category / Persona Selector - Side-by-Side Blocks */}
+        <div className="space-y-2">
+          <label className="block font-bold text-slate-900 text-xs">
+            Select Account Category *
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Category 1: MSME Exporter */}
+            <button
+              type="button"
+              onClick={() => setRole('MSME')}
+              className={`p-4 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between gap-3 cursor-pointer ${
+                role === 'MSME'
+                  ? 'border-orange-500 bg-orange-50/60 shadow-md ring-4 ring-orange-500/10'
+                  : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/60'
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-colors ${
+                  role === 'MSME' ? 'bg-orange-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700'
+                }`}>
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                  role === 'MSME'
+                    ? 'bg-orange-100 text-orange-800 border-orange-200'
+                    : 'bg-slate-100 text-slate-600 border-slate-200'
+                }`}>
+                  Exporters
+                </span>
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
+                  MSME Exporter
+                  {role === 'MSME' && <CheckCircle2 className="w-4 h-4 text-orange-600 shrink-0" />}
+                </h4>
+                <p className="text-[11px] text-slate-600 leading-snug mt-1">
+                  Evaluate export readiness score, generate trade docs & book freight
+                </p>
+              </div>
+            </button>
+
+            {/* Category 2: Service Provider */}
+            <button
+              type="button"
+              onClick={() => setRole('PROVIDER')}
+              className={`p-4 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between gap-3 cursor-pointer ${
+                role === 'PROVIDER'
+                  ? 'border-blue-500 bg-blue-50/60 shadow-md ring-4 ring-blue-500/10'
+                  : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/60'
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-colors ${
+                  role === 'PROVIDER' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700'
+                }`}>
+                  <Truck className="w-5 h-5" />
+                </div>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                  role === 'PROVIDER'
+                    ? 'bg-blue-100 text-blue-800 border-blue-200'
+                    : 'bg-slate-100 text-slate-600 border-slate-200'
+                }`}>
+                  Partners
+                </span>
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
+                  Service Provider
+                  {role === 'PROVIDER' && <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />}
+                </h4>
+                <p className="text-[11px] text-slate-600 leading-snug mt-1">
+                  CHA customs clearance, test laboratories & freight forwarders
+                </p>
+              </div>
+            </button>
+          </div>
+          <input type="hidden" name="role" value={role} />
+        </div>
+
         {/* Full Name */}
         <div>
           <label className="block font-bold text-slate-900 mb-1">Full Name *</label>
@@ -109,20 +188,6 @@ export default function RegisterForm({ action }: RegisterFormProps) {
             className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs transition-all"
             required
           />
-        </div>
-
-        {/* Role Persona Selection */}
-        <div>
-          <label className="block font-bold text-slate-900 mb-1">Account Role *</label>
-          <select
-            name="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value as any)}
-            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 font-bold text-xs"
-          >
-            <option value="MSME">MSME Exporter (Evaluate readiness, upload docs, book freight)</option>
-            <option value="PROVIDER">Service Provider (Fulfill testing, CHA clearance, logistics)</option>
-          </select>
         </div>
 
         {/* Conditional Role Fields */}
