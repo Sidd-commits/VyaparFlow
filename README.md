@@ -201,7 +201,6 @@ npx tsx tests/e2e/comprehensive_diagnostics.ts
 | :--- | :--- | :--- | :--- |
 | **MSME Exporter** | `msme@apex-exports.com` | `password123` | Exporter Dashboard, Readiness Scoring, Shipments, Packaging |
 | **Logistics / CHA Provider** | `provider@freight.com` | `password123` | Service Provider Queue, Document Verification, Bids |
-| **Platform Administrator** | `admin@vyaparflow.com` | `admin123` | Platform Admin Console, Compliance Rules, Audit Trail |
 
 ---
 
