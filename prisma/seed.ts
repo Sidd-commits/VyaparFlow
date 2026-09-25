@@ -1041,7 +1041,97 @@ async function main() {
     ],
   });
 
-  // 16. Notifications & Audit Logs
+  // 16. Provider Tasks for Lab, CHA, and Freight Partners
+  console.log('Creating operational provider tasks for demo providers...');
+  const taskPhyto = await prisma.providerTask.create({
+    data: {
+      providerId: providerLab.id,
+      requirementId: reqPhyto.id,
+      type: 'CERTIFICATION',
+      status: 'in_progress',
+      notes: 'Phytosanitary laboratory inspection and pathogen assay queued for Alphonso Mango consignment.',
+      assignedAt: pastDays(2),
+    },
+  });
+
+  await prisma.certificationRequest.create({
+    data: {
+      requirementId: reqPhyto.id,
+      providerTaskId: taskPhyto.id,
+      status: 'in_progress',
+      requestedAt: pastDays(2),
+    },
+  });
+
+  const taskHeavyMetals = await prisma.providerTask.create({
+    data: {
+      providerId: providerLab.id,
+      requirementId: reqHeavyMetals.id,
+      type: 'CERTIFICATION',
+      status: 'completed',
+      notes: 'NABL certified laboratory assay completed. Curcumin 5.2% verified compliant with US FDA MRLs.',
+      assignedAt: pastDays(4),
+      completedAt: pastDays(3),
+    },
+  });
+
+  const taskCoO = await prisma.providerTask.create({
+    data: {
+      providerId: providerCHA.id,
+      requirementId: reqCoO.id,
+      type: 'CUSTOMS_CHA',
+      status: 'in_progress',
+      notes: 'Chamber of Commerce physical stamp & digital seal validation in review for UAE customs clearance.',
+      assignedAt: pastDays(1),
+    },
+  });
+
+  const taskCustomsShipment = await prisma.providerTask.create({
+    data: {
+      providerId: providerCHA.id,
+      shipmentId: activeShipment.id,
+      type: 'CUSTOMS_CHA',
+      status: 'in_progress',
+      notes: 'ICEGATE Shipping Bill draft and Let Export Order (LEO) pre-filing validation for Jebel Ali corridor.',
+      assignedAt: pastDays(1),
+    },
+  });
+
+  const taskFreightUserA = await prisma.providerTask.create({
+    data: {
+      providerId: providerFreight1.id,
+      shipmentId: activeShipment.id,
+      type: 'FREIGHT',
+      status: 'in_progress',
+      notes: 'Reefer container booking (+4°C) & JNPT gate-in terminal schedule reserved with carrier.',
+      assignedAt: pastDays(2),
+    },
+  });
+
+  const taskFreightUserB = await prisma.providerTask.create({
+    data: {
+      providerId: providerFreight1.id,
+      shipmentId: activeShipmentUserB.id,
+      type: 'FREIGHT',
+      status: 'accepted',
+      notes: 'Carrier booking confirmed for New York Newark corridor. Bill of Lading draft generated.',
+      assignedAt: pastDays(3),
+    },
+  });
+
+  const taskFreightCompleted = await prisma.providerTask.create({
+    data: {
+      providerId: providerFreight1.id,
+      shipmentId: completedShipment.id,
+      type: 'FREIGHT',
+      status: 'completed',
+      notes: 'All milestone events posted; cargo delivered to Hamburg buyer representative in sound condition.',
+      assignedAt: pastDays(20),
+      completedAt: pastDays(2),
+    },
+  });
+
+  // 17. Notifications & Audit Logs
   await prisma.notification.createMany({
     data: [
       {

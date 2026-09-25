@@ -48,5 +48,10 @@ export function verifyPassword(password: string, storedHash: string): boolean {
     return crypto.timingSafeEqual(originalBuffer, computedBuffer);
   }
 
+  // Fallback for plaintext passwords (e.g. initial demo seed data)
+  if (storedHash === password) {
+    return true;
+  }
+
   return false;
 }

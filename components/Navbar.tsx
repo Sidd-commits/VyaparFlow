@@ -13,6 +13,7 @@ import {
   Box,
   Truck,
   ShieldCheck,
+  TrendingUp,
   UserPlus,
   LogOut,
   LogIn,
@@ -247,12 +248,21 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/provider'
-                        ? 'bg-blue-50 text-blue-600 font-bold'
+                        ? 'bg-orange-50 text-orange-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
                     <Truck className="w-4 h-4" />
-                    Task Queue Portal
+                    Command Deck
+                  </Link>
+
+                  <Link
+                    href="/provider?tab=quotes"
+                    prefetch={true}
+                    className="px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  >
+                    <TrendingUp className="w-4 h-4" />
+                    Freight RFQs
                   </Link>
 
                   <Link
@@ -260,12 +270,12 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname.startsWith('/shipments')
-                        ? 'bg-blue-50 text-blue-600 font-bold'
+                        ? 'bg-orange-50 text-orange-600 font-bold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
                     <Ship className="w-4 h-4" />
-                    Assigned Shipments
+                    Fleet Cargo
                   </Link>
                 </>
               )}

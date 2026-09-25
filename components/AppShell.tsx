@@ -17,6 +17,7 @@ import {
   Menu,
   X,
   ShieldCheck,
+  TrendingUp,
 } from 'lucide-react';
 
 interface AppShellProps {
@@ -86,10 +87,19 @@ export default function AppShell({
 
   const providerNavGroups: NavGroup[] = [
     {
-      label: 'OPERATIONS',
+      label: 'OPERATIONS DECK',
       items: [
-        { name: 'Task Queue', href: '/provider', icon: Truck, exact: true },
+        { name: 'Command Hub', href: '/provider', icon: LayoutDashboard, exact: true },
+        { name: 'Compliance Audits', href: '/provider?tab=verification', icon: FileCheck2 },
+        { name: 'Freight RFQs & Bids', href: '/provider?tab=quotes', icon: TrendingUp },
+        { name: 'Cargo Fleet Telemetry', href: '/provider?tab=milestones', icon: Truck },
+      ],
+    },
+    {
+      label: 'PARTNER NETWORK',
+      items: [
         { name: 'Assigned Shipments', href: '/shipments', icon: Ship },
+        { name: 'Accreditations & Profile', href: '/provider?tab=profile', icon: Building2 },
       ],
     },
   ];

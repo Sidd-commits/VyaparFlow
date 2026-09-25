@@ -824,6 +824,271 @@ export async function updateProviderTaskAction(taskId: string, status: string, n
   revalidatePath('/documents');
 }
 
+export async function submitFreightQuoteAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  const { user, role } = await getActiveUser();
+  if (!user || (role !== 'PROVIDER' && !isPlatformAdmin(user))) {
+    throw new Error('Unauthorized: Only authorized freight service providers or Platform Admins can submit quotes.');
+  }
+
+  const shipmentId = (formData.get('shipmentId') as string)?.trim();
+  const providerId = (formData.get('providerId') as string)?.trim() || user.providers?.[0]?.id;
+  const mode = (formData.get('mode') as string)?.trim() || 'Sea Freight (FCL 20ft Reefer)';
+  const cost = parseFloat((formData.get('cost') as string) || '0');
+  const transitMin = parseInt((formData.get('transitMin') as string) || '10', 10);
+  const transitMax = parseInt((formData.get('transitMax') as string) || '14', 10);
+  const inclusions = (formData.get('inclusions') as string)?.trim() || 'Port handling, Bill of Lading, Customs filing';
+  const exclusions = (formData.get('exclusions') as string)?.trim() || 'Destination customs duty & VAT';
+
+  if (!shipmentId) {
+    return { success: false, error: 'Shipment ID is required to submit a freight quote.' };
+  }
+
+  if (!providerId) {
+    return { success: false, error: 'Provider record could not be resolved.' };
+  }
+
+  if (!cost || cost <= 0) {
+    return { success: false, error: 'Valid freight cost in INR is required.' };
+  }
+
+  const shipment = await prisma.shipment.findUnique({
+    where: { id: shipmentId },
+    include: { business: true, product: true },
+  });
+
+  if (!shipment) {
+    return { success: false, error: 'Shipment not found.' };
+  }
+
+  const createdQuote = await prisma.quote.create({
+    data: {
+      shipmentId,
+      providerId,
+      mode,
+      cost,
+      currency: 'INR',
+      transitMin,
+      transitMax,
+      inclusions,
+      exclusions,
+      isSelected: false,
+    },
+    include: { provider: true },
+  });
+
+  // Notify MSME business owner
+  try {
+    await prisma.notification.create({
+      data: {
+        userId: shipment.business.ownerUserId,
+        type: 'NEW_QUOTE',
+        title: `New Freight Quote: #${shipment.shipmentNumber}`,
+        message: `${createdQuote.provider.name} submitted a quote for ${mode} at ₹${cost.toLocaleString('en-IN')}.`,
+      },
+    });
+  } catch (notifErr) {}
+
+  // Create audit log
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      entityType: 'Quote',
+      entityId: createdQuote.id,
+      action: 'SUBMIT_FREIGHT_QUOTE',
+      newValueJson: JSON.stringify({
+        shipmentId,
+        providerId,
+        mode,
+        cost,
+        transitMin,
+        transitMax,
+      }),
+    },
+  });
+
+  revalidatePath('/provider');
+  revalidatePath('/shipments');
+  revalidatePath(`/shipments/${shipmentId}`);
+  revalidatePath(`/shipments/${shipmentId}/quotes`);
+  revalidatePath('/dashboard');
+
+  return { success: true };
+}
+
+export async function updateProviderDetailsAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  const { user, role } = await getActiveUser();
+  if (!user || (role !== 'PROVIDER' && !isPlatformAdmin(user))) {
+    throw new Error('Unauthorized: Authentication required.');
+  }
+
+  const providerId = (formData.get('providerId') as string)?.trim() || user.providers?.[0]?.id;
+  const name = (formData.get('name') as string)?.trim();
+  const serviceArea = (formData.get('serviceArea') as string)?.trim();
+  const contactEmail = (formData.get('contactEmail') as string)?.trim();
+  const type = (formData.get('type') as string)?.trim();
+
+  if (!providerId) {
+    return { success: false, error: 'Provider ID is required.' };
+  }
+
+  const provider = await prisma.provider.findUnique({
+    where: { id: providerId },
+  });
+
+  if (!provider) {
+    return { success: false, error: 'Provider profile not found.' };
+  }
+
+  if (!isPlatformAdmin(user) && provider.userId && provider.userId !== user.id) {
+    return { success: false, error: 'Unauthorized: Cannot edit another provider profile.' };
+  }
+
+  await prisma.provider.update({
+    where: { id: providerId },
+    data: {
+      name: name || provider.name,
+      serviceArea: serviceArea || provider.serviceArea,
+      contactEmail: contactEmail || provider.contactEmail,
+      type: type || provider.type,
+    },
+  });
+
+  revalidatePath('/provider');
+  return { success: true };
+}
+
+export async function completeLabAuditAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  const { user, role } = await getActiveUser();
+  if (!user || (role !== 'PROVIDER' && !isPlatformAdmin(user))) {
+    throw new Error('Unauthorized: Lab audit actions require accredited provider or admin credentials.');
+  }
+
+  const taskId = (formData.get('taskId') as string)?.trim();
+  const requirementId = (formData.get('requirementId') as string)?.trim();
+  const assayValue = (formData.get('assayValue') as string)?.trim();
+  const isApproved = formData.get('decision') === 'approve';
+  const notes = (formData.get('notes') as string)?.trim();
+
+  if (!taskId && !requirementId) {
+    return { success: false, error: 'Task or Requirement ID is required.' };
+  }
+
+  const auditRemark = isApproved
+    ? `Accredited Lab Audit PASSED${assayValue ? ` [Assay: ${assayValue}]` : ''}: ${notes || 'Complies with target market regulatory standards & MRL tolerances.'}`
+    : `Accredited Lab Audit REJECTED: ${notes || 'Sample does not meet required regulatory thresholds.'}`;
+
+  if (requirementId) {
+    await prisma.requirement.update({
+      where: { id: requirementId },
+      data: {
+        status: isApproved ? 'verified' : 'rejected',
+        reason: auditRemark,
+        completedAt: isApproved ? new Date() : null,
+      },
+    });
+
+    await prisma.document.updateMany({
+      where: { requirementId },
+      data: {
+        status: isApproved ? 'verified' : 'rejected',
+        notes: auditRemark,
+      },
+    });
+  }
+
+  if (taskId) {
+    await prisma.providerTask.update({
+      where: { id: taskId },
+      data: {
+        status: isApproved ? 'completed' : 'rejected',
+        completedAt: new Date(),
+        notes: auditRemark,
+      },
+    });
+  }
+
+  revalidatePath('/provider');
+  revalidatePath('/readiness');
+  revalidatePath('/certifications');
+  revalidatePath('/documents');
+  revalidatePath('/dashboard');
+
+  return { success: true };
+}
+
+export async function fileCustomsLEOAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  const { user, role } = await getActiveUser();
+  if (!user || (role !== 'PROVIDER' && !isPlatformAdmin(user))) {
+    throw new Error('Unauthorized: Customs actions require CHA provider or admin credentials.');
+  }
+
+  const taskId = (formData.get('taskId') as string)?.trim();
+  const shipmentId = (formData.get('shipmentId') as string)?.trim();
+  const shippingBillNumber = (formData.get('shippingBillNumber') as string)?.trim() || `SB-${Date.now().toString().slice(-6)}`;
+  const portLocation = (formData.get('portLocation') as string)?.trim() || 'JNPT Customs Terminal, Nhava Sheva';
+  const isApproved = formData.get('decision') === 'approve';
+  const customNotes = (formData.get('notes') as string)?.trim();
+
+  if (shipmentId) {
+    const shipment = await prisma.shipment.findUnique({
+      where: { id: shipmentId },
+      include: { business: true },
+    });
+
+    if (shipment) {
+      const milestoneStatus = isApproved ? 'Export Customs' : 'Exception';
+      const eventNote = isApproved
+        ? `ICEGATE Shipping Bill #${shippingBillNumber} processed. LEO (Let Export Order) granted by Indian Customs. Ready for container loading.`
+        : `Customs Clearance On Hold: ${customNotes || 'Discrepancy in HS Code classification or valuation documentation.'}`;
+
+      await prisma.trackingEvent.create({
+        data: {
+          shipmentId,
+          status: milestoneStatus,
+          location: portLocation,
+          note: eventNote,
+          actorId: user.id,
+        },
+      });
+
+      await prisma.shipment.update({
+        where: { id: shipmentId },
+        data: { status: isApproved ? 'Export Customs' : 'Exception' },
+      });
+
+      try {
+        await prisma.notification.create({
+          data: {
+            userId: shipment.business.ownerUserId,
+            type: isApproved ? 'CUSTOMS_CLEARED' : 'CUSTOMS_HOLD',
+            title: isApproved ? `LEO Granted: #${shipment.shipmentNumber}` : `Customs Hold: #${shipment.shipmentNumber}`,
+            message: eventNote,
+          },
+        });
+      } catch (e) {}
+    }
+  }
+
+  if (taskId) {
+    await prisma.providerTask.update({
+      where: { id: taskId },
+      data: {
+        status: isApproved ? 'completed' : 'rejected',
+        completedAt: new Date(),
+        notes: `Customs CHA Action: Shipping Bill #${shippingBillNumber}. ${isApproved ? 'LEO cleared.' : 'Held for clarification.'}`,
+      },
+    });
+  }
+
+  revalidatePath('/provider');
+  revalidatePath('/shipments');
+  revalidatePath(`/shipments/${shipmentId}`);
+  revalidatePath(`/shipments/${shipmentId}/tracking`);
+  revalidatePath('/dashboard');
+
+  return { success: true };
+}
+
 export async function addTrackingEventAction(
   shipmentId: string,
   status: string,
