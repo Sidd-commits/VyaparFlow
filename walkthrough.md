@@ -2,6 +2,7 @@
 
 ## Executive Summary
 
+
 A comprehensive architectural audit, security hardening, and functional enhancement pass was executed across the **VyaparFlow** codebase for Indian MSME exporters. The implementation focused on four primary pillars:
 1. **Document Verification Workflow & State Machine**: Strictly enforced the business rule `UPLOADED DOES NOT MEAN APPROVED`. Uploaded compliance proof enters an amber/yellow `Verification Pending` state; dispatch blockers remain active until an accredited third-party partner or platform administrator verifies the submission. Exporters cannot self-approve.
 2. **Industry & Product-Specific Requirement Personalization**: Built a centralized corridor applicability service (`lib/services/applicability.ts`) ensuring requirements (FSSAI, APEDA, Phytosanitary, BIS Steel, GJEPC, Kimberley Process) are dynamically scoped by industry domain, product category/HS code, and destination country.
