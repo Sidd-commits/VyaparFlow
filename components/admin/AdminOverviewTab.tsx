@@ -243,7 +243,7 @@ export default function AdminOverviewTab({
                     <span className="font-bold text-slate-900 text-xs font-mono">
                       {log.action}
                     </span>
-                    <span className="text-[10px] text-slate-400">
+                    <span suppressHydrationWarning className="text-[10px] text-slate-400">
                       {new Date(log.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>

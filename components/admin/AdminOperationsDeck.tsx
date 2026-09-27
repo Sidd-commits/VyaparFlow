@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import AdminOverviewTab from './AdminOverviewTab';
 import AdminUserManagementTab from './AdminUserManagementTab';
 import AdminVerificationQueueTab from './AdminVerificationQueueTab';
@@ -64,7 +65,41 @@ export default function AdminOperationsDeck({
   countriesList,
   categoriesList,
 }: AdminOperationsDeckProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'verifications' | 'rules' | 'logs'>('overview');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const tabParam = searchParams ? searchParams.get('tab') : null;
+
+  const normalizeTab = (param: string | null): 'overview' | 'users' | 'verifications' | 'rules' | 'logs' => {
+    if (param === 'users') return 'users';
+    if (param === 'verifications' || param === 'verification') return 'verifications';
+    if (param === 'rules') return 'rules';
+    if (param === 'logs') return 'logs';
+    return 'overview';
+  };
+
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'verifications' | 'rules' | 'logs'>(
+    normalizeTab(tabParam)
+  );
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(normalizeTab(tabParam));
+    }
+  }, [tabParam]);
+
+  const handleTabChange = (tab: 'overview' | 'users' | 'verifications' | 'rules' | 'logs') => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : '');
+    if (tab === 'overview') {
+      params.delete('tab');
+    } else {
+      params.set('tab', tab);
+    }
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
 
   interface AdminTab {
     id: 'overview' | 'users' | 'verifications' | 'rules' | 'logs';
@@ -144,7 +179,7 @@ export default function AdminOperationsDeck({
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => handleTabChange(tab.id as any)}
                 className={`px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
                   isActive
                     ? 'bg-orange-600 text-white shadow-md shadow-orange-600/20'
@@ -179,7 +214,7 @@ export default function AdminOperationsDeck({
             metrics={metrics}
             corridorDistribution={corridorDistribution}
             recentActivity={recentActivity}
-            onSelectTab={setActiveTab}
+            onSelectTab={handleTabChange}
           />
         )}
 

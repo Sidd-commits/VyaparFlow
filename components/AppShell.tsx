@@ -18,6 +18,9 @@ import {
   X,
   ShieldCheck,
   TrendingUp,
+  Users,
+  Scale,
+  Activity,
 } from 'lucide-react';
 
 interface AppShellProps {
@@ -108,8 +111,11 @@ export default function AppShell({
     {
       label: 'ADMINISTRATION',
       items: [
-        { name: 'Operations Console', href: '/admin', icon: ShieldCheck, exact: true },
-        { name: 'Document Verification', href: '/documents', icon: FileText },
+        { name: 'Operations Overview', href: '/admin', icon: LayoutDashboard, exact: true },
+        { name: 'Exporters & Users', href: '/admin?tab=users', icon: Users },
+        { name: 'Verification Queue', href: '/admin?tab=verifications', icon: FileCheck2 },
+        { name: 'Regulatory Rules', href: '/admin?tab=rules', icon: Scale },
+        { name: 'Audit Trail', href: '/admin?tab=logs', icon: Activity },
       ],
     },
   ];
@@ -122,7 +128,21 @@ export default function AppShell({
       : msmeNavGroups;
 
   const isLinkActive = (item: NavItem) => {
+    // If running in browser, check search params for tab queries
+    if (typeof window !== 'undefined' && item.href.includes('?')) {
+      const currentUrl = window.location.pathname + window.location.search;
+      if (currentUrl === item.href) return true;
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetQuery = item.href.split('?')[1];
+      const targetParams = new URLSearchParams(targetQuery);
+      const targetTab = targetParams.get('tab');
+      return pathname === item.href.split('?')[0] && urlParams.get('tab') === targetTab;
+    }
+
     if (item.exact) {
+      if (typeof window !== 'undefined' && window.location.search.includes('tab=')) {
+        return false;
+      }
       return pathname === item.href;
     }
     return pathname === item.href || pathname.startsWith(`${item.href}/`);

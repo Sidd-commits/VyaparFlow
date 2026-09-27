@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import { requireAuth } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
@@ -9,6 +10,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function ProductsPage() {
   const { role, user } = await requireAuth();
+  if (role === 'ADMIN') redirect('/admin');
+  if (role === 'PROVIDER') redirect('/provider');
+
   const business = user?.businesses[0];
 
   const products = business?.id

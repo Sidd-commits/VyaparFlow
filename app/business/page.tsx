@@ -1,4 +1,5 @@
 import React from 'react';
+import { redirect } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import BusinessRegistrationsForm from '@/components/BusinessRegistrationsForm';
 import EditCompanyProfileModal from '@/components/EditCompanyProfileModal';
@@ -12,6 +13,8 @@ export const dynamic = 'force-dynamic';
 
 export default async function BusinessPage() {
   const { role, user } = await requireAuth();
+  if (role === 'ADMIN') redirect('/admin');
+  if (role === 'PROVIDER') redirect('/provider?tab=profile');
   
   // Scoped strictly to the logged in user's owned business
   const business = user?.businesses?.[0];
@@ -209,9 +212,7 @@ export default async function BusinessPage() {
                 GSTIN & IEC Proof Verification
               </h3>
               <p className="text-xs text-slate-500">
-                {role === 'ADMIN'
-                  ? 'Review and accept or reject GSTIN/IEC proof documents submitted by MSME exporters.'
-                  : 'Your proof documents are submitted for admin verification. Status updates will appear here.'}
+                Your proof documents are submitted for admin verification. Status updates will appear here.
               </p>
             </div>
           </div>
@@ -261,38 +262,6 @@ export default async function BusinessPage() {
                       >
                         <Eye className="w-3.5 h-3.5 text-slate-600" /> View Document
                       </a>
-
-                      {/* Admin Accept/Reject Buttons */}
-                      {role === 'ADMIN' && doc.status === 'under_review' && (
-                        <>
-                          <form
-                            action={async () => {
-                              'use server';
-                              await verifyDocumentAction(doc.id, 'verified', 'GSTIN proof verified by Platform Admin.');
-                            }}
-                          >
-                            <button
-                              type="submit"
-                              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer flex items-center gap-1"
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5" /> Accept
-                            </button>
-                          </form>
-                          <form
-                            action={async () => {
-                              'use server';
-                              await verifyDocumentAction(doc.id, 'rejected', 'GSTIN proof rejected. Please re-upload valid certificate.');
-                            }}
-                          >
-                            <button
-                              type="submit"
-                              className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer flex items-center gap-1"
-                            >
-                              <XCircle className="w-3.5 h-3.5" /> Reject
-                            </button>
-                          </form>
-                        </>
-                      )}
                     </div>
                   </div>
                 ))}
@@ -345,38 +314,6 @@ export default async function BusinessPage() {
                       >
                         <Eye className="w-3.5 h-3.5 text-slate-600" /> View Document
                       </a>
-
-                      {/* Admin Accept/Reject Buttons */}
-                      {role === 'ADMIN' && doc.status === 'under_review' && (
-                        <>
-                          <form
-                            action={async () => {
-                              'use server';
-                              await verifyDocumentAction(doc.id, 'verified', 'IEC proof verified by Platform Admin.');
-                            }}
-                          >
-                            <button
-                              type="submit"
-                              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer flex items-center gap-1"
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5" /> Accept
-                            </button>
-                          </form>
-                          <form
-                            action={async () => {
-                              'use server';
-                              await verifyDocumentAction(doc.id, 'rejected', 'IEC proof rejected. Please re-upload valid certificate.');
-                            }}
-                          >
-                            <button
-                              type="submit"
-                              className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xs transition-colors cursor-pointer flex items-center gap-1"
-                            >
-                              <XCircle className="w-3.5 h-3.5" /> Reject
-                            </button>
-                          </form>
-                        </>
-                      )}
                     </div>
                   </div>
                 ))}

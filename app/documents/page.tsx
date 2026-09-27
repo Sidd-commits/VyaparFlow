@@ -1,4 +1,5 @@
 import React from 'react';
+import { redirect } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import { requireAuth, verifyDocumentAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
@@ -24,6 +25,15 @@ export const dynamic = 'force-dynamic';
 
 export default async function DocumentsPage() {
   const { role, user } = await requireAuth();
+
+  if (role === 'ADMIN') {
+    redirect('/admin?tab=verifications');
+  }
+
+  if (role === 'PROVIDER') {
+    redirect('/provider?tab=verification');
+  }
+
   const business = user?.businesses?.[0];
 
   // Scoped strictly to authenticated user's business for MSME; all for Admin/Provider
@@ -99,16 +109,11 @@ export default async function DocumentsPage() {
           )}
 
           {/* Right Column: Document List & Status Timelines */}
-          <div className={`${role === 'MSME' && business ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4`}>
+          <div className={`${business ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-4`}>
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-slate-900 font-serif">
                 Compliance Document Dossier ({documents.length})
               </h3>
-              {role === 'ADMIN' && (
-                <span className="text-xs bg-slate-900 text-orange-400 font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Platform Admin Reviewer
-                </span>
-              )}
             </div>
 
             {documents.length === 0 ? (
@@ -295,43 +300,6 @@ export default async function DocumentsPage() {
                         >
                           <Eye className="w-3.5 h-3.5 text-slate-600" /> View Document
                         </a>
-
-                        {/* Admin / Provider Action Buttons */}
-                        {(role === 'ADMIN' || role === 'PROVIDER') && isPending && (
-                          <div className="flex items-center gap-2">
-                            <form
-                              action={async () => {
-                                'use server';
-                                await verifyDocumentAction(doc.id, 'verified');
-                              }}
-                            >
-                              <button
-                                type="submit"
-                                className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
-                              >
-                                <CheckCircle2 className="w-3.5 h-3.5" /> Approve & Verify
-                              </button>
-                            </form>
-
-                            <form
-                              action={async () => {
-                                'use server';
-                                await verifyDocumentAction(
-                                  doc.id,
-                                  'rejected',
-                                  'Document scan illegible or missing official seal/signature.'
-                                );
-                              }}
-                            >
-                              <button
-                                type="submit"
-                                className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
-                              >
-                                <FileX2 className="w-3.5 h-3.5" /> Reject Document
-                              </button>
-                            </form>
-                          </div>
-                        )}
                       </div>
                     </div>
                   );
