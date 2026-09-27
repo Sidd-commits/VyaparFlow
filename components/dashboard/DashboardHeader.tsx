@@ -2,6 +2,7 @@
 
 import React from 'react';
 import EditCompanyProfileModal from '@/components/EditCompanyProfileModal';
+import ProfileCompletenessModal from '@/components/dashboard/ProfileCompletenessModal';
 import { Globe2, Building2, CheckCircle2, ShieldCheck } from 'lucide-react';
 
 interface DashboardHeaderProps {
@@ -21,6 +22,8 @@ interface DashboardHeaderProps {
     gstStatus: string;
     iecStatus: string;
     profileCompletion?: number | null;
+    products?: any[];
+    documents?: any[];
   } | null;
   product?: {
     name: string;
@@ -75,7 +78,7 @@ export default function DashboardHeader({
           </div>
         </div>
 
-        {/* Right: Target Corridor & Compact Status */}
+        {/* Right: Target Corridor & Profile Completeness Trigger */}
         <div className="flex flex-wrap items-center gap-3 text-xs">
           {/* Destination Corridor Pill */}
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-orange-50/70 border border-orange-200 text-orange-900 font-semibold">
@@ -86,11 +89,18 @@ export default function DashboardHeader({
             </span>
           </div>
 
-          {/* Compact Profile Indicator */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-medium">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-            <span>Profile {profileCompletion}%</span>
-          </div>
+          {/* Dynamic Profile Indicator with Interactive Audit Modal */}
+          {business ? (
+            <ProfileCompletenessModal
+              business={business}
+              triggerClassName="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer shadow-2xs"
+            />
+          ) : (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700 font-medium">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>Profile {profileCompletion}%</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

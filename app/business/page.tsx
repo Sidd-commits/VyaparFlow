@@ -2,8 +2,10 @@ import React from 'react';
 import AppShell from '@/components/AppShell';
 import BusinessRegistrationsForm from '@/components/BusinessRegistrationsForm';
 import EditCompanyProfileModal from '@/components/EditCompanyProfileModal';
+import ProfileCompletenessModal from '@/components/dashboard/ProfileCompletenessModal';
 import { requireAuth, updateBusinessRegistrationsAction, verifyDocumentAction } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
+import { calculateProfileCompletenessFromData } from '@/lib/services/profileCompleteness';
 import { Building2, MapPin, CheckCircle2, ShieldCheck, Upload, FileText, AlertTriangle, Clock, XCircle, Eye, Edit3 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -40,6 +42,14 @@ export default async function BusinessPage() {
         })
       : Promise.resolve([]),
   ]);
+
+  const businessWithDocs = business ? {
+    ...business,
+    documents: [...gstProofDocs, ...iecProofDocs],
+  } : null;
+
+  const profileResult = businessWithDocs ? calculateProfileCompletenessFromData(businessWithDocs) : null;
+  const profileCompletion = profileResult?.totalScore ?? (business?.profileCompletion || 20);
 
   const statusBadge = (status: string) => {
     if (status === 'verified')
@@ -84,9 +94,26 @@ export default async function BusinessPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-            <span className="text-xs font-semibold text-slate-500">Profile Readiness:</span>
-            <span className="text-xl font-bold text-slate-900">{business?.profileCompletion || 20}%</span>
+          <div className="flex items-center gap-3">
+            {businessWithDocs ? (
+              <ProfileCompletenessModal
+                business={businessWithDocs}
+                triggerElement={
+                  <div className="flex items-center gap-3 bg-slate-50 hover:bg-slate-100 p-3.5 rounded-xl border border-slate-200 transition-colors shadow-2xs">
+                    <span className="text-xs font-semibold text-slate-500">Profile Readiness:</span>
+                    <span className="text-xl font-bold text-slate-900">{profileCompletion}%</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800">
+                      View Audit →
+                    </span>
+                  </div>
+                }
+              />
+            ) : (
+              <div className="flex items-center gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                <span className="text-xs font-semibold text-slate-500">Profile Readiness:</span>
+                <span className="text-xl font-bold text-slate-900">{profileCompletion}%</span>
+              </div>
+            )}
           </div>
         </div>
 

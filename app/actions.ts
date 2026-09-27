@@ -15,6 +15,7 @@ import {
 } from '@/lib/businessTypeConfig';
 import { syncBusinessRequirements } from '@/lib/services/applicability';
 import { ensureMSMEBusiness } from '@/lib/services/setupMSME';
+import { syncBusinessProfileCompleteness } from '@/lib/services/profileCompleteness';
 import {
   PERSONA_COOKIE,
   USER_ID_COOKIE,
@@ -312,6 +313,9 @@ export async function uploadDocumentAction(formData: FormData): Promise<void> {
     },
   });
 
+  // Synchronize profile completeness
+  await syncBusinessProfileCompleteness(businessId).catch(() => {});
+
   revalidatePath('/dashboard');
   revalidatePath('/documents');
   revalidatePath('/readiness');
@@ -398,6 +402,10 @@ export async function verifyDocumentAction(
       }),
     },
   });
+
+  if (existingDoc.businessId) {
+    await syncBusinessProfileCompleteness(existingDoc.businessId).catch(() => {});
+  }
 
   revalidatePath('/dashboard');
   revalidatePath('/documents');
@@ -817,6 +825,13 @@ export async function updateProviderTaskAction(taskId: string, status: string, n
       newValueJson: JSON.stringify({ status, notes }),
     },
   });
+
+  const targetBizId =
+    task.shipment?.businessId ||
+    task.requirement?.productCountry?.product?.businessId;
+  if (targetBizId) {
+    await syncBusinessProfileCompleteness(targetBizId).catch(() => {});
+  }
 
   revalidatePath('/provider');
   revalidatePath('/dashboard');
@@ -1542,12 +1557,6 @@ export async function updateBusinessRegistrationsAction(formData: FormData): Pro
     updateData.iecStatus = `Active (${iecCode})`;
   }
 
-  if (gstNumber && iecCode) {
-    updateData.profileCompletion = 100;
-  } else if (gstNumber || iecCode) {
-    updateData.profileCompletion = 60;
-  }
-
   await prisma.business.update({
     where: { id: targetBusiness.id },
     data: updateData,
@@ -1611,6 +1620,9 @@ export async function updateBusinessRegistrationsAction(formData: FormData): Pro
       }
     }
   }
+
+  // Dynamically calculate and sync true profile completeness
+  await syncBusinessProfileCompleteness(targetBusiness.id).catch(() => {});
 
   revalidatePath('/business');
   revalidatePath('/dashboard');
@@ -1721,6 +1733,9 @@ export async function updateCompanyProfileAction(formData: FormData): Promise<{ 
 
   // Dynamically sync statutory compliance requirements to the updated business type & corridor
   await syncBusinessRequirements(targetBusinessId);
+
+  // Recalculate true profile completeness based on updated fields
+  await syncBusinessProfileCompleteness(targetBusinessId).catch(() => {});
 
   // Log audit action
   await prisma.auditLog.create({
@@ -2104,6 +2119,9 @@ export async function completeOnboardingAction(formData: FormData): Promise<void
 
   // Calculate & sync personalized requirements tailored to industry, products, destinations
   await syncBusinessRequirements(business.id);
+
+  // Dynamically calculate and persist true profile completeness
+  await syncBusinessProfileCompleteness(business.id).catch(() => {});
 
   // Audit log
   await prisma.auditLog.create({
