@@ -1224,6 +1224,56 @@ export async function updateRuleAction(ruleId: string, data: { priority?: string
   revalidatePath('/readiness');
 }
 
+export async function createRuleAction(formData: FormData): Promise<{ success: boolean; error?: string }> {
+  const { user } = await requireAdmin();
+
+  const title = (formData.get('title') as string)?.trim();
+  const description = (formData.get('description') as string)?.trim();
+  const type = (formData.get('type') as string)?.trim() || 'document';
+  const priority = (formData.get('priority') as string)?.trim() || 'high';
+  const weight = parseFloat((formData.get('weight') as string) || '15');
+  const countryId = (formData.get('countryId') as string)?.trim() || null;
+  const categoryId = (formData.get('categoryId') as string)?.trim() || null;
+  const blocksDispatch = formData.get('blocksDispatch') === 'true';
+  const mandatory = formData.get('mandatory') !== 'false';
+  const notes = (formData.get('notes') as string)?.trim();
+
+  if (!title || !description) {
+    return { success: false, error: 'Rule title and description are required.' };
+  }
+
+  const created = await prisma.rule.create({
+    data: {
+      title,
+      description,
+      type,
+      priority,
+      weight: isNaN(weight) ? 10 : weight,
+      countryId: countryId || null,
+      categoryId: categoryId || null,
+      blocksDispatch,
+      mandatory,
+      notes: notes || null,
+      active: true,
+      version: 1,
+    },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: user.id,
+      entityType: 'Rule',
+      entityId: created.id,
+      action: 'CREATE_COMPLIANCE_RULE',
+      newValueJson: JSON.stringify({ title, type, priority, weight, countryId, categoryId }),
+    },
+  });
+
+  revalidatePath('/admin');
+  revalidatePath('/readiness');
+  return { success: true };
+}
+
 export async function registerUserAction(formData: FormData): Promise<void> {
   const name = ((formData.get('name') as string) || '').trim();
   const rawEmail = ((formData.get('email') as string) || '').trim();

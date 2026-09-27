@@ -43,7 +43,7 @@ async function runPlatformAudit() {
   const isIncorrect = await verifyPassword('WrongPassword', hash);
   assert(isIncorrect === false, 'Password verification fails on incorrect credentials');
 
-  const token = await createSessionToken({ userId: 'u-1', email: 'test@vyaparflow.in', role: 'MSME' });
+  const token = await createSessionToken({ userId: 'u-1', email: 'test@vyaparflow.in', name: 'Test Exporter', role: 'MSME' });
   assert(typeof token === 'string' && token.length > 20, 'Cryptographic JWT session token issued');
 
   // -------------------------------------------------------------
