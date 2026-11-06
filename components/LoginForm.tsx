@@ -78,6 +78,21 @@ const ERROR_MESSAGES: Record<string, { title: string; desc: string; type: 'error
     desc: 'An unexpected error occurred during Google sign-in. Please try again or sign in with email.',
     type: 'error',
   },
+  database_connection_failed: {
+    title: 'Database Service Unavailable',
+    desc: 'Could not connect to the cloud database instance. The database may be paused or offline. Please contact the administrator or try again shortly.',
+    type: 'error',
+  },
+  rate_limited: {
+    title: 'Too Many Requests',
+    desc: 'Security rate limit triggered due to repeated requests. Please wait 60 seconds before trying again.',
+    type: 'warning',
+  },
+  oauth_state_invalid: {
+    title: 'Security Verification Failed',
+    desc: 'OAuth state token validation failed or expired. Please initiate sign-in again.',
+    type: 'error',
+  },
 };
 
 function GoogleIcon({ className = 'w-5 h-5' }: { className?: string }) {

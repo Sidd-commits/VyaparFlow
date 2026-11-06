@@ -1,6 +1,7 @@
 import { prisma } from '../../lib/prisma';
 import { hashPassword } from '../../lib/crypto';
-import { USER_ID_COOKIE, PERSONA_COOKIE, USER_EMAIL_COOKIE, USER_NAME_COOKIE } from '../../lib/authCookies';
+import { USER_ID_COOKIE, PERSONA_COOKIE, USER_EMAIL_COOKIE, USER_NAME_COOKIE, SESSION_COOKIE } from '../../lib/authCookies';
+import { createSessionToken } from '../../lib/session';
 
 const BASE_URL = 'http://localhost:3000';
 
@@ -120,7 +121,14 @@ async function main() {
   // 3. Authenticated MSME User Session & Page Checks
   if (msmeUser) {
     console.log('\n--- Phase 3: Authenticated MSME User Page Checks ---');
+    const msmeToken = createSessionToken({
+      userId: msmeUser.id,
+      email: msmeUser.email,
+      role: 'MSME',
+      name: msmeUser.name,
+    });
     const msmeCookies = {
+      [SESSION_COOKIE]: msmeToken,
       [USER_ID_COOKIE]: msmeUser.id,
       [USER_EMAIL_COOKIE]: msmeUser.email,
       [USER_NAME_COOKIE]: msmeUser.name,
@@ -152,7 +160,14 @@ async function main() {
   // 4. Authenticated Provider User Session & Page Checks
   if (providerUser) {
     console.log('\n--- Phase 4: Authenticated Provider User Page Checks ---');
+    const providerToken = createSessionToken({
+      userId: providerUser.id,
+      email: providerUser.email,
+      role: 'PROVIDER',
+      name: providerUser.name,
+    });
     const providerCookies = {
+      [SESSION_COOKIE]: providerToken,
       [USER_ID_COOKIE]: providerUser.id,
       [USER_EMAIL_COOKIE]: providerUser.email,
       [USER_NAME_COOKIE]: providerUser.name,
@@ -171,7 +186,14 @@ async function main() {
   // 5. Authenticated Admin User Session & Page Checks
   if (adminUser) {
     console.log('\n--- Phase 5: Authenticated Admin User Page Checks ---');
+    const adminToken = createSessionToken({
+      userId: adminUser.id,
+      email: adminUser.email,
+      role: 'ADMIN',
+      name: adminUser.name,
+    });
     const adminCookies = {
+      [SESSION_COOKIE]: adminToken,
       [USER_ID_COOKIE]: adminUser.id,
       [USER_EMAIL_COOKIE]: adminUser.email,
       [USER_NAME_COOKIE]: adminUser.name,
@@ -190,7 +212,14 @@ async function main() {
   // 6. Non-Admin trying to access /admin
   if (msmeUser) {
     console.log('\n--- Phase 6: Privilege Escalation & Security Boundary Checks ---');
+    const msmeToken = createSessionToken({
+      userId: msmeUser.id,
+      email: msmeUser.email,
+      role: 'MSME',
+      name: msmeUser.name,
+    });
     const msmeCookies = {
+      [SESSION_COOKIE]: msmeToken,
       [USER_ID_COOKIE]: msmeUser.id,
       [USER_EMAIL_COOKIE]: msmeUser.email,
       [USER_NAME_COOKIE]: msmeUser.name,
@@ -236,9 +265,34 @@ async function main() {
 
     const anyDoc = await prisma.document.findFirst();
     if (anyDoc) {
-      const docRes = await fetch(`${BASE_URL}/api/documents/${anyDoc.id}`);
-      const isPdf = Boolean(docRes.status === 200 && docRes.headers.get('content-type')?.includes('application/pdf'));
-      record(`Document PDF Viewer API (/api/documents/${anyDoc.id})`, isPdf, `Status: ${docRes.status}, Content-Type: ${docRes.headers.get('content-type')}`, docRes.status);
+      // 1. Unauthenticated request must be blocked (IDOR protection)
+      const unauthDocRes = await fetch(`${BASE_URL}/api/documents/${anyDoc.id}`);
+      record(
+        `Document IDOR Protection (/api/documents/${anyDoc.id})`,
+        unauthDocRes.status === 401 || unauthDocRes.status === 403,
+        `Unauthenticated correctly rejected with status: ${unauthDocRes.status}`,
+        unauthDocRes.status
+      );
+
+      // 2. Authorized Admin request must succeed with PDF stream
+      const adminDocToken = createSessionToken({
+        userId: adminUser.id,
+        email: adminUser.email,
+        role: 'ADMIN',
+        name: adminUser.name,
+      });
+      const authDocRes = await fetch(`${BASE_URL}/api/documents/${anyDoc.id}`, {
+        headers: {
+          Cookie: `${SESSION_COOKIE}=${adminDocToken}; ${USER_ID_COOKIE}=${adminUser.id}; ${PERSONA_COOKIE}=ADMIN; ${USER_EMAIL_COOKIE}=${adminUser.email}`,
+        },
+      });
+      const isPdf = Boolean(authDocRes.status === 200 && authDocRes.headers.get('content-type')?.includes('application/pdf'));
+      record(
+        `Authorized Document PDF Access (/api/documents/${anyDoc.id})`,
+        isPdf,
+        `Status: ${authDocRes.status}, Content-Type: ${authDocRes.headers.get('content-type')}`,
+        authDocRes.status
+      );
     }
 
     // Phase 4: Production Health Check API

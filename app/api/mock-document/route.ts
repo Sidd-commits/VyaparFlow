@@ -4,7 +4,14 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const name = searchParams.get('name') || 'Document';
+  const rawName = searchParams.get('name') || 'Document';
+  // Escape HTML entities to prevent Reflected XSS (OWASP A03 / CWE-79)
+  const name = rawName
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 
   const html = `
     <!DOCTYPE html>

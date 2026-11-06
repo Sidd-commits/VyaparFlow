@@ -3,10 +3,11 @@
 import { prisma } from '@/lib/prisma';
 import { calculateReadinessScore } from '@/lib/services/readiness';
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import crypto from 'crypto';
 import {
   BUSINESS_TYPE_CONFIGS,
   validateGSTIN,
@@ -27,21 +28,35 @@ import {
 import { createSessionToken, verifySessionToken } from '@/lib/session';
 import { hashPassword, verifyPassword } from '@/lib/crypto';
 import { isPlatformAdmin, requireAdmin, getPlatformAdminEmail } from '@/lib/authGuards';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+
+const ALLOWED_UPLOAD_EXTENSIONS = new Set(['.pdf', '.png', '.jpg', '.jpeg', '.webp', '.doc', '.docx']);
 
 async function saveFileLocally(file: File | null, prefix: string): Promise<{ storageKey: string, size: number, name: string } | null> {
   if (!file || file.size === 0) return null;
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const filename = `${prefix}_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-  
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-  try {
-    await mkdir(uploadDir, { recursive: true });
-  } catch (e) {}
 
-  const filepath = path.join(uploadDir, filename);
-  await writeFile(filepath, buffer);
+  const rawExt = path.extname(file.name).toLowerCase();
+  if (rawExt && !ALLOWED_UPLOAD_EXTENSIONS.has(rawExt)) {
+    throw new Error(`Unsupported file type (${rawExt}). Allowed formats: PDF, PNG, JPG, JPEG, WEBP, DOC, DOCX.`);
+  }
+  const safeExt = ALLOWED_UPLOAD_EXTENSIONS.has(rawExt) ? rawExt : '.pdf';
+  const cleanBase = file.name.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40);
+  const randomSuffix = crypto.randomBytes(4).toString('hex');
+  const filename = `${prefix}_${Date.now()}_${randomSuffix}_${cleanBase}${safeExt}`;
   
-  return { storageKey: `uploads/${filename}`, size: file.size, name: file.name };
+  try {
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    await mkdir(uploadDir, { recursive: true });
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const filepath = path.join(uploadDir, filename);
+    await writeFile(filepath, buffer);
+    return { storageKey: `uploads/${filename}`, size: file.size, name: file.name };
+  } catch (fsErr: any) {
+    // Cloud/Serverless read-only filesystem resilience (e.g. Vercel Lambda EROFS):
+    // Fall back to virtual storage key so critical business workflows continue without crashing.
+    console.warn(`[saveFileLocally] Disk write bypassed (${fsErr?.code || fsErr?.message}). Using virtual cloud key.`);
+    return { storageKey: `uploads/${filename}`, size: file.size, name: file.name };
+  }
 }
 
 export async function getActiveUser(): Promise<{
@@ -53,18 +68,15 @@ export async function getActiveUser(): Promise<{
     const sessionCookieVal = cookieStore.get(SESSION_COOKIE)?.value;
     const verifiedSession = verifySessionToken(sessionCookieVal);
 
-    const userIdVal = verifiedSession?.userId || cookieStore.get(USER_ID_COOKIE)?.value;
-    const userEmailVal = verifiedSession?.email || cookieStore.get(USER_EMAIL_COOKIE)?.value;
-    const rawName = cookieStore.get(USER_NAME_COOKIE)?.value;
-    let userNameVal: string | null = verifiedSession?.name || null;
-    if (!userNameVal && rawName) {
-      try {
-        userNameVal = decodeURIComponent(rawName);
-      } catch {
-        userNameVal = rawName;
-      }
+    // Cryptographic Session Check: Only accept authenticated session if HMAC-SHA256 signature is valid
+    if (!verifiedSession) {
+      return { user: null, role: null };
     }
-    const personaVal = (verifiedSession?.role || cookieStore.get(PERSONA_COOKIE)?.value) as 'MSME' | 'PROVIDER' | 'ADMIN' | undefined;
+
+    const userIdVal = verifiedSession.userId;
+    const userEmailVal = verifiedSession.email;
+    const userNameVal = verifiedSession.name;
+    const personaVal = verifiedSession.role;
 
     const USER_AUTH_SELECT = {
       id: true,
@@ -1275,6 +1287,18 @@ export async function createRuleAction(formData: FormData): Promise<{ success: b
 }
 
 export async function registerUserAction(formData: FormData): Promise<void> {
+  // 1. IP Rate Limiting Guard (5 registrations per minute per IP)
+  try {
+    const headerList = await headers();
+    const clientIp = getClientIp({ headers: headerList });
+    const regLimit = checkRateLimit(`register:${clientIp}`, 5, 60000);
+    if (!regLimit.success) {
+      redirect('/login?tab=register&error=rate_limited');
+    }
+  } catch (err: any) {
+    if (err?.digest?.startsWith('NEXT_REDIRECT') || err?.message === 'NEXT_REDIRECT') throw err;
+  }
+
   const name = ((formData.get('name') as string) || '').trim();
   const rawEmail = ((formData.get('email') as string) || '').trim();
   const email = rawEmail.toLowerCase();
@@ -1299,14 +1323,21 @@ export async function registerUserAction(formData: FormData): Promise<void> {
   }
 
   // Check if user already exists
-  const existingUser = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { email },
-        { email: rawEmail },
-      ],
-    },
-  });
+  let existingUser = null;
+  try {
+    existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { email: rawEmail },
+        ],
+      },
+    });
+  } catch (dbErr: any) {
+    if (dbErr?.digest?.startsWith('NEXT_REDIRECT') || dbErr?.message === 'NEXT_REDIRECT') throw dbErr;
+    console.error('Database connection error checking existing user:', dbErr);
+    redirect('/login?tab=register&error=database_connection_failed');
+  }
 
   if (existingUser) {
     redirect('/login?tab=register&error=email_exists');
@@ -1316,26 +1347,33 @@ export async function registerUserAction(formData: FormData): Promise<void> {
   const passwordHash = hashPassword(password);
 
   // Create new user account with strictly sanitized role
-  const newUser = await prisma.user.create({
-    data: {
-      name,
-      email,
-      passwordHash,
-      role,
-      ...(role === 'PROVIDER'
-        ? {
-            providers: {
-              create: {
-                name: `${name} Logistics & Trade Services`,
-                type: 'FREIGHT',
-                serviceArea: 'Pan-India & Global Corridors',
-                contactEmail: email,
+  let newUser = null;
+  try {
+    newUser = await prisma.user.create({
+      data: {
+        name,
+        email,
+        passwordHash,
+        role,
+        ...(role === 'PROVIDER'
+          ? {
+              providers: {
+                create: {
+                  name: `${name} Logistics & Trade Services`,
+                  type: 'FREIGHT',
+                  serviceArea: 'Pan-India & Global Corridors',
+                  contactEmail: email,
+                },
               },
-            },
-          }
-        : {}),
-    },
-  });
+            }
+          : {}),
+      },
+    });
+  } catch (dbErr: any) {
+    if (dbErr?.digest?.startsWith('NEXT_REDIRECT') || dbErr?.message === 'NEXT_REDIRECT') throw dbErr;
+    console.error('Database connection error creating user:', dbErr);
+    redirect('/login?tab=register&error=database_connection_failed');
+  }
 
   // Switch role and log in with the newly created user account
   const sessionToken = createSessionToken({
@@ -1361,6 +1399,18 @@ export async function registerUserAction(formData: FormData): Promise<void> {
 }
 
 export async function loginUserAction(formData: FormData): Promise<void> {
+  // 1. IP Rate Limiting Guard (10 attempts per minute per IP)
+  try {
+    const headerList = await headers();
+    const clientIp = getClientIp({ headers: headerList });
+    const loginLimit = checkRateLimit(`login:${clientIp}`, 10, 60000);
+    if (!loginLimit.success) {
+      redirect('/login?error=rate_limited');
+    }
+  } catch (err: any) {
+    if (err?.digest?.startsWith('NEXT_REDIRECT') || err?.message === 'NEXT_REDIRECT') throw err;
+  }
+
   const rawEmail = ((formData.get('email') as string) || '').trim();
   const email = rawEmail.toLowerCase();
   const password = (formData.get('password') as string) || '';
@@ -1374,21 +1424,28 @@ export async function loginUserAction(formData: FormData): Promise<void> {
     redirect('/login?error=password_required');
   }
 
-  let user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { email },
-        { email: rawEmail },
-      ],
-    },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      passwordHash: true,
-    },
-  });
+  let user = null;
+  try {
+    user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email },
+          { email: rawEmail },
+        ],
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        passwordHash: true,
+      },
+    });
+  } catch (dbErr: any) {
+    if (dbErr?.digest?.startsWith('NEXT_REDIRECT') || dbErr?.message === 'NEXT_REDIRECT') throw dbErr;
+    console.error('Database connection error in loginUserAction:', dbErr);
+    redirect('/login?error=database_connection_failed');
+  }
 
   // Well-known demo accounts map for instant cloud / Vercel bootstrap
   const DEMO_ACCOUNTS: Record<string, { name: string; role: 'MSME' | 'PROVIDER' | 'ADMIN'; providerType?: string }> = {

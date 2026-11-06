@@ -37,8 +37,9 @@ export async function ensureProviderProfile(
     provider = await prisma.provider.findFirst({
       where: {
         OR: [
-          { contactEmail: { equals: userEmail, mode: 'insensitive' } },
-          { name: { contains: formattedName, mode: 'insensitive' } },
+          { contactEmail: userEmail },
+          { contactEmail: userEmail.toLowerCase() },
+          { name: { contains: formattedName } },
         ],
       },
       include: {

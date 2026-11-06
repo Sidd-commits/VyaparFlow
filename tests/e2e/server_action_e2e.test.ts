@@ -1,6 +1,8 @@
 import http from 'http';
 import assert from 'assert';
 import { prisma } from '../../lib/prisma';
+import { createSessionToken } from '../../lib/session';
+import { SESSION_COOKIE } from '../../lib/authCookies';
 
 function httpGet(urlStr: string, cookieHeader: string): Promise<{ statusCode: number; body: string }> {
   return new Promise((resolve, reject) => {
@@ -46,7 +48,14 @@ export async function runServerActionE2ETest() {
     },
   });
 
-  const cookieHeader = `vyaparflow_active_user_id=${testUser.id}; vyaparflow_active_user_email=${encodeURIComponent(testUser.email)}; vyaparflow_active_user_name=${encodeURIComponent(testUser.name)}; vyaparflow_active_role=MSME`;
+  const sessionToken = createSessionToken({
+    userId: testUser.id,
+    email: testUser.email,
+    role: 'MSME',
+    name: testUser.name,
+  });
+
+  const cookieHeader = `${SESSION_COOKIE}=${sessionToken}; vyaparflow_active_user_id=${testUser.id}; vyaparflow_active_user_email=${encodeURIComponent(testUser.email)}; vyaparflow_active_user_name=${encodeURIComponent(testUser.name)}; vyaparflow_active_role=MSME; vyaparflow_active_persona=MSME`;
 
   const business = await prisma.business.create({
     data: {

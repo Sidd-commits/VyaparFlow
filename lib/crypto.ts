@@ -59,8 +59,15 @@ export function verifyPassword(password: string, storedHash: string): boolean {
     }
   }
 
-  // Fallback for plaintext passwords (e.g. initial demo seed data)
-  if (storedHash === password || storedHash === p || storedHash.trim() === p) {
+  // Constant-time fallback comparison for legacy/demo plaintext passwords
+  const targetBuffer = Buffer.from(storedHash);
+  const inputBuffer = Buffer.from(password);
+  const trimmedInputBuffer = Buffer.from(p);
+
+  if (targetBuffer.length === inputBuffer.length && crypto.timingSafeEqual(targetBuffer, inputBuffer)) {
+    return true;
+  }
+  if (targetBuffer.length === trimmedInputBuffer.length && crypto.timingSafeEqual(targetBuffer, trimmedInputBuffer)) {
     return true;
   }
 

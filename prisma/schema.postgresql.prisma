@@ -1,0 +1,300 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
+}
+
+model User {
+  id           String         @id @default(uuid())
+  email        String         @unique
+  passwordHash String
+  name         String
+  role         String         // "MSME", "PROVIDER", "ADMIN"
+  avatar       String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  businesses   Business[]
+  providers    Provider[]
+  notifications Notification[]
+  auditLogs    AuditLog[]     @relation("ActorLogs")
+}
+
+model Business {
+  id                String       @id @default(uuid())
+  ownerUserId       String
+  ownerUser         User         @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  legalName         String
+  displayName       String
+  businessType      String
+  location          String
+  city              String       @default("Mumbai")
+  state             String       @default("Maharashtra")
+  gstStatus         String       @default("Active")
+  iecStatus         String       @default("Active")
+  profileCompletion Int          @default(80)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  products          Product[]
+  documents         Document[]
+  shipments         Shipment[]
+}
+
+model ProductCategory {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  active      Boolean   @default(true)
+  products    Product[]
+  rules       Rule[]
+}
+
+model Product {
+  id           String            @id @default(uuid())
+  businessId   String
+  business     Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  categoryId   String
+  category     ProductCategory   @relation(fields: [categoryId], references: [id])
+  name         String
+  hsCode       String
+  unit         String            @default("KG")
+  defaultValue Float             @default(1000)
+  createdAt    DateTime          @default(now())
+  destinations ProductCountry[]
+  shipments    Shipment[]
+}
+
+model Country {
+  id           String           @id @default(uuid())
+  name         String
+  isoCode      String           @unique
+  active       Boolean          @default(true)
+  destinations ProductCountry[]
+  rules        Rule[]
+  shipments    Shipment[]
+}
+
+model ProductCountry {
+  id             String          @id @default(uuid())
+  productId      String
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  countryId      String
+  country        Country         @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  createdAt      DateTime        @default(now())
+  requirements   Requirement[]
+  packagingItems PackagingItem[]
+}
+
+model Rule {
+  id             String           @id @default(uuid())
+  categoryId     String?
+  category       ProductCategory? @relation(fields: [categoryId], references: [id])
+  countryId      String?
+  country        Country?         @relation(fields: [countryId], references: [id])
+  type           String           // "document", "certification", "packaging", "labelling", "shipment"
+  title          String
+  description    String
+  priority       String           // "critical", "high", "medium", "low"
+  mandatory      Boolean          @default(true)
+  weight         Float            @default(10.0)
+  processingDays Int              @default(3)
+  blocksDispatch Boolean          @default(false)
+  notes          String?
+  version        Int              @default(1)
+  active         Boolean          @default(true)
+  updatedAt      DateTime         @updatedAt
+  requirements   Requirement[]
+}
+
+model Requirement {
+  id                   String                 @id @default(uuid())
+  productCountryId     String
+  productCountry       ProductCountry         @relation(fields: [productCountryId], references: [id], onDelete: Cascade)
+  shipmentId           String?
+  ruleId               String?
+  rule                 Rule?                  @relation(fields: [ruleId], references: [id])
+  type                 String                 // "document", "certification", "packaging", "labelling", "shipment"
+  title                String
+  priority             String                 // "critical", "high", "medium", "low"
+  status               String                 // "missing", "uploaded", "under_review", "verified", "rejected", "expired"
+  weight               Float                  @default(10.0)
+  reason               String?
+  dueDate              DateTime?
+  completedAt          DateTime?
+  createdAt            DateTime               @default(now())
+  documents            Document[]
+  providerTasks        ProviderTask[]
+  certificationRequests CertificationRequest[]
+}
+
+model Document {
+  id            String       @id @default(uuid())
+  businessId    String
+  business      Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  shipmentId    String?
+  shipment      Shipment?    @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
+  requirementId String?
+  requirement   Requirement? @relation(fields: [requirementId], references: [id], onDelete: SetNull)
+  type          String       // "GST_CERTIFICATE", "IEC_CERTIFICATE", "APEDA_RCMC", "LAB_TEST_REPORT", "PACKING_LIST", "COMMERCIAL_INVOICE", "PHYTOSANITARY"
+  storageKey    String       // S3 key or simulated URL
+  originalName  String
+  mimeType      String       @default("application/pdf")
+  size          Int          @default(256000)
+  version       Int          @default(1)
+  status        String       @default("under_review") // "under_review", "verified", "rejected", "expired"
+  notes         String?
+  uploadedAt    DateTime     @default(now())
+  issueDate     DateTime?
+  expiryDate    DateTime?
+  metadata      String?      // JSON string for extensibility
+}
+
+model Provider {
+  id               String            @id @default(uuid())
+  userId           String?
+  user             User?             @relation(fields: [userId], references: [id])
+  name             String
+  type             String            // "FREIGHT", "CERTIFICATION", "CUSTOMS_CHA", "INSURANCE"
+  serviceArea      String
+  contactEmail     String
+  active           Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  providerTasks    ProviderTask[]
+  quotes           Quote[]
+  insuranceOptions InsuranceOption[]
+}
+
+model ProviderTask {
+  id                    String                 @id @default(uuid())
+  providerId            String
+  provider              Provider               @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  shipmentId            String?
+  shipment              Shipment?              @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
+  requirementId         String?
+  requirement           Requirement?           @relation(fields: [requirementId], references: [id])
+  type                  String                 // "CERTIFICATION", "FREIGHT", "CUSTOMS_CHA", "INSURANCE"
+  status                String                 @default("requested") // "requested", "accepted", "in_progress", "completed", "rejected", "exception"
+  notes                 String?
+  assignedAt            DateTime               @default(now())
+  completedAt           DateTime?
+  certificationRequests CertificationRequest[]
+}
+
+model CertificationRequest {
+  id             String        @id @default(uuid())
+  requirementId  String
+  requirement    Requirement   @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  providerTaskId String?
+  providerTask   ProviderTask? @relation(fields: [providerTaskId], references: [id])
+  status         String        @default("requested") // "not_requested", "requested", "in_progress", "completed", "rejected"
+  requestedAt    DateTime      @default(now())
+  completedAt    DateTime?
+}
+
+model PackagingItem {
+  id               String         @id @default(uuid())
+  productCountryId String
+  productCountry   ProductCountry @relation(fields: [productCountryId], references: [id], onDelete: Cascade)
+  title            String
+  type             String         // "packaging", "labelling"
+  priority         String         @default("high")
+  mandatory        Boolean        @default(true)
+  status           String         @default("incomplete") // "incomplete", "completed"
+  notes            String?
+}
+
+model Shipment {
+  id                   String           @id @default(uuid())
+  shipmentNumber       String           @unique
+  businessId           String
+  business             Business         @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  productId            String
+  product              Product          @relation(fields: [productId], references: [id])
+  destinationCountryId String
+  destinationCountry   Country          @relation(fields: [destinationCountryId], references: [id])
+  destinationCity      String           @default("Dubai")
+  value                Float
+  currency             String           @default("INR")
+  quantity             Float
+  weight               Float
+  packages             Int
+  mode                 String           @default("Sea")
+  status               String           @default("Draft") // "Draft", "Preparation", "Ready to Dispatch", "Pickup Scheduled", "Picked Up", "Export Customs", "Dispatched", "In Transit", "Destination Customs", "Delivered", "Exception"
+  eta                  DateTime?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  documents            Document[]
+  quotes               Quote[]
+  insuranceOptions     InsuranceOption[]
+  providerTasks        ProviderTask[]
+  trackingEvents       TrackingEvent[]
+}
+
+model Quote {
+  id          String    @id @default(uuid())
+  shipmentId  String
+  shipment    Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  providerId  String
+  provider    Provider  @relation(fields: [providerId], references: [id])
+  mode        String    // "Sea", "Air", "Courier"
+  cost        Float
+  currency    String    @default("INR")
+  transitMin  Int
+  transitMax  Int
+  inclusions  String    // JSON string or comma list
+  exclusions  String    // JSON string or comma list
+  isSelected  Boolean   @default(false)
+  expiresAt   DateTime?
+}
+
+model InsuranceOption {
+  id          String   @id @default(uuid())
+  shipmentId  String
+  shipment    Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  providerId  String
+  provider    Provider @relation(fields: [providerId], references: [id])
+  rate        Float    // e.g. 0.003 (0.3%)
+  premium     Float
+  coverage    String
+  status      String   @default("Not Requested") // "Not Requested", "Requested", "Issued", "Rejected"
+  exclusions  String?
+}
+
+model TrackingEvent {
+  id         String   @id @default(uuid())
+  shipmentId String
+  shipment   Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  status     String
+  timestamp  DateTime @default(now())
+  location   String
+  note       String?
+  actorId    String?
+}
+
+model Notification {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  message   String
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  actorId      String
+  actor        User     @relation("ActorLogs", fields: [actorId], references: [id])
+  entityType   String
+  entityId     String
+  action       String
+  oldValueJson String?
+  newValueJson String?
+  createdAt    DateTime @default(now())
+}
+

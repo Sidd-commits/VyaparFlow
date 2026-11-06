@@ -2,7 +2,8 @@ import assert from 'assert';
 import { prisma } from '../../lib/prisma';
 import { hashPassword } from '../../lib/crypto';
 import { getPlatformAdminEmail } from '../../lib/authGuards';
-import { PERSONA_COOKIE, USER_ID_COOKIE, USER_EMAIL_COOKIE } from '../../lib/authCookies';
+import { PERSONA_COOKIE, USER_ID_COOKIE, USER_EMAIL_COOKIE, SESSION_COOKIE } from '../../lib/authCookies';
+import { createSessionToken } from '../../lib/session';
 
 export async function runAdminNavigationAudit() {
   console.log('================================================================');
@@ -23,8 +24,15 @@ export async function runAdminNavigationAudit() {
     },
   });
 
+  const adminToken = createSessionToken({
+    userId: legitimateAdmin.id,
+    email: legitimateAdmin.email,
+    role: 'ADMIN',
+    name: legitimateAdmin.name,
+  });
+
   const adminHeaders = {
-    Cookie: `${USER_ID_COOKIE}=${legitimateAdmin.id}; ${PERSONA_COOKIE}=ADMIN; ${USER_EMAIL_COOKIE}=${legitimateAdmin.email}`,
+    Cookie: `${SESSION_COOKIE}=${adminToken}; ${USER_ID_COOKIE}=${legitimateAdmin.id}; ${PERSONA_COOKIE}=ADMIN; ${USER_EMAIL_COOKIE}=${legitimateAdmin.email}`,
   };
 
   console.log('\n--- 1. Testing GET /admin as Platform Admin ---');

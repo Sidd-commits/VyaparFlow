@@ -1,4 +1,6 @@
 import { prisma } from '../../lib/prisma';
+import { createSessionToken } from '../../lib/session';
+import { SESSION_COOKIE, USER_ID_COOKIE, PERSONA_COOKIE, USER_EMAIL_COOKIE } from '../../lib/authCookies';
 
 async function main() {
   console.log('--- Testing MSME User A (Apex Agro Exporters) ---');
@@ -8,9 +10,16 @@ async function main() {
 
   if (!userA) throw new Error('User A not found');
 
+  const tokenA = createSessionToken({
+    userId: userA.id,
+    email: userA.email,
+    role: 'MSME',
+    name: userA.name,
+  });
+
   const resA = await fetch('http://localhost:3000/dashboard', {
     headers: {
-      Cookie: `vyaparflow_active_user_email=${userA.email}; vyaparflow_active_role=MSME; vyaparflow_active_user_id=${userA.id}`,
+      Cookie: `${SESSION_COOKIE}=${tokenA}; ${USER_EMAIL_COOKIE}=${userA.email}; ${PERSONA_COOKIE}=MSME; ${USER_ID_COOKIE}=${userA.id}`,
     },
   });
 
@@ -29,9 +38,16 @@ async function main() {
 
   if (!userB) throw new Error('User B not found');
 
+  const tokenB = createSessionToken({
+    userId: userB.id,
+    email: userB.email,
+    role: 'MSME',
+    name: userB.name,
+  });
+
   const resB = await fetch('http://localhost:3000/dashboard', {
     headers: {
-      Cookie: `vyaparflow_active_user_email=${userB.email}; vyaparflow_active_role=MSME; vyaparflow_active_user_id=${userB.id}`,
+      Cookie: `${SESSION_COOKIE}=${tokenB}; ${USER_EMAIL_COOKIE}=${userB.email}; ${PERSONA_COOKIE}=MSME; ${USER_ID_COOKIE}=${userB.id}`,
     },
   });
 

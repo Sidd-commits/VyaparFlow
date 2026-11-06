@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getActiveUser } from '@/app/actions';
 import fs from 'fs';
 import path from 'path';
 import jsPDF from 'jspdf';
@@ -125,6 +126,12 @@ export async function GET(
     return NextResponse.json({ error: 'Document ID is required' }, { status: 400 });
   }
 
+  // Enforce authentication & session check (Mitigate IDOR / OWASP A01)
+  const { user, role } = await getActiveUser();
+  if (!user || !role) {
+    return NextResponse.json({ error: 'Unauthorized: Authentication required to view compliance documents' }, { status: 401 });
+  }
+
   const doc = await prisma.document.findUnique({
     where: { id },
     include: {
@@ -135,6 +142,16 @@ export async function GET(
 
   if (!doc) {
     return NextResponse.json({ error: 'Document not found' }, { status: 404 });
+  }
+
+  // Enforce Ownership & Role-Based Access Control:
+  // MSME users may only inspect documents owned by their business.
+  // ADMIN and PROVIDER users are authorized to inspect compliance documents.
+  if (role === 'MSME' && doc.business?.ownerUserId !== user.id) {
+    return NextResponse.json(
+      { error: 'Forbidden: You do not have permission to view this compliance document' },
+      { status: 403 }
+    );
   }
 
   // 1. Check if an actual file was uploaded to disk under public/uploads

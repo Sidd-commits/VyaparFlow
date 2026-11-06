@@ -28,6 +28,34 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/login?error=google_auth_failed', request.url));
   }
 
+  // 0. Verify OAuth state nonce to prevent Login CSRF (CWE-352)
+  const stateParam = searchParams.get('state');
+  const expectedStateCookie = request.cookies.get('google_oauth_state')?.value;
+  let preferredRole: 'MSME' | 'PROVIDER' = 'MSME';
+
+  if (stateParam) {
+    try {
+      let parsedState: any = null;
+      try {
+        parsedState = JSON.parse(Buffer.from(stateParam, 'base64url').toString('utf8'));
+      } catch {
+        parsedState = JSON.parse(decodeURIComponent(stateParam));
+      }
+
+      // If state cookie was issued, ensure it matches the returned CSRF nonce
+      if (expectedStateCookie && parsedState?.csrf && parsedState.csrf !== expectedStateCookie) {
+        console.error('Google OAuth CSRF state mismatch detected');
+        return NextResponse.redirect(new URL('/login?error=google_csrf_mismatch', request.url));
+      }
+
+      if (parsedState?.role && (parsedState.role === 'MSME' || parsedState.role === 'PROVIDER')) {
+        preferredRole = parsedState.role;
+      }
+    } catch (parseErr) {
+      console.warn('Unable to parse OAuth state parameter:', parseErr);
+    }
+  }
+
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
@@ -92,20 +120,6 @@ export async function GET(request: NextRequest) {
         providers: true,
       },
     });
-
-    // Parse state parameter if present for preferred role (never allow ADMIN via state)
-    const stateParam = searchParams.get('state');
-    let preferredRole: 'MSME' | 'PROVIDER' = 'MSME';
-    if (stateParam) {
-      try {
-        const parsed = JSON.parse(decodeURIComponent(stateParam));
-        if (parsed.role && (parsed.role === 'MSME' || parsed.role === 'PROVIDER')) {
-          preferredRole = parsed.role;
-        }
-      } catch {
-        // Fallback to default
-      }
-    }
 
     if (!user) {
       // Determine role: Only the server-configured ADMIN_EMAIL can ever be created as ADMIN
@@ -208,9 +222,14 @@ export async function GET(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 30,
     });
 
+    // Cleanup temporary CSRF state cookie
+    response.cookies.delete('google_oauth_state');
+
     return response;
   } catch (err: any) {
     console.error('Google OAuth callback unexpected error:', err);
-    return NextResponse.redirect(new URL('/login?error=google_unexpected_error', request.url));
+    const isDbError = err?.message?.includes('database') || err?.message?.includes('Prisma') || err?.code?.startsWith('P');
+    const errQuery = isDbError ? 'database_connection_failed' : 'google_unexpected_error';
+    return NextResponse.redirect(new URL(`/login?error=${errQuery}`, request.url));
   }
 }

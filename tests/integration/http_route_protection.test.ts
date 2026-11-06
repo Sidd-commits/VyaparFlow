@@ -2,7 +2,8 @@ import assert from 'assert';
 import { prisma } from '../../lib/prisma';
 import { hashPassword } from '../../lib/crypto';
 import { getPlatformAdminEmail } from '../../lib/authGuards';
-import { PERSONA_COOKIE, USER_ID_COOKIE, USER_EMAIL_COOKIE } from '../../lib/authCookies';
+import { PERSONA_COOKIE, USER_ID_COOKIE, USER_EMAIL_COOKIE, SESSION_COOKIE } from '../../lib/authCookies';
+import { createSessionToken } from '../../lib/session';
 
 export async function runHttpRouteProtectionTests() {
   console.log('================================================================');
@@ -43,6 +44,27 @@ export async function runHttpRouteProtectionTests() {
     },
   });
 
+  const msmeToken = createSessionToken({
+    userId: msmeUser.id,
+    email: msmeUser.email,
+    role: 'MSME',
+    name: msmeUser.name,
+  });
+
+  const providerToken = createSessionToken({
+    userId: providerUser.id,
+    email: providerUser.email,
+    role: 'PROVIDER',
+    name: providerUser.name,
+  });
+
+  const adminToken = createSessionToken({
+    userId: legitimateAdmin.id,
+    email: legitimateAdmin.email,
+    role: 'ADMIN',
+    name: legitimateAdmin.name,
+  });
+
   try {
     // 1. Test GET /login content
     console.log('\n--- 1. Testing GET /login ---');
@@ -72,7 +94,7 @@ export async function runHttpRouteProtectionTests() {
     console.log('\n--- 3. Testing GET /admin as Exporter (MSME) ---');
     const msmeAdminRes = await fetch(`${baseUrl}/admin`, {
       headers: {
-        Cookie: `${USER_ID_COOKIE}=${msmeUser.id}; ${PERSONA_COOKIE}=MSME; ${USER_EMAIL_COOKIE}=${msmeUser.email}`,
+        Cookie: `${SESSION_COOKIE}=${msmeToken}; ${USER_ID_COOKIE}=${msmeUser.id}; ${PERSONA_COOKIE}=MSME; ${USER_EMAIL_COOKIE}=${msmeUser.email}`,
       },
       redirect: 'manual',
     });
@@ -91,7 +113,7 @@ export async function runHttpRouteProtectionTests() {
     console.log('\n--- 4. Testing GET /admin as Service Provider ---');
     const providerAdminRes = await fetch(`${baseUrl}/admin`, {
       headers: {
-        Cookie: `${USER_ID_COOKIE}=${providerUser.id}; ${PERSONA_COOKIE}=PROVIDER; ${USER_EMAIL_COOKIE}=${providerUser.email}`,
+        Cookie: `${SESSION_COOKIE}=${providerToken}; ${USER_ID_COOKIE}=${providerUser.id}; ${PERSONA_COOKIE}=PROVIDER; ${USER_EMAIL_COOKIE}=${providerUser.email}`,
       },
       redirect: 'manual',
     });
@@ -110,16 +132,30 @@ export async function runHttpRouteProtectionTests() {
     console.log('\n--- 5. Testing GET /admin as Platform Admin ---');
     const adminRes = await fetch(`${baseUrl}/admin`, {
       headers: {
-        Cookie: `${USER_ID_COOKIE}=${legitimateAdmin.id}; ${PERSONA_COOKIE}=ADMIN; ${USER_EMAIL_COOKIE}=${legitimateAdmin.email}`,
+        Cookie: `${SESSION_COOKIE}=${adminToken}; ${USER_ID_COOKIE}=${legitimateAdmin.id}; ${PERSONA_COOKIE}=ADMIN; ${USER_EMAIL_COOKIE}=${legitimateAdmin.email}`,
       },
     });
     assert.strictEqual(adminRes.status, 200, `Authorized admin must get 200 OK for /admin, got: ${adminRes.status}`);
     const adminHtml = await adminRes.text();
     assert.ok(
-      adminHtml.includes('Platform Administrator') || adminHtml.includes('Compliance Rules') || adminHtml.includes('Audit Logs'),
+      adminHtml.includes('Admin Operations Command Center') || adminHtml.includes('Platform Administrator') || adminHtml.includes('Compliance Rules') || adminHtml.includes('Audit Logs'),
       'Admin console HTML must be rendered for authorized Platform Admin'
     );
     console.log('✓ Authorized Platform Admin successfully accessed /admin operations console');
+
+    // 6. Test Authentication Bypass Prevention: Unsigned Admin Cookie without Session
+    console.log('\n--- 6. Testing Unsigned Admin Cookie Bypass Prevention ---');
+    const spoofedRes = await fetch(`${baseUrl}/admin`, {
+      headers: {
+        Cookie: `${USER_ID_COOKIE}=${legitimateAdmin.id}; ${PERSONA_COOKIE}=ADMIN; ${USER_EMAIL_COOKIE}=${legitimateAdmin.email}`,
+      },
+      redirect: 'manual',
+    });
+    assert.ok(
+      [307, 308, 302, 303].includes(spoofedRes.status),
+      `Unsigned spoofed cookie without valid session must be redirected, got: ${spoofedRes.status}`
+    );
+    console.log('✓ Unsigned cookie impersonation attempt successfully blocked and redirected');
 
     console.log('\n================================================================');
     console.log('🎉 ALL HTTP ROUTE PROTECTION INTEGRATION TESTS PASSED 100%!');

@@ -1,6 +1,8 @@
 import http from 'http';
 import assert from 'assert';
 import { prisma } from '../../lib/prisma';
+import { createSessionToken } from '../../lib/session';
+import { SESSION_COOKIE } from '../../lib/authCookies';
 
 function httpGet(urlStr: string, cookieHeader: string): Promise<{ statusCode: number; body: string }> {
   return new Promise((resolve, reject) => {
@@ -49,7 +51,13 @@ export async function runLiveDestinationE2ETest() {
     },
   });
 
-  const cookieJapan = `vyaparflow_active_user_id=${userJapan.id}; vyaparflow_active_user_email=${encodeURIComponent(userJapan.email)}; vyaparflow_active_user_name=${encodeURIComponent(userJapan.name)}; vyaparflow_active_role=MSME`;
+  const tokenJapan = createSessionToken({
+    userId: userJapan.id,
+    email: userJapan.email,
+    role: 'MSME',
+    name: userJapan.name,
+  });
+  const cookieJapan = `${SESSION_COOKIE}=${tokenJapan}; vyaparflow_active_user_id=${userJapan.id}; vyaparflow_active_user_email=${encodeURIComponent(userJapan.email)}; vyaparflow_active_user_name=${encodeURIComponent(userJapan.name)}; vyaparflow_active_role=MSME; vyaparflow_active_persona=MSME`;
 
   let countryJP = await prisma.country.findFirst({ where: { isoCode: 'JP' } });
   if (!countryJP) {
@@ -116,7 +124,13 @@ export async function runLiveDestinationE2ETest() {
     },
   });
 
-  const cookieNL = `vyaparflow_active_user_id=${userNL.id}; vyaparflow_active_user_email=${encodeURIComponent(userNL.email)}; vyaparflow_active_user_name=${encodeURIComponent(userNL.name)}; vyaparflow_active_role=MSME`;
+  const tokenNL = createSessionToken({
+    userId: userNL.id,
+    email: userNL.email,
+    role: 'MSME',
+    name: userNL.name,
+  });
+  const cookieNL = `${SESSION_COOKIE}=${tokenNL}; vyaparflow_active_user_id=${userNL.id}; vyaparflow_active_user_email=${encodeURIComponent(userNL.email)}; vyaparflow_active_user_name=${encodeURIComponent(userNL.name)}; vyaparflow_active_role=MSME; vyaparflow_active_persona=MSME`;
 
   let countryNL = await prisma.country.findFirst({ where: { isoCode: 'NL' } });
   if (!countryNL) {

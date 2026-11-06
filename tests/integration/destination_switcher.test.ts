@@ -1,6 +1,8 @@
 import http from 'http';
 import assert from 'assert';
 import { prisma } from '../../lib/prisma';
+import { createSessionToken } from '../../lib/session';
+import { SESSION_COOKIE } from '../../lib/authCookies';
 
 function httpGet(urlStr: string, cookieHeader: string): Promise<{ statusCode: number; body: string }> {
   return new Promise((resolve, reject) => {
@@ -46,7 +48,14 @@ export async function runDestinationSwitcherTest() {
     },
   });
 
-  const cookieHeader = `vyaparflow_active_user_id=${user.id}; vyaparflow_active_user_email=${encodeURIComponent(user.email)}; vyaparflow_active_user_name=${encodeURIComponent(user.name)}; vyaparflow_active_role=MSME`;
+  const token = createSessionToken({
+    userId: user.id,
+    email: user.email,
+    role: 'MSME',
+    name: user.name,
+  });
+
+  const cookieHeader = `${SESSION_COOKIE}=${token}; vyaparflow_active_user_id=${user.id}; vyaparflow_active_user_email=${encodeURIComponent(user.email)}; vyaparflow_active_user_name=${encodeURIComponent(user.name)}; vyaparflow_active_role=MSME; vyaparflow_active_persona=MSME`;
 
   let countryNL = await prisma.country.findFirst({ where: { isoCode: 'NL' } });
   if (!countryNL) {

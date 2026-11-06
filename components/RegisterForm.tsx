@@ -1,14 +1,57 @@
 'use client';
 
 import React, { useState, useTransition } from 'react';
-import { Building2, Truck, ArrowRight, UserPlus, Sparkles, CheckCircle2 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { Building2, Truck, ArrowRight, UserPlus, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 import { saveRecentAccount } from '@/lib/recentAccounts';
 
 interface RegisterFormProps {
   action: (formData: FormData) => Promise<void>;
 }
 
+const REGISTER_ERROR_MESSAGES: Record<string, { title: string; desc: string; type: 'error' | 'warning' }> = {
+  invalid_role: {
+    title: 'Registration Not Allowed',
+    desc: 'Platform Administrator accounts cannot be registered publicly.',
+    type: 'error',
+  },
+  name_required: {
+    title: 'Name Required',
+    desc: 'Please enter your full legal name.',
+    type: 'warning',
+  },
+  invalid_email: {
+    title: 'Invalid Email',
+    desc: 'Please enter a valid business or personal email address.',
+    type: 'warning',
+  },
+  password_too_short: {
+    title: 'Password Too Short',
+    desc: 'Your password must be at least 6 characters long.',
+    type: 'warning',
+  },
+  email_exists: {
+    title: 'Account Already Exists',
+    desc: 'An account with this email address already exists. Please sign in instead.',
+    type: 'warning',
+  },
+  rate_limited: {
+    title: 'Registration Limit Exceeded',
+    desc: 'Too many registration attempts from this network. Please wait 60 seconds before trying again.',
+    type: 'warning',
+  },
+  database_connection_failed: {
+    title: 'Database Service Unavailable',
+    desc: 'Could not connect to the cloud database instance. The database may be paused or offline. Please contact the administrator or try again shortly.',
+    type: 'error',
+  },
+};
+
 export default function RegisterForm({ action }: RegisterFormProps) {
+  const searchParams = useSearchParams();
+  const errorCode = searchParams.get('error');
+  const errorInfo = errorCode ? REGISTER_ERROR_MESSAGES[errorCode] : null;
+
   const [role, setRole] = useState<'MSME' | 'PROVIDER'>('MSME');
   const [isPending, startTransition] = useTransition();
 
@@ -62,6 +105,27 @@ export default function RegisterForm({ action }: RegisterFormProps) {
           </p>
         </div>
       </div>
+
+      {/* Alert Banner (if error or warning) */}
+      {errorInfo && (
+        <div
+          className={`p-4 rounded-2xl border text-xs flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-200 shadow-xs ${
+            errorInfo.type === 'error'
+              ? 'bg-rose-50 border-rose-200 text-rose-900'
+              : 'bg-amber-50 border-amber-200 text-amber-900'
+          }`}
+        >
+          <AlertCircle
+            className={`w-5 h-5 shrink-0 mt-0.5 ${
+              errorInfo.type === 'error' ? 'text-rose-600' : 'text-amber-600'
+            }`}
+          />
+          <div className="flex-1">
+            <h4 className="font-bold text-xs">{errorInfo.title}</h4>
+            <p className="mt-0.5 text-[11px] leading-relaxed opacity-90">{errorInfo.desc}</p>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4 text-xs">
         {/* Category / Persona Selector - Side-by-Side Blocks */}
