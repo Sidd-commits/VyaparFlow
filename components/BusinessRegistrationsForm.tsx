@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FileText } from 'lucide-react';
+import { FileText, CheckCircle2, ShieldCheck, Building2, MapPin } from 'lucide-react';
 import GSTLookupButton from '@/components/GSTLookupButton';
 import DocumentDropzone from '@/components/DocumentDropzone';
 import { GSTDetails } from '@/lib/services/sandboxGst';
@@ -22,6 +22,7 @@ export default function BusinessRegistrationsForm({
   const [gstin, setGstin] = useState(defaultGstin || '');
   const [iec, setIec] = useState(defaultIec || '');
   const [fetchedDetails, setFetchedDetails] = useState<GSTDetails | null>(null);
+  const [applyToProfile, setApplyToProfile] = useState<boolean>(true);
 
   const handleGSTFetched = (details: GSTDetails) => {
     setFetchedDetails(details);
@@ -31,11 +32,21 @@ export default function BusinessRegistrationsForm({
     <form action={action} className="space-y-6 text-xs">
       <input type="hidden" name="businessId" value={businessId} />
 
+      {/* Hidden inputs to synchronize verified GST details into company profile */}
+      {fetchedDetails && applyToProfile && (
+        <>
+          <input type="hidden" name="legalName" value={fetchedDetails.legalName} />
+          <input type="hidden" name="tradeName" value={fetchedDetails.tradeName || fetchedDetails.legalName} />
+          <input type="hidden" name="city" value={fetchedDetails.address?.city || ''} />
+          <input type="hidden" name="state" value={fetchedDetails.address?.state || ''} />
+        </>
+      )}
+
       {/* GSTIN Registration Block */}
       <div className="space-y-4 p-5 rounded-2xl border border-slate-200 bg-[#FAF9F6]">
         <div className="flex items-center justify-between">
           <span className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-            <FileText className="w-4 h-4 text-orange-600" /> GSTIN Registration
+            <FileText className="w-4 h-4 text-orange-600" /> GSTIN Registration &amp; Taxpayer Verification
           </span>
           <span className="text-[10px] font-semibold text-orange-800 bg-orange-100 px-2.5 py-0.5 rounded-full border border-orange-200">
             Statutory Identifier
@@ -60,7 +71,7 @@ export default function BusinessRegistrationsForm({
             required
           />
           <p className="text-[10px] text-slate-500 mt-1 mb-2">
-            Format: 2 digits + 5 letters + 4 digits + 1 letter + 1 alphanumeric + Z + 1 alphanumeric
+            Standard 15-character Indian GST format (2 State Code + 10 PAN + 1 Entity + Z + 1 Check Digit)
           </p>
 
           {/* Real-time GST Verification Button */}
@@ -68,12 +79,33 @@ export default function BusinessRegistrationsForm({
             gstinValue={gstin}
             onDetailsFetched={handleGSTFetched}
           />
+
+          {/* Option to sync verified GST taxpayer name to Company Profile */}
+          {fetchedDetails && (
+            <div className="mt-3 p-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-950 flex items-start gap-2.5">
+              <input
+                type="checkbox"
+                id="applyGstSync"
+                checked={applyToProfile}
+                onChange={(e) => setApplyToProfile(e.target.checked)}
+                className="mt-0.5 w-4 h-4 text-orange-600 border-slate-300 rounded focus:ring-orange-500 cursor-pointer"
+              />
+              <label htmlFor="applyGstSync" className="text-xs cursor-pointer">
+                <span className="font-bold text-slate-900 block">
+                  Synchronize Verified GST Entity with Company Profile
+                </span>
+                <span className="text-slate-600 text-[11px]">
+                  Updates your profile legal name to <strong className="text-slate-900">{fetchedDetails.legalName}</strong> and registered city to <strong className="text-slate-900">{fetchedDetails.address?.city}</strong>.
+                </span>
+              </label>
+            </div>
+          )}
         </div>
 
         <div className="pt-2 border-t border-slate-200/80">
           <DocumentDropzone
             name="gstFile"
-            label="GST Registration Certificate"
+            label="GST Registration Certificate (Form GST REG-06)"
             description="Upload official Form GST REG-06 certificate issued by GSTN."
             maxSizeMb={10}
             accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg"
@@ -109,7 +141,7 @@ export default function BusinessRegistrationsForm({
             className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-mono font-bold text-xs uppercase focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none"
             required
           />
-          <p className="text-[10px] text-slate-500 mt-0.5">Must be exactly 10 digits (e.g. 0301099882)</p>
+          <p className="text-[10px] text-slate-500 mt-0.5">Must be exactly 10 numeric digits issued by DGFT</p>
         </div>
 
         <div className="pt-2 border-t border-slate-200/80">
@@ -127,7 +159,7 @@ export default function BusinessRegistrationsForm({
         type="submit"
         className="w-full py-3.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
       >
-        Submit Registration Proofs & Recalculate Score →
+        Submit Registration Proofs &amp; Recalculate Score →
       </button>
     </form>
   );

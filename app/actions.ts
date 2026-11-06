@@ -1647,6 +1647,10 @@ export async function updateBusinessRegistrationsAction(formData: FormData): Pro
   const requestedBusinessId = (formData.get('businessId') as string)?.trim();
   const gstNumber = (formData.get('gstNumber') as string)?.trim();
   const iecCode = (formData.get('iecCode') as string)?.trim();
+  const legalName = (formData.get('legalName') as string)?.trim();
+  const tradeName = (formData.get('tradeName') as string)?.trim() || (formData.get('displayName') as string)?.trim();
+  const city = (formData.get('city') as string)?.trim();
+  const state = (formData.get('state') as string)?.trim();
   const gstFile = formData.get('gstFile') as File | null;
   const iecFile = formData.get('iecFile') as File | null;
 
@@ -1662,6 +1666,18 @@ export async function updateBusinessRegistrationsAction(formData: FormData): Pro
   }
   if (iecCode) {
     updateData.iecStatus = `Active (${iecCode})`;
+  }
+  if (legalName) {
+    updateData.legalName = legalName;
+  }
+  if (tradeName) {
+    updateData.displayName = tradeName;
+  }
+  if (city) {
+    updateData.city = city;
+  }
+  if (state) {
+    updateData.state = state;
   }
 
   await prisma.business.update({
