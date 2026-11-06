@@ -1,6 +1,7 @@
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
@@ -134,21 +135,22 @@ model Document {
   id            String       @id @default(uuid())
   businessId    String
   business      Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
-  requirementId String?
-  requirement   Requirement? @relation(fields: [requirementId], references: [id])
   shipmentId    String?
-  shipment      Shipment?    @relation(fields: [shipmentId], references: [id])
-  type          String       // "GST", "IEC", "CoO", "Invoice", "PackingList", "TestReport", etc.
-  storageKey    String
+  shipment      Shipment?    @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
+  requirementId String?
+  requirement   Requirement? @relation(fields: [requirementId], references: [id], onDelete: SetNull)
+  type          String       // "GST_CERTIFICATE", "IEC_CERTIFICATE", "APEDA_RCMC", "LAB_TEST_REPORT", "PACKING_LIST", "COMMERCIAL_INVOICE", "PHYTOSANITARY"
+  storageKey    String       // S3 key or simulated URL
   originalName  String
-  mimeType      String
-  size          Int
-  issueDate     DateTime?
-  expiryDate    DateTime?
-  status        String       @default("uploaded") // "uploaded", "under_review", "verified", "rejected", "expired"
+  mimeType      String       @default("application/pdf")
+  size          Int          @default(256000)
   version       Int          @default(1)
+  status        String       @default("under_review") // "under_review", "verified", "rejected", "expired"
   notes         String?
   uploadedAt    DateTime     @default(now())
+  issueDate     DateTime?
+  expiryDate    DateTime?
+  metadata      String?      // JSON string for extensibility
 }
 
 model Provider {
@@ -156,10 +158,11 @@ model Provider {
   userId           String?
   user             User?             @relation(fields: [userId], references: [id])
   name             String
-  type             String            // "CERTIFICATION", "FREIGHT", "CUSTOMS_CHA", "INSURANCE"
-  serviceArea      String            @default("Pan India")
+  type             String            // "FREIGHT", "CERTIFICATION", "CUSTOMS_CHA", "INSURANCE"
+  serviceArea      String
   contactEmail     String
   active           Boolean           @default(true)
+  createdAt        DateTime          @default(now())
   providerTasks    ProviderTask[]
   quotes           Quote[]
   insuranceOptions InsuranceOption[]
@@ -170,7 +173,7 @@ model ProviderTask {
   providerId            String
   provider              Provider               @relation(fields: [providerId], references: [id], onDelete: Cascade)
   shipmentId            String?
-  shipment              Shipment?              @relation(fields: [shipmentId], references: [id])
+  shipment              Shipment?              @relation(fields: [shipmentId], references: [id], onDelete: SetNull)
   requirementId         String?
   requirement           Requirement?           @relation(fields: [requirementId], references: [id])
   type                  String                 // "CERTIFICATION", "FREIGHT", "CUSTOMS_CHA", "INSURANCE"
@@ -294,3 +297,4 @@ model AuditLog {
   newValueJson String?
   createdAt    DateTime @default(now())
 }
+
