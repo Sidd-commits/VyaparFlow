@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useTransition } from 'react';
+import React, { useState, useEffect, useRef, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { logoutUserAction } from '@/app/actions';
 import VyaparFlowLogo from '@/components/VyaparFlowLogo';
+import { motion } from 'framer-motion';
 import {
   Ship,
   LayoutDashboard,
@@ -37,29 +38,73 @@ const NAV_SECTIONS = [
   { id: 'ecosystem', label: 'Ecosystem' },
 ];
 
+const MSME_NAV_ITEMS = [
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/readiness', label: 'Readiness Score', icon: FileCheck2 },
+  { href: '/documents', label: 'Documents', icon: FileText },
+  { href: '/certifications', label: 'Certifications', icon: Award },
+  { href: '/packaging', label: 'Packaging', icon: Box },
+  { href: '/shipments', label: 'Shipments', icon: Truck },
+];
+
+const PROVIDER_NAV_ITEMS = [
+  { href: '/provider', label: 'Command Deck', icon: Truck },
+  { href: '/provider?tab=quotes', label: 'Freight RFQs', icon: TrendingUp },
+  { href: '/shipments', label: 'Fleet Cargo', icon: Ship },
+];
+
+const ADMIN_NAV_ITEMS = [
+  { href: '/admin', label: 'Operations Console', icon: ShieldCheck },
+  { href: '/documents', label: 'Document Verification', icon: FileText },
+];
+
 export default function Navbar({ currentRole, userEmail, userName }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [activeSection, setActiveSection] = useState<string>('');
+  const [activeSection, setActiveSection] = useState<string>('overview');
+  const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const [hoveredAuthLink, setHoveredAuthLink] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
-  // Scrollspy observer for active section on the landing page
+  // References for locking programmatic smooth scroll to prevent intermediate tab flicker
+  const isProgrammaticScroll = useRef(false);
+  const scrollTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // Scrollspy observer for active section on landing page
   useEffect(() => {
     if (pathname !== '/') return;
 
+    // Reset to 'overview' if scrolled near top
+    const handleScrollCheck = () => {
+      if (isProgrammaticScroll.current) return;
+      if (window.scrollY < 250) {
+        setActiveSection('overview');
+      }
+    };
+    window.addEventListener('scroll', handleScrollCheck, { passive: true });
+
     const observerOptions = {
       root: null,
-      rootMargin: '-15% 0px -65% 0px',
-      threshold: 0,
+      rootMargin: '-20% 0px -55% 0px',
+      threshold: [0, 0.25],
     };
 
     const handleIntersect: IntersectionObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
+      // Critical AniMaster / Vengeance optimization:
+      // Suppress intermediate section jumps during programmatic smooth scroll
+      if (isProgrammaticScroll.current) return;
+
+      const visible = entries.filter((e) => e.isIntersecting);
+      if (visible.length > 0) {
+        // Pick the visible section closest to the top of the reading viewport
+        visible.sort((a, b) => {
+          const aTop = Math.abs(a.boundingClientRect.top - 80);
+          const bTop = Math.abs(b.boundingClientRect.top - 80);
+          return aTop - bTop;
+        });
+        setActiveSection(visible[0].target.id);
+      }
     };
 
     const observer = new IntersectionObserver(handleIntersect, observerOptions);
@@ -69,7 +114,11 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
       if (el) observer.observe(el);
     });
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', handleScrollCheck);
+      if (scrollTimer.current) clearTimeout(scrollTimer.current);
+    };
   }, [pathname]);
 
   // Handle direct hash navigation on initial load or back/forward
@@ -85,18 +134,33 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
   }, [pathname]);
 
   const scrollToElementId = (id: string) => {
-    setActiveSection(id);
     const targetElement = document.getElementById(id);
-    if (targetElement) {
-      const navOffset = 80;
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - navOffset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth',
-      });
-      window.history.replaceState(null, '', `#${id}`);
-    }
+    if (!targetElement) return;
+
+    // 1. Lock programmatic scroll flag so IntersectionObserver does not override active tab
+    isProgrammaticScroll.current = true;
+    if (scrollTimer.current) clearTimeout(scrollTimer.current);
+
+    // 2. Set active section immediately so the sliding pill glides right to the destination tab
+    setActiveSection(id);
+
+    // 3. Smooth scroll with precision navbar offset (80px header height)
+    const navOffset = 80;
+    const elementPosition = targetElement.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.scrollY - navOffset;
+
+    window.scrollTo({
+      top: Math.max(0, offsetPosition),
+      behavior: 'smooth',
+    });
+
+    // 4. Update URL hash cleanly and unlock observer after scroll finishes
+    scrollTimer.current = setTimeout(() => {
+      isProgrammaticScroll.current = false;
+      if (typeof window !== 'undefined') {
+        window.history.replaceState(null, '', `#${id}`);
+      }
+    }, 650);
   };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -149,174 +213,219 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
 
           {/* Navigation Links — Role Specific or Landing Scrollspy */}
           {isLoggedIn ? (
-            <nav className="hidden lg:flex items-center gap-1">
-              {currentRole === 'MSME' && (
-                <>
-                  <Link
-                    href="/dashboard"
-                    prefetch={true}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
-                      pathname === '/dashboard'
-                        ? 'bg-orange-50 text-orange-600 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    <LayoutDashboard className="w-4 h-4" />
-                    Dashboard
-                  </Link>
+            <nav className="hidden lg:inline-flex items-center p-1 rounded-full bg-slate-100/80 border border-slate-200/80 backdrop-blur-md shadow-2xs relative">
+              {currentRole === 'MSME' &&
+                MSME_NAV_ITEMS.map((item) => {
+                  const isActive =
+                    item.href === '/dashboard'
+                      ? pathname === '/dashboard'
+                      : pathname.startsWith(item.href);
+                  const isHovered = hoveredAuthLink === item.href;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      prefetch={true}
+                      onMouseEnter={() => setHoveredAuthLink(item.href)}
+                      onMouseLeave={() => setHoveredAuthLink(null)}
+                      className="relative px-3 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer select-none"
+                    >
+                      {isActive && (
+                        <motion.div
+                          layoutId="navbar-auth-pill"
+                          className="absolute inset-0 bg-white rounded-full shadow-xs border border-orange-200/70"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 420,
+                            damping: 32,
+                          }}
+                        />
+                      )}
+                      {!isActive && isHovered && (
+                        <motion.div
+                          layoutId="navbar-auth-hover-pill"
+                          className="absolute inset-0 bg-slate-200/50 rounded-full"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 450,
+                            damping: 35,
+                          }}
+                        />
+                      )}
+                      <Icon
+                        className={`w-3.5 h-3.5 relative z-10 transition-colors ${
+                          isActive ? 'text-orange-600' : 'text-slate-500'
+                        }`}
+                      />
+                      <span
+                        className={`relative z-10 transition-colors ${
+                          isActive ? 'text-orange-600 font-bold' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
 
-                  <Link
-                    href="/readiness"
-                    prefetch={true}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
-                      pathname === '/readiness'
-                        ? 'bg-orange-50 text-orange-600 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    <FileCheck2 className="w-4 h-4" />
-                    Readiness Score
-                  </Link>
+              {currentRole === 'PROVIDER' &&
+                PROVIDER_NAV_ITEMS.map((item) => {
+                  const isActive =
+                    item.href === '/provider'
+                      ? pathname === '/provider'
+                      : pathname.startsWith(item.href);
+                  const isHovered = hoveredAuthLink === item.href;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      prefetch={true}
+                      onMouseEnter={() => setHoveredAuthLink(item.href)}
+                      onMouseLeave={() => setHoveredAuthLink(null)}
+                      className="relative px-3 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer select-none"
+                    >
+                      {isActive && (
+                        <motion.div
+                          layoutId="navbar-auth-pill"
+                          className="absolute inset-0 bg-white rounded-full shadow-xs border border-orange-200/70"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 420,
+                            damping: 32,
+                          }}
+                        />
+                      )}
+                      {!isActive && isHovered && (
+                        <motion.div
+                          layoutId="navbar-auth-hover-pill"
+                          className="absolute inset-0 bg-slate-200/50 rounded-full"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 450,
+                            damping: 35,
+                          }}
+                        />
+                      )}
+                      <Icon
+                        className={`w-3.5 h-3.5 relative z-10 transition-colors ${
+                          isActive ? 'text-orange-600' : 'text-slate-500'
+                        }`}
+                      />
+                      <span
+                        className={`relative z-10 transition-colors ${
+                          isActive ? 'text-orange-600 font-bold' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
 
-                  <Link
-                    href="/documents"
-                    prefetch={true}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
-                      pathname === '/documents'
-                        ? 'bg-orange-50 text-orange-600 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    <FileText className="w-4 h-4" />
-                    Documents
-                  </Link>
-
-                  <Link
-                    href="/certifications"
-                    prefetch={true}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
-                      pathname === '/certifications'
-                        ? 'bg-orange-50 text-orange-600 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Award className="w-4 h-4" />
-                    Certifications
-                  </Link>
-
-                  <Link
-                    href="/packaging"
-                    prefetch={true}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
-                      pathname === '/packaging'
-                        ? 'bg-orange-50 text-orange-600 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Box className="w-4 h-4" />
-                    Packaging
-                  </Link>
-
-                  <Link
-                    href="/shipments"
-                    prefetch={true}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
-                      pathname.startsWith('/shipments')
-                        ? 'bg-orange-50 text-orange-600 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Truck className="w-4 h-4" />
-                    Shipments
-                  </Link>
-                </>
-              )}
-
-              {currentRole === 'PROVIDER' && (
-                <>
-                  <Link
-                    href="/provider"
-                    prefetch={true}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
-                      pathname === '/provider'
-                        ? 'bg-orange-50 text-orange-600 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Truck className="w-4 h-4" />
-                    Command Deck
-                  </Link>
-
-                  <Link
-                    href="/provider?tab=quotes"
-                    prefetch={true}
-                    className="px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-50"
-                  >
-                    <TrendingUp className="w-4 h-4" />
-                    Freight RFQs
-                  </Link>
-
-                  <Link
-                    href="/shipments"
-                    prefetch={true}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
-                      pathname.startsWith('/shipments')
-                        ? 'bg-orange-50 text-orange-600 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    <Ship className="w-4 h-4" />
-                    Fleet Cargo
-                  </Link>
-                </>
-              )}
-
-              {currentRole === 'ADMIN' && (
-                <>
-                  <Link
-                    href="/admin"
-                    prefetch={true}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
-                      pathname === '/admin'
-                        ? 'bg-orange-50 text-orange-600 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    <ShieldCheck className="w-4 h-4" />
-                    Admin Operations Console
-                  </Link>
-
-                  <Link
-                    href="/documents"
-                    prefetch={true}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
-                      pathname === '/documents'
-                        ? 'bg-orange-50 text-orange-600 font-semibold'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                    }`}
-                  >
-                    <FileText className="w-4 h-4" />
-                    Document Verification
-                  </Link>
-                </>
-              )}
+              {currentRole === 'ADMIN' &&
+                ADMIN_NAV_ITEMS.map((item) => {
+                  const isActive =
+                    item.href === '/admin'
+                      ? pathname === '/admin'
+                      : pathname.startsWith(item.href);
+                  const isHovered = hoveredAuthLink === item.href;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      prefetch={true}
+                      onMouseEnter={() => setHoveredAuthLink(item.href)}
+                      onMouseLeave={() => setHoveredAuthLink(null)}
+                      className="relative px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer select-none"
+                    >
+                      {isActive && (
+                        <motion.div
+                          layoutId="navbar-auth-pill"
+                          className="absolute inset-0 bg-white rounded-full shadow-xs border border-orange-200/70"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 420,
+                            damping: 32,
+                          }}
+                        />
+                      )}
+                      {!isActive && isHovered && (
+                        <motion.div
+                          layoutId="navbar-auth-hover-pill"
+                          className="absolute inset-0 bg-slate-200/50 rounded-full"
+                          transition={{
+                            type: 'spring',
+                            stiffness: 450,
+                            damping: 35,
+                          }}
+                        />
+                      )}
+                      <Icon
+                        className={`w-3.5 h-3.5 relative z-10 transition-colors ${
+                          isActive ? 'text-orange-600' : 'text-slate-500'
+                        }`}
+                      />
+                      <span
+                        className={`relative z-10 transition-colors ${
+                          isActive ? 'text-orange-600 font-bold' : 'text-slate-600 hover:text-slate-900'
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
             </nav>
           ) : (
-            <nav className="hidden md:flex items-center gap-1 text-xs font-semibold">
+            <nav className="hidden md:inline-flex items-center p-1 rounded-full bg-slate-100/80 border border-slate-200/80 backdrop-blur-md shadow-2xs relative">
               {NAV_SECTIONS.map((sec) => {
                 const isActive = activeSection === sec.id;
+                const isHovered = hoveredSection === sec.id;
                 return (
                   <Link
                     key={sec.id}
                     href={`/#${sec.id}`}
                     onClick={(e) => handleNavClick(e, sec.id)}
-                    className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer active:scale-[0.98] ${
-                      isActive
-                        ? 'bg-orange-50 text-orange-600 font-semibold border border-orange-200/80 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
-                    }`}
+                    onMouseEnter={() => setHoveredSection(sec.id)}
+                    onMouseLeave={() => setHoveredSection(null)}
+                    className="relative px-3.5 py-1.5 text-xs font-semibold rounded-full select-none cursor-pointer flex items-center justify-center transition-colors"
                   >
-                    {sec.label}
+                    {/* Active Floating Pill with spring animation (AniMaster / Skipper / Vengeance pattern) */}
+                    {isActive && (
+                      <motion.div
+                        layoutId="navbar-active-pill"
+                        className="absolute inset-0 bg-white rounded-full shadow-xs border border-orange-200/70"
+                        transition={{
+                          type: 'spring',
+                          stiffness: 420,
+                          damping: 32,
+                        }}
+                      />
+                    )}
+
+                    {/* Hover Ghost Pill */}
+                    {!isActive && isHovered && (
+                      <motion.div
+                        layoutId="navbar-hover-pill"
+                        className="absolute inset-0 bg-slate-200/50 rounded-full"
+                        transition={{
+                          type: 'spring',
+                          stiffness: 450,
+                          damping: 35,
+                        }}
+                      />
+                    )}
+
+                    <span
+                      className={`relative z-10 transition-colors duration-150 ${
+                        isActive ? 'text-orange-600 font-bold' : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      {sec.label}
+                    </span>
                   </Link>
                 );
               })}
@@ -428,16 +537,23 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 px-2 block">
                   Platform Sections
                 </span>
-                {NAV_SECTIONS.map((sec) => (
-                  <Link
-                    key={sec.id}
-                    href={`/#${sec.id}`}
-                    onClick={(e) => handleNavClick(e, sec.id)}
-                    className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-orange-50 hover:text-orange-600 transition-colors"
-                  >
-                    {sec.label}
-                  </Link>
-                ))}
+                {NAV_SECTIONS.map((sec) => {
+                  const isActive = activeSection === sec.id;
+                  return (
+                    <Link
+                      key={sec.id}
+                      href={`/#${sec.id}`}
+                      onClick={(e) => handleNavClick(e, sec.id)}
+                      className={`block px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                        isActive
+                          ? 'bg-orange-50 text-orange-600 font-bold border border-orange-200/80 shadow-2xs'
+                          : 'text-slate-800 hover:bg-slate-50'
+                      }`}
+                    >
+                      {sec.label}
+                    </Link>
+                  );
+                })}
               </div>
 
               <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-2">
