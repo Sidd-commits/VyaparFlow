@@ -211,7 +211,7 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
                 key={c.id}
                 type="button"
                 onClick={() => setActiveId(c.id)}
-                className={`relative p-2 rounded-xl text-left transition-colors cursor-pointer select-none ${
+                className={`relative p-2 rounded-xl text-left transition-colors cursor-pointer select-none min-w-0 ${
                   active ? 'text-white font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
                 }`}
               >
@@ -222,7 +222,7 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
                     transition={{ type: 'spring', stiffness: 450, damping: 35 }}
                   />
                 )}
-                <span className="relative z-10 block text-xs font-bold truncate">{c.name}</span>
+                <span className="relative z-10 block text-[11px] sm:text-xs font-bold truncate">{c.name}</span>
                 <span className={`relative z-10 block text-[10px] truncate mt-0.5 ${active ? 'text-orange-100' : 'text-slate-400'}`}>
                   {c.commodity.split(' ')[0]}
                 </span>
@@ -231,27 +231,27 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
           })}
         </div>
 
-        {/* Active Corridor Card & Route Progression */}
-        <div className="relative z-10 p-4.5 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-4">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <div>
+        {/* Active Corridor Card & Route Progression (Rigid Stable Layout with Zero Shift) */}
+        <div className="relative z-10 p-5 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
+            <div className="sm:col-span-8 min-w-0 space-y-0.5">
               <span className="text-[11px] uppercase tracking-wider font-bold text-orange-600 block">
                 Active Consignment
               </span>
-              <h4 className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
+              <h4 className="text-base sm:text-lg font-bold text-slate-900 truncate">
                 {current.commodity}
               </h4>
-              <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-1 font-medium">
+              <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-1 font-medium truncate">
                 <MapPin className="w-3.5 h-3.5 text-orange-600 shrink-0" />
-                <span>{current.originPort}</span>
-                <ArrowRight className="w-3 h-3 text-slate-400" />
+                <span className="truncate">{current.originPort}</span>
+                <ArrowRight className="w-3 h-3 text-slate-400 shrink-0" />
                 <Globe2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                <span>{current.destPort}</span>
+                <span className="truncate">{current.destPort}</span>
               </p>
             </div>
-            <div className="text-right">
+            <div className="sm:col-span-4 text-left sm:text-right shrink-0">
               <span className="text-[11px] text-slate-500 block font-medium">Estimated Transit</span>
-              <span className="text-xs font-bold text-slate-800 mt-0.5 block">
+              <span className="text-xs font-bold text-slate-800 mt-0.5 block whitespace-nowrap">
                 {current.transitTime}
               </span>
             </div>

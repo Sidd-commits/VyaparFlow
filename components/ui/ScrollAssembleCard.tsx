@@ -35,16 +35,19 @@ interface ScrollAssembleCardProps extends Omit<HTMLMotionProps<'div'>, 'children
 }
 
 const getVariants = (direction: AssembleDirection, distance: number, delay: number, duration?: number): Variants => {
+  // Cap delay so fast scrolling never leaves elements waiting
+  const safeDelay = Math.min(delay, 0.15);
+
   const springVisible = {
     type: 'spring' as const,
-    stiffness: 260,
+    stiffness: 280,
     damping: 24,
-    delay,
+    delay: safeDelay,
     ...(duration ? { duration } : {}),
   };
 
   const smoothHidden = {
-    duration: 0.32,
+    duration: 0.28,
     ease: [0.32, 0, 0.67, 0] as const, // Organic cubic ease-in for disassembly
   };
 
@@ -300,7 +303,7 @@ export default function ScrollAssembleCard({
   duration,
   distance = 45,
   once = false, // Bidirectional by default: Assembles on scroll-in, disassembles on scroll-out!
-  amount = 0.15,
+  amount = 0.04, // Ultra-responsive trigger threshold for high-speed scrolling
   className = '',
   ...rest
 }: ScrollAssembleCardProps) {
@@ -313,7 +316,7 @@ export default function ScrollAssembleCard({
       viewport={{ once, amount }}
       variants={variants}
       className={`transform-gpu ${className}`}
-      style={{ perspective: 1200 }}
+      style={{ perspective: 1200, willChange: 'transform, opacity' }}
       {...rest}
     >
       {children}

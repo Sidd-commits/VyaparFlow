@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import ScrollAssembleCard from '@/components/ui/ScrollAssembleCard';
 import ScrollCounter from '@/components/ui/ScrollCounter';
-import AnimatedBeamConduit from '@/components/ui/AnimatedBeamConduit';
 import {
   Ship,
   ArrowRight,
@@ -347,14 +346,6 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 <span className="text-xs text-orange-800 font-semibold block">Direct exporter margin benefit</span>
               </ScrollAssembleCard>
             </div>
-
-            {/* Dynamic Animated Trade Corridor Conduit Beam */}
-            <AnimatedBeamConduit
-              fromText={currentCommodity.corridor.split('→')[0]?.trim()}
-              toText={currentCommodity.corridor.split('→')[1]?.trim()}
-              viaText={`${currentCommodity.fta} Zero-Tariff Corridor`}
-              className="mt-2"
-            />
 
             {/* Statutory Requirement Banner */}
             <div className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-2xs">
@@ -885,15 +876,6 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </button>
           </div>
 
-          {/* Real-time Multi-agency Synchronized Conduit */}
-          <div className="bg-orange-50/40 rounded-2xl border border-orange-100 p-4">
-            <AnimatedBeamConduit
-              fromText="MSME Factory & Packhouse"
-              viaText="Encrypted Trade Dossier Sync"
-              toText="Customs Station & Port Terminal"
-            />
-          </div>
-
           {/* Persona Detail Cards (Harmonized Modern SaaS Cards) */}
           <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xl">
             {activePersona === 'msme' && (
@@ -1223,10 +1205,6 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
               </>
             )}
           </div>
-
-          <p className="text-xs text-slate-400 pt-4">
-            No long commitments &bull; DGFT &amp; CBIC compliance aligned &bull; Made in India
-          </p>
         </div>
       </ScrollAssembleCard>
     </div>
