@@ -32,7 +32,7 @@ export default function AuthContainer({ currentUser }: AuthContainerProps) {
   }, [searchParams]);
 
   return (
-    <div className={`w-full mx-auto space-y-5 transition-all duration-300 ${activeTab === 'register' ? 'max-w-xl' : 'max-w-md'}`}>
+    <div className={`w-full mx-auto space-y-6 transition-all duration-300 ${activeTab === 'register' ? 'max-w-xl' : 'max-w-lg'}`}>
       {/* If already signed in, display helpful banner */}
       {currentUser && (
         <div className="bg-emerald-50 border border-emerald-200/90 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
