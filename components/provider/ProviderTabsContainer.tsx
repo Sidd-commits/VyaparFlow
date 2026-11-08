@@ -76,17 +76,17 @@ export default function ProviderTabsContainer({
   return (
     <div className="space-y-6">
       {/* Tab Navigation Pill Bar */}
-      <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-2xs flex flex-wrap gap-1.5 sm:gap-2">
+      <div className="bg-white p-1.5 sm:p-2 rounded-2xl border border-slate-200 shadow-2xs flex flex-nowrap overflow-x-auto no-scrollbar touch-scroll gap-1.5 sm:gap-2">
         <button
           onClick={() => handleTabChange('verification')}
-          className={`flex-1 min-w-[140px] sm:min-w-[170px] py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+          className={`shrink-0 sm:flex-1 py-2.5 sm:py-3 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap active:scale-95 ${
             activeTab === 'verification'
               ? 'bg-slate-900 text-white shadow-md'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <FileCheck2
-            className={`w-4 h-4 ${
+            className={`w-4 h-4 shrink-0 ${
               activeTab === 'verification' ? 'text-orange-400' : 'text-slate-400'
             }`}
           />
@@ -106,14 +106,14 @@ export default function ProviderTabsContainer({
 
         <button
           onClick={() => handleTabChange('quotes')}
-          className={`flex-1 min-w-[140px] sm:min-w-[170px] py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+          className={`shrink-0 sm:flex-1 py-2.5 sm:py-3 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap active:scale-95 ${
             activeTab === 'quotes'
               ? 'bg-slate-900 text-white shadow-md'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <TrendingUp
-            className={`w-4 h-4 ${
+            className={`w-4 h-4 shrink-0 ${
               activeTab === 'quotes' ? 'text-orange-400' : 'text-slate-400'
             }`}
           />
@@ -133,14 +133,14 @@ export default function ProviderTabsContainer({
 
         <button
           onClick={() => handleTabChange('milestones')}
-          className={`flex-1 min-w-[140px] sm:min-w-[170px] py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+          className={`shrink-0 sm:flex-1 py-2.5 sm:py-3 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap active:scale-95 ${
             activeTab === 'milestones'
               ? 'bg-slate-900 text-white shadow-md'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <Truck
-            className={`w-4 h-4 ${
+            className={`w-4 h-4 shrink-0 ${
               activeTab === 'milestones' ? 'text-orange-400' : 'text-slate-400'
             }`}
           />
@@ -160,14 +160,14 @@ export default function ProviderTabsContainer({
 
         <button
           onClick={() => handleTabChange('profile')}
-          className={`flex-1 min-w-[140px] sm:min-w-[170px] py-3 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+          className={`shrink-0 sm:flex-1 py-2.5 sm:py-3 px-3.5 sm:px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap active:scale-95 ${
             activeTab === 'profile'
               ? 'bg-slate-900 text-white shadow-md'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <Building2
-            className={`w-4 h-4 ${
+            className={`w-4 h-4 shrink-0 ${
               activeTab === 'profile' ? 'text-orange-400' : 'text-slate-400'
             }`}
           />

@@ -170,7 +170,7 @@ export default function AdminOperationsDeck({
         </div>
 
         {/* Tab Switcher Bar */}
-        <div className="relative z-10 flex items-center gap-2 mt-6 pt-4 border-t border-slate-800/80 overflow-x-auto text-xs">
+        <div className="relative z-10 flex items-center gap-2 mt-6 pt-4 border-t border-slate-800/80 overflow-x-auto no-scrollbar touch-scroll flex-nowrap text-xs">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -180,7 +180,7 @@ export default function AdminOperationsDeck({
                 key={tab.id}
                 type="button"
                 onClick={() => handleTabChange(tab.id as any)}
-                className={`px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+                className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shrink-0 cursor-pointer whitespace-nowrap active:scale-95 ${
                   isActive
                     ? 'bg-orange-600 text-white shadow-md shadow-orange-600/20'
                     : 'bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white'
