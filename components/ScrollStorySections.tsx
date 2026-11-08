@@ -315,9 +315,9 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
               </div>
             </div>
 
-            {/* 3-Column Duty Comparison Grid with Staggered Entrance */}
+            {/* 3-Column Duty Comparison Grid with Dynamic Scale & Pulse */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <ScrollAssembleCard direction="left" distance={30} delay={0.05} className="p-5 rounded-2xl bg-white border border-slate-200 space-y-1 shadow-2xs">
+              <ScrollAssembleCard direction="top" distance={30} delay={0.05} className="p-5 rounded-2xl bg-white border border-slate-200 space-y-1 shadow-2xs">
                 <span className="text-xs font-semibold text-slate-500 block">
                   Standard Import Tariff
                 </span>
@@ -327,7 +327,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 <span className="text-xs text-slate-500 block">Standard base rate without treaty</span>
               </ScrollAssembleCard>
 
-              <ScrollAssembleCard direction="pop" distance={30} delay={0.15} className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1 shadow-2xs">
+              <ScrollAssembleCard direction="scale-pulse" delay={0.15} className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-1 shadow-2xs ring-2 ring-emerald-500/20">
                 <span className="text-xs font-semibold text-emerald-800 block">
                   Preferential FTA Tariff
                 </span>
@@ -337,7 +337,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 <span className="text-xs text-emerald-800 font-semibold block">Unlocked via trade certification</span>
               </ScrollAssembleCard>
 
-              <ScrollAssembleCard direction="right" distance={30} delay={0.25} className="p-5 rounded-2xl bg-orange-50 border border-orange-200 space-y-1 shadow-2xs">
+              <ScrollAssembleCard direction="bottom" distance={30} delay={0.25} className="p-5 rounded-2xl bg-orange-50 border border-orange-200 space-y-1 shadow-2xs">
                 <span className="text-xs font-semibold text-orange-900 block">
                   Direct Net Duty Savings
                 </span>
@@ -390,10 +390,10 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           </p>
         </ScrollAssembleCard>
 
-        {/* 4 Pillars Grid (Assembling from All 4 Corners) */}
+        {/* 4 Pillars Grid (Assembling from All 4 Bento Puzzle Corners) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-          {/* Pillar 1 (Flies in from Left) */}
-          <ScrollAssembleCard direction="left" distance={50} delay={0.05} className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-200 transition-all">
+          {/* Pillar 1 (Assembles from Top-Left Diagonal) */}
+          <ScrollAssembleCard direction="puzzle-tl" distance={45} delay={0.05} className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-200 transition-all">
             <div className="flex items-center justify-between">
               <span className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center font-bold text-orange-600 text-sm">
                 01
@@ -418,8 +418,8 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </div>
           </ScrollAssembleCard>
 
-          {/* Pillar 2 (Flies in from Top) */}
-          <ScrollAssembleCard direction="top" distance={50} delay={0.15} className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-200 transition-all">
+          {/* Pillar 2 (Assembles from Top-Right Diagonal) */}
+          <ScrollAssembleCard direction="puzzle-tr" distance={45} delay={0.12} className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-200 transition-all">
             <div className="flex items-center justify-between">
               <span className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center font-bold text-orange-600 text-sm">
                 02
@@ -444,8 +444,8 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </div>
           </ScrollAssembleCard>
 
-          {/* Pillar 3 (Flies in from Bottom) */}
-          <ScrollAssembleCard direction="bottom" distance={50} delay={0.25} className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-200 transition-all">
+          {/* Pillar 3 (Assembles from Bottom-Left Diagonal) */}
+          <ScrollAssembleCard direction="puzzle-bl" distance={45} delay={0.19} className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-200 transition-all">
             <div className="flex items-center justify-between">
               <span className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center font-bold text-orange-600 text-sm">
                 03
@@ -470,8 +470,8 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </div>
           </ScrollAssembleCard>
 
-          {/* Pillar 4 (Flies in from Right) */}
-          <ScrollAssembleCard direction="right" distance={50} delay={0.35} className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-200 transition-all">
+          {/* Pillar 4 (Assembles from Bottom-Right Diagonal) */}
+          <ScrollAssembleCard direction="puzzle-br" distance={45} delay={0.26} className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-200 transition-all">
             <div className="flex items-center justify-between">
               <span className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center font-bold text-orange-600 text-sm">
                 04
@@ -582,9 +582,16 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                     <span className="text-orange-600 font-bold block text-sm">COMMERCIAL INVOICE #EXP-2026-0941</span>
                     <span className="text-slate-500 text-xs mt-0.5 block">Incoterms 2020: CIF Jebel Ali Port, Dubai (UAE)</span>
                   </div>
-                  <div className="text-right text-slate-500 text-xs">
-                    <span>Date: 11-SEP-2026</span>
-                    <span className="block text-emerald-700 font-bold">Currency: USD ($)</span>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right text-slate-500 text-xs">
+                      <span>Date: 11-SEP-2026</span>
+                      <span className="block text-emerald-700 font-bold">Currency: USD ($)</span>
+                    </div>
+                    <ScrollAssembleCard direction="stamp" delay={0.15}>
+                      <div className="px-2.5 py-1 rounded-lg border-2 border-emerald-600 bg-emerald-50 text-emerald-800 font-mono font-black text-[10px] uppercase tracking-wider rotate-[-3deg] shadow-xs">
+                        ✓ DGFT VERIFIED
+                      </div>
+                    </ScrollAssembleCard>
                   </div>
                 </div>
 
@@ -668,8 +675,15 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                     <span className="text-orange-600 font-bold block text-sm">PREFERENTIAL CERTIFICATE OF ORIGIN (CEPA FORM 1)</span>
                     <span className="text-slate-500 text-xs mt-0.5 block">Issuing Authority: Directorate General of Foreign Trade (DGFT)</span>
                   </div>
-                  <div className="text-right text-emerald-700 text-xs font-semibold">
-                    <span>Status: Digitally Signed &amp; QR Encoded</span>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right text-emerald-700 text-xs font-semibold">
+                      <span>Status: Digitally Signed &amp; QR Encoded</span>
+                    </div>
+                    <ScrollAssembleCard direction="stamp" delay={0.15}>
+                      <div className="px-2.5 py-1 rounded-lg border-2 border-emerald-600 bg-emerald-50 text-emerald-800 font-mono font-black text-[10px] uppercase tracking-wider rotate-[-3deg] shadow-xs">
+                        ✓ CEPA FORM 1
+                      </div>
+                    </ScrollAssembleCard>
                   </div>
                 </div>
 
@@ -691,8 +705,15 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                     <span className="text-orange-600 font-bold block text-sm">ICEGATE SHIPPING BILL #SB-98214-JNPT</span>
                     <span className="text-slate-500 text-xs mt-0.5 block">Customs Station: INNSA1 (Nhava Sheva, JNPT Port)</span>
                   </div>
-                  <div className="text-right text-emerald-700 text-xs font-semibold">
-                    <span>Let Export Order (LEO) Status: GRANTED</span>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right text-emerald-700 text-xs font-semibold">
+                      <span>Let Export Order (LEO) Status: GRANTED</span>
+                    </div>
+                    <ScrollAssembleCard direction="stamp" delay={0.15}>
+                      <div className="px-2.5 py-1 rounded-lg border-2 border-emerald-600 bg-emerald-50 text-emerald-800 font-mono font-black text-[10px] uppercase tracking-wider rotate-[-3deg] shadow-xs">
+                        ✓ ICEGATE LEO
+                      </div>
+                    </ScrollAssembleCard>
                   </div>
                 </div>
 
@@ -731,7 +752,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
         <ScrollAssembleCard direction="bottom" distance={40} delay={0.1} className="max-w-6xl mx-auto bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-10 space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
             {/* Stage 1 */}
-            <ScrollAssembleCard direction="pop" distance={25} delay={0.05} className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+            <ScrollAssembleCard direction="domino" distance={25} delay={0.06} className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-emerald-800">
                 <span>01. FACTORY</span>
                 <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -741,7 +762,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </ScrollAssembleCard>
 
             {/* Stage 2 */}
-            <ScrollAssembleCard direction="pop" distance={25} delay={0.12} className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+            <ScrollAssembleCard direction="domino" distance={25} delay={0.12} className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-emerald-800">
                 <span>02. INLAND ICD</span>
                 <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -751,7 +772,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </ScrollAssembleCard>
 
             {/* Stage 3 */}
-            <ScrollAssembleCard direction="pop" distance={25} delay={0.19} className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+            <ScrollAssembleCard direction="domino" distance={25} delay={0.18} className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-emerald-800">
                 <span>03. PORT GATE-IN</span>
                 <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -761,7 +782,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </ScrollAssembleCard>
 
             {/* Stage 4 */}
-            <ScrollAssembleCard direction="pop" distance={25} delay={0.26} className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
+            <ScrollAssembleCard direction="domino" distance={25} delay={0.24} className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-emerald-800">
                 <span>04. CUSTOMS LEO</span>
                 <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -771,7 +792,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </ScrollAssembleCard>
 
             {/* Stage 5 */}
-            <ScrollAssembleCard direction="pop" distance={25} delay={0.33} className="p-4 rounded-2xl bg-orange-50 border border-orange-200 space-y-2">
+            <ScrollAssembleCard direction="domino" distance={25} delay={0.30} className="p-4 rounded-2xl bg-orange-50 border border-orange-200 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-orange-800">
                 <span>05. OCEAN TRANSIT</span>
                 <Ship className="w-3.5 h-3.5 text-orange-600" />
@@ -781,7 +802,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </ScrollAssembleCard>
 
             {/* Stage 6 */}
-            <ScrollAssembleCard direction="pop" distance={25} delay={0.4} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 opacity-75">
+            <ScrollAssembleCard direction="domino" distance={25} delay={0.36} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 opacity-75">
               <div className="flex items-center justify-between text-xs font-bold text-slate-500">
                 <span>06. BERTH &amp; OUT</span>
                 <Clock className="w-3.5 h-3.5 text-slate-400" />
@@ -1095,7 +1116,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
       {/* ─────────────────────────────────────────────────────────────
           STORY 07 — NATIONAL TRADE IMPACT METRICS
       ───────────────────────────────────────────────────────────── */}
-      <ScrollAssembleCard direction="pop" distance={40} delay={0.1} className="bg-linear-to-r from-orange-600 via-orange-500 to-amber-600 rounded-3xl p-8 sm:p-14 text-white shadow-2xl space-y-8">
+      <ScrollAssembleCard direction="float-expand" distance={35} delay={0.05} className="bg-linear-to-r from-orange-600 via-orange-500 to-amber-600 rounded-3xl p-8 sm:p-14 text-white shadow-2xl space-y-8">
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 border border-white/30 text-white text-xs font-bold uppercase tracking-wider">
             National Trade Platform
@@ -1109,45 +1130,45 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
+          <ScrollAssembleCard direction="pop" delay={0.08} className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
             <span className="text-3xl sm:text-5xl font-black font-sans font-mono block">
-              <ScrollCounter value={100} suffix="%" />
+              <ScrollCounter value={100} suffix="%" once={false} />
             </span>
             <span className="text-xs uppercase tracking-wider font-bold opacity-90 mt-2 block">
               Verified Rules
             </span>
             <span className="text-[11px] opacity-75 mt-0.5 block">CBIC &amp; DGFT Aligned</span>
-          </div>
+          </ScrollAssembleCard>
 
-          <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
+          <ScrollAssembleCard direction="pop" delay={0.16} className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
             <span className="text-3xl sm:text-5xl font-black font-sans font-mono block">
-              &lt;&nbsp;<ScrollCounter value={3} suffix=" Min" />
+              &lt;&nbsp;<ScrollCounter value={3} suffix=" Min" once={false} />
             </span>
             <span className="text-xs uppercase tracking-wider font-bold opacity-90 mt-2 block">
               Readiness Audit
             </span>
             <span className="text-[11px] opacity-75 mt-0.5 block">Instant HS &amp; Duty Lookup</span>
-          </div>
+          </ScrollAssembleCard>
 
-          <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
+          <ScrollAssembleCard direction="pop" delay={0.24} className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
             <span className="text-3xl sm:text-5xl font-black font-sans font-mono block">
-              0–<ScrollCounter value={100} />
+              0–<ScrollCounter value={100} once={false} />
             </span>
             <span className="text-xs uppercase tracking-wider font-bold opacity-90 mt-2 block">
               Weighted Index
             </span>
             <span className="text-[11px] opacity-75 mt-0.5 block">Explainable Blockers</span>
-          </div>
+          </ScrollAssembleCard>
 
-          <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
+          <ScrollAssembleCard direction="pop" delay={0.32} className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
             <span className="text-3xl sm:text-5xl font-black font-sans font-mono block">
-              <ScrollCounter value={1} suffix="-Click" />
+              <ScrollCounter value={1} suffix="-Click" once={false} />
             </span>
             <span className="text-xs uppercase tracking-wider font-bold opacity-90 mt-2 block">
               Document Vault
             </span>
             <span className="text-[11px] opacity-75 mt-0.5 block">Invoices, Pack Lists &amp; CoO</span>
-          </div>
+          </ScrollAssembleCard>
         </div>
       </ScrollAssembleCard>
 
@@ -1155,7 +1176,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           STORY 08 — FINAL ENTERPRISE CTA
           (Harmonized Deep Midnight & Warm Amber Aura)
       ───────────────────────────────────────────────────────────── */}
-      <ScrollAssembleCard direction="bottom" distance={50} delay={0.15} className="bg-linear-to-br from-slate-900 via-slate-950 to-orange-950/40 rounded-3xl border border-slate-800 p-8 sm:p-14 text-white shadow-2xl relative overflow-hidden text-center space-y-8">
+      <ScrollAssembleCard direction="dock-drawer" distance={45} delay={0.1} className="bg-linear-to-br from-slate-900 via-slate-950 to-orange-950/40 rounded-3xl border border-slate-800 p-8 sm:p-14 text-white shadow-2xl relative overflow-hidden text-center space-y-8">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
 

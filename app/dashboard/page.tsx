@@ -93,7 +93,7 @@ export default async function DashboardPage() {
         {readinessData ? (
           <div className="space-y-6">
             {/* LEVEL 1 — Export Readiness Summary (Score & 1-line plain status) */}
-            <ScrollAssembleCard direction="bottom" distance={20} delay={0.1}>
+            <ScrollAssembleCard direction="scale-pulse" delay={0.1}>
               <ExportReadinessSummary
                 readinessData={readinessData}
                 productName={product?.name}
@@ -103,17 +103,17 @@ export default async function DashboardPage() {
             </ScrollAssembleCard>
 
             {/* LEVEL 1 — What Needs Your Attention (Action Queue max 3 items) */}
-            <ScrollAssembleCard direction="bottom" distance={20} delay={0.16}>
+            <ScrollAssembleCard direction="dock-drawer" delay={0.16}>
               <AttentionRequiredSection readinessData={readinessData} />
             </ScrollAssembleCard>
 
             {/* LEVEL 2 — Active Shipment Operational Status */}
-            <ScrollAssembleCard direction="bottom" distance={20} delay={0.22}>
+            <ScrollAssembleCard direction="unfold-3d" delay={0.22}>
               <ActiveShipmentCard activeShipment={activeShipment} />
             </ScrollAssembleCard>
 
             {/* LEVEL 3 — Quick Navigation Actions */}
-            <ScrollAssembleCard direction="bottom" distance={20} delay={0.28}>
+            <ScrollAssembleCard direction="pop" delay={0.28}>
               <QuickNavActions />
             </ScrollAssembleCard>
 
