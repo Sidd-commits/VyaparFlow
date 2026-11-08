@@ -2,7 +2,8 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { Ship, RefreshCw } from 'lucide-react';
+import VyaparFlowLogo from '@/components/VyaparFlowLogo';
+import { RefreshCw } from 'lucide-react';
 
 export default function GlobalError({
   error,
@@ -19,8 +20,8 @@ export default function GlobalError({
     <html lang="en">
       <body className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-4 font-sans">
         <div className="w-full max-w-md bg-slate-900 border border-slate-800 p-8 rounded-3xl shadow-2xl text-center space-y-5">
-          <div className="w-12 h-12 rounded-2xl bg-orange-600/20 border border-orange-500/30 text-orange-400 flex items-center justify-center mx-auto">
-            <Ship className="w-6 h-6" />
+          <div className="flex items-center justify-center mx-auto">
+            <VyaparFlowLogo size={42} showText={true} variant="dark" subtitle="Global Recovery Console" />
           </div>
 
           <div className="space-y-2">

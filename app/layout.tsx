@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Newsreader, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -23,8 +23,19 @@ const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#EA580C",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
-  title: "VyaparFlow — Export Logistics Readiness Operating System",
+  metadataBase: new URL("https://www.vyaparflow.online"),
+  title: {
+    default: "VyaparFlow — Export Logistics Readiness Platform",
+    template: "%s | VyaparFlow",
+  },
   description:
     "Deterministic export readiness, compliance, certification, and multi-carrier logistics SaaS platform for Indian MSMEs.",
   keywords: [
@@ -36,6 +47,41 @@ export const metadata: Metadata = {
     "Global Trade Logistics",
     "VyaparFlow",
   ],
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/manifest.json",
+  openGraph: {
+    title: "VyaparFlow — Export Logistics Readiness Operating System",
+    description:
+      "Deterministic export readiness, compliance, and multi-carrier execution for Indian MSMEs.",
+    url: "https://www.vyaparflow.online",
+    siteName: "VyaparFlow",
+    locale: "en_IN",
+    type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "VyaparFlow Export Readiness Platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "VyaparFlow — Export Logistics Readiness Platform",
+    description:
+      "Deterministic export readiness, compliance, and multi-carrier execution for Indian MSMEs.",
+    images: ["/og-image.png"],
+  },
 };
 
 import { Suspense } from "react";

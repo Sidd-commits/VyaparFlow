@@ -4,6 +4,7 @@ import React, { useState, useTransition } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { logoutUserAction } from '@/app/actions';
+import VyaparFlowLogo from '@/components/VyaparFlowLogo';
 import {
   Ship,
   LayoutDashboard,
@@ -178,17 +179,7 @@ export default function AppShell({
               prefetch={true}
               className="flex items-center gap-3 group"
             >
-              <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white font-bold shadow-sm shadow-orange-600/30 group-hover:scale-105 transition-transform shrink-0">
-                <Ship className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <span className="font-bold text-lg tracking-tight text-slate-900 font-sans block leading-tight">
-                  VyaparFlow
-                </span>
-                <span className="block text-[10px] text-slate-500 font-medium tracking-tight truncate">
-                  Export Logistics Platform
-                </span>
-              </div>
+              <VyaparFlowLogo size={36} showText={true} subtitle="Export Logistics Platform" />
             </Link>
           </div>
 
@@ -285,23 +276,21 @@ export default function AppShell({
               ? '/admin'
               : '/dashboard'
           }
-          className="flex items-center gap-2.5 group"
+          className="flex items-center gap-2 group"
         >
-          <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold shadow-xs group-hover:scale-105 transition-transform">
-            <Ship className="w-4 h-4" />
-          </div>
-          <div>
-            <span className="font-bold text-sm tracking-tight text-slate-900 font-sans block leading-tight">
-              VyaparFlow
-            </span>
-            <span className="block text-[8px] uppercase tracking-wider text-slate-500 font-semibold">
-              {currentRole === 'PROVIDER'
+          <VyaparFlowLogo
+            size={30}
+            showText={true}
+            subtitle={
+              currentRole === 'PROVIDER'
                 ? 'Provider Portal'
                 : currentRole === 'ADMIN'
                 ? 'Admin Governance'
-                : 'MSME Export OS'}
-            </span>
-          </div>
+                : 'MSME Export OS'
+            }
+            titleClassName="text-sm font-bold text-slate-900"
+            subtitleClassName="text-[8px] uppercase tracking-wider text-slate-500 font-semibold"
+          />
         </Link>
 
         <div className="flex items-center gap-2">
@@ -334,19 +323,13 @@ export default function AppShell({
           <div className="relative w-4/5 max-w-xs bg-white h-full flex flex-col justify-between shadow-2xl z-10 animate-in slide-in-from-right duration-200">
             {/* Drawer Header */}
             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold">
-                  <Ship className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="font-bold text-sm tracking-tight text-slate-900 font-sans block">
-                    VyaparFlow
-                  </span>
-                  <span className="text-[10px] text-slate-500 font-medium block">
-                    Navigation &amp; Profile
-                  </span>
-                </div>
-              </div>
+              <VyaparFlowLogo
+                size={30}
+                showText={true}
+                subtitle="Navigation & Profile"
+                titleClassName="text-sm font-bold text-slate-900"
+                subtitleClassName="text-[10px] text-slate-500 font-medium"
+              />
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-200/70 cursor-pointer"

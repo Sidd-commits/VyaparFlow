@@ -2,7 +2,8 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { Ship, RefreshCw, LogIn, LayoutDashboard, AlertTriangle, ArrowLeft } from 'lucide-react';
+import VyaparFlowLogo from '@/components/VyaparFlowLogo';
+import { RefreshCw, LogIn, LayoutDashboard, AlertTriangle, ArrowLeft } from 'lucide-react';
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -22,10 +23,8 @@ export default function ErrorBoundary({ error, reset }: ErrorProps) {
 
       <div className="w-full max-w-lg bg-slate-900/90 border border-slate-800 p-8 rounded-3xl shadow-2xl space-y-6 relative z-10 text-center">
         {/* Logo / Header */}
-        <div className="flex items-center justify-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-orange-600/20 border border-orange-500/30 text-orange-400 flex items-center justify-center">
-            <Ship className="w-6 h-6" />
-          </div>
+        <div className="flex items-center justify-center">
+          <VyaparFlowLogo size={42} showText={true} variant="dark" subtitle="System Status Console" />
         </div>
 
         <div className="space-y-2">

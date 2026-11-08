@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import HeroExportCockpit from '@/components/HeroExportCockpit';
 import ScrollStorySections from '@/components/ScrollStorySections';
 import { getActiveUser } from '@/app/actions';
+import VyaparFlowLogo from '@/components/VyaparFlowLogo';
 import {
   Ship,
   ArrowRight,
@@ -131,19 +132,12 @@ export default async function LandingPage() {
       <footer className="mt-auto bg-slate-950 text-slate-400 py-12 text-xs border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-slate-800 pb-8">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-orange-600 flex items-center justify-center text-white shadow-sm shadow-orange-600/30">
-                <Ship className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="font-bold text-white text-base tracking-tight font-sans">
-                  VyaparFlow
-                </span>
-                <span className="block text-[10px] text-slate-400 font-medium">
-                  Export Logistics Readiness Platform
-                </span>
-              </div>
-            </div>
+            <VyaparFlowLogo
+              size={36}
+              showText={true}
+              variant="dark"
+              subtitle="Export Logistics Readiness Platform"
+            />
 
             <div className="flex flex-wrap items-center gap-6 text-slate-400 text-xs">
               <Link href="/readiness" className="hover:text-orange-400 transition-colors">
