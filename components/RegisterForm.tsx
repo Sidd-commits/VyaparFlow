@@ -139,7 +139,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                   <Building2 className="w-4 h-4" />
                 </div>
                 {role === 'MSME' && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                     Selected
                   </span>
                 )}
@@ -149,7 +149,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                   <span>MSME Exporter</span>
                   {role === 'MSME' && <CheckCircle2 className="w-3.5 h-3.5 text-orange-600 shrink-0" />}
                 </h4>
-                <p className="text-[11px] text-slate-500 leading-snug mt-0.5">
+                <p className="text-xs text-slate-500 leading-snug mt-0.5">
                   Indian manufacturers exporting agricultural, chemical, or engineered products.
                 </p>
               </div>
@@ -174,7 +174,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                   <Truck className="w-4 h-4" />
                 </div>
                 {role === 'PROVIDER' && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                     Selected
                   </span>
                 )}
@@ -184,7 +184,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                   <span>Service Provider</span>
                   {role === 'PROVIDER' && <CheckCircle2 className="w-3.5 h-3.5 text-orange-600 shrink-0" />}
                 </h4>
-                <p className="text-[11px] text-slate-500 leading-snug mt-0.5">
+                <p className="text-xs text-slate-500 leading-snug mt-0.5">
                   Licensed freight forwarders, NABL-accredited test labs, and customs brokers.
                 </p>
               </div>
@@ -221,7 +221,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
         <div className="space-y-1">
           <div className="flex items-center justify-between">
             <label className="block font-semibold text-slate-700">Password</label>
-            <span className="text-[10px] text-slate-500">Min. 6 characters</span>
+            <span className="text-xs text-slate-500">Min. 6 characters</span>
           </div>
           <input
             type="password"

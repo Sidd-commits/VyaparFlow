@@ -210,20 +210,27 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       )}
 
       {/* 2. AUTHENTICATION CARD */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-900/5 space-y-6 relative overflow-hidden">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-900/5 space-y-5 relative overflow-hidden">
         {/* Subtle decorative glow */}
         <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/5 rounded-full blur-2xl pointer-events-none -mr-10 -mt-10" />
 
+        {/* Form Title & Subtitle */}
+        <div className="space-y-1">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            Sign in to your account
+          </h2>
+          <p className="text-xs text-slate-500">
+            Select your workspace role to enter the operating portal
+          </p>
+        </div>
+
         {/* ROLE SELECTION TABS */}
         <div className="space-y-2">
-          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
-            Sign In As:
-          </label>
           <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100/90 rounded-2xl border border-slate-200/80">
             <button
               type="button"
               onClick={() => setSelectedRole('MSME')}
-              className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              className={`py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 selectedRole === 'MSME'
                   ? 'bg-white text-orange-600 shadow-2xs font-bold border border-slate-200/80'
                   : 'text-slate-600 hover:text-slate-900'
@@ -236,7 +243,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             <button
               type="button"
               onClick={() => setSelectedRole('PROVIDER')}
-              className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+              className={`py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 selectedRole === 'PROVIDER'
                   ? 'bg-white text-orange-600 shadow-2xs font-bold border border-slate-200/80'
                   : 'text-slate-600 hover:text-slate-900'
@@ -246,12 +253,6 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               <span>Service Provider</span>
             </button>
           </div>
-
-          <p className="text-[11px] text-slate-500 font-medium px-1">
-            {selectedRole === 'MSME'
-              ? 'Access factory export readiness, statutory documents, and freight quotes.'
-              : 'Access freight forwarder bids, quarantine testing reports, and customs CHA filings.'}
-          </p>
         </div>
 
         {/* PRIMARY GOOGLE SSO BUTTON */}
@@ -266,9 +267,9 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         </div>
 
         {/* OR DIVIDER */}
-        <div className="relative flex items-center justify-center my-3">
+        <div className="relative flex items-center justify-center my-2">
           <div className="border-t border-slate-200 w-full" />
-          <span className="bg-white text-slate-500 px-3 text-[11px] uppercase tracking-wider shrink-0 font-medium">
+          <span className="bg-white text-slate-500 px-3 text-xs uppercase tracking-wider shrink-0 font-medium">
             or continue with email
           </span>
           <div className="border-t border-slate-200 w-full" />
@@ -412,11 +413,11 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
             <span className="font-semibold text-slate-800">
               Need Demo / Test Credentials?
             </span>
-            <span className="text-[10px] bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-bold border border-orange-200">
+            <span className="text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-bold border border-orange-200">
               1-Click Fill
             </span>
           </div>
-          <div className="flex items-center gap-1 text-slate-500 font-medium text-[11px]">
+          <div className="flex items-center gap-1 text-slate-500 font-medium text-xs">
             <span>{showHelperAccounts ? 'Hide' : 'Show accounts'}</span>
             {showHelperAccounts ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </div>
@@ -424,7 +425,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
 
         {showHelperAccounts && (
           <div className="p-4 pt-1 border-t border-orange-200/70 bg-white/70 space-y-2.5 text-xs animate-in fade-in duration-150">
-            <p className="text-[11px] text-slate-600">
+            <p className="text-xs text-slate-600">
               Click any verified test account below to auto-fill its credentials. Password is <code className="bg-orange-100/70 px-1.5 py-0.5 rounded font-mono text-orange-900 font-bold border border-orange-200">password123</code>:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
@@ -443,9 +444,9 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               >
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-xs text-slate-900">MSME Exporter 1</span>
-                  <span className="text-[9px] bg-orange-50 text-orange-700 border border-orange-200 px-1.5 py-0.5 rounded font-bold">Mango &rarr; UAE</span>
+                  <span className="text-xs bg-orange-50 text-orange-700 border border-orange-200 px-1.5 py-0.5 rounded font-bold">Mango &rarr; UAE</span>
                 </div>
-                <p className="text-[10px] text-slate-500 truncate mt-0.5 font-mono">msme@apex-exports.com</p>
+                <p className="text-xs text-slate-500 truncate mt-0.5 font-mono">msme@apex-exports.com</p>
               </div>
 
               {/* MSME 2 */}
@@ -463,9 +464,9 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               >
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-xs text-slate-900">MSME Exporter 2</span>
-                  <span className="text-[9px] bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded font-bold">Spices &rarr; USA</span>
+                  <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded font-bold">Spices &rarr; USA</span>
                 </div>
-                <p className="text-[10px] text-slate-500 truncate mt-0.5 font-mono">msme2@konkan-spices.com</p>
+                <p className="text-xs text-slate-500 truncate mt-0.5 font-mono">msme2@konkan-spices.com</p>
               </div>
 
               {/* Freight Forwarder */}
@@ -483,9 +484,9 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               >
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-xs text-slate-900">Freight Forwarder</span>
-                  <span className="text-[9px] bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded font-bold">Ocean &amp; Air</span>
+                  <span className="text-xs bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded font-bold">Ocean &amp; Air</span>
                 </div>
-                <p className="text-[10px] text-slate-500 truncate mt-0.5 font-mono">provider@freight.com</p>
+                <p className="text-xs text-slate-500 truncate mt-0.5 font-mono">provider@freight.com</p>
               </div>
 
               {/* Lab */}
@@ -503,9 +504,9 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               >
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-xs text-slate-900">Testing Laboratory</span>
-                  <span className="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded font-bold">NABL Certified</span>
+                  <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded font-bold">NABL Certified</span>
                 </div>
-                <p className="text-[10px] text-slate-500 truncate mt-0.5 font-mono">lab@certify.com</p>
+                <p className="text-xs text-slate-500 truncate mt-0.5 font-mono">lab@certify.com</p>
               </div>
 
               {/* CHA */}
@@ -523,9 +524,9 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               >
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-xs text-slate-900">Customs House Agent (CHA)</span>
-                  <span className="text-[9px] bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded font-bold">Port Customs &amp; LEO</span>
+                  <span className="text-xs bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded font-bold">Port Customs &amp; LEO</span>
                 </div>
-                <p className="text-[10px] text-slate-500 truncate mt-0.5 font-mono">cha@customs.com</p>
+                <p className="text-xs text-slate-500 truncate mt-0.5 font-mono">cha@customs.com</p>
               </div>
             </div>
           </div>

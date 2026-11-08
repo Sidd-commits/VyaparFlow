@@ -1,330 +1,342 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
-  Building2,
-  FlaskConical,
-  Truck,
-  Ship,
-  Plane,
-  ShieldCheck,
-  CheckCircle2,
+  Zap,
+  MapPin,
   ArrowRight,
-  Clock,
-  Sparkles,
+  Globe2,
+  ShieldCheck,
+  RefreshCw,
   Check,
-  RotateCcw,
 } from 'lucide-react';
 
-interface RouteData {
+interface TradeCorridorData {
   id: string;
-  label: string;
+  name: string;
+  shortLabel: string;
   commodity: string;
-  origin: string;
-  destination: string;
-  transit: string;
-  dutySaved: string;
-  ftaType: string;
-  icon: 'ship' | 'plane';
-  steps: {
-    title: string;
-    sub: string;
-    badge: string;
-    completed: boolean;
-  }[];
+  originPort: string;
+  destPort: string;
+  cargoValue: string;
+  dutySaving: string;
+  transitTime: string;
+  baseScore: number;
+  resolvedScore: number;
+  carrier: string;
+  keyDoc: string;
 }
 
-const ROUTES: RouteData[] = [
+const CORRIDORS: TradeCorridorData[] = [
   {
     id: 'nashik-dubai',
-    label: 'Nashik → Dubai',
+    name: 'Nashik → Dubai',
+    shortLabel: 'Sonaka',
     commodity: 'Sonaka Table Grapes',
-    origin: 'JNPT Nhava Sheva',
-    destination: 'Jebel Ali Port (UAE)',
-    transit: '4–5 Days Ocean Reefer',
-    dutySaved: '₹1.48L Saved',
-    ftaType: '0% CEPA Duty',
-    icon: 'ship',
-    steps: [
-      {
-        title: 'Factory Readiness Audit',
-        sub: 'Export readiness 100/100 • Automated Invoice & Packing List',
-        badge: 'Verified',
-        completed: true,
-      },
-      {
-        title: 'NABL Laboratory Clearance',
-        sub: 'APEDA Phytosanitary & Pesticide Residue Cert uploaded',
-        badge: 'Passed',
-        completed: true,
-      },
-      {
-        title: 'Port CFS Gate-in & ICEGATE',
-        sub: 'Shipping Bill SB-98214 registered • Container sealed',
-        badge: 'Gate-In Done',
-        completed: true,
-      },
-      {
-        title: 'Customs LEO Clearance',
-        sub: 'Let Export Order granted • 0% CEPA preferential tariff',
-        badge: 'LEO Cleared',
-        completed: true,
-      },
-    ],
+    originPort: 'JNPT Port (Nhava Sheva)',
+    destPort: 'Jebel Ali Port (UAE)',
+    cargoValue: '₹12,50,000',
+    dutySaving: '0% CEPA Preferential Duty',
+    transitTime: '4–5 Days Ocean Reefer',
+    baseScore: 68,
+    resolvedScore: 96,
+    carrier: 'SwiftGlobe Logistics India',
+    keyDoc: 'APEDA Phytosanitary & NABL Residue Pass',
   },
   {
     id: 'surat-rotterdam',
-    label: 'Surat → Rotterdam',
+    name: 'Surat → Rotterdam',
+    shortLabel: 'Woven',
     commodity: 'Woven Synthetic Fabrics',
-    origin: 'Hazira Port Terminal',
-    destination: 'Rotterdam Port (EU)',
-    transit: '21–23 Days Ocean FCL',
-    dutySaved: '₹2.24L Saved',
-    ftaType: '4.8% REX Concession',
-    icon: 'ship',
-    steps: [
-      {
-        title: 'Mill Dispatch & Documentation',
-        sub: 'Batch inspection passed • Commercial Dossier assembled',
-        badge: 'Verified',
-        completed: true,
-      },
-      {
-        title: 'OEKO-TEX & REACH Compliance',
-        sub: 'EU Safety standards validated by accredited lab',
-        badge: 'Passed',
-        completed: true,
-      },
-      {
-        title: 'CFS Container Stuffing',
-        sub: 'Hazira customs gate-in registered • RFID container seal',
-        badge: 'Gate-In Done',
-        completed: true,
-      },
-      {
-        title: 'Customs LEO Release',
-        sub: 'Shipping bill assessment cleared • Vessel boarding ordered',
-        badge: 'LEO Cleared',
-        completed: true,
-      },
-    ],
+    originPort: 'Hazira Port Terminal',
+    destPort: 'Port of Rotterdam (EU)',
+    cargoValue: '₹28,40,000',
+    dutySaving: '4.8% REX Tariff Concession',
+    transitTime: '21–23 Days Ocean FCL',
+    baseScore: 72,
+    resolvedScore: 95,
+    carrier: 'OceanBridge Global Express',
+    keyDoc: 'OEKO-TEX 100 & REACH Safety Pass',
+  },
+  {
+    id: 'morbi-usa',
+    name: 'Morbi → Long Beach',
+    shortLabel: 'Vitrified',
+    commodity: 'Polished Vitrified Tiles',
+    originPort: 'Mundra Port Gateway',
+    destPort: 'Port of Long Beach (USA)',
+    cargoValue: '₹42,00,000',
+    dutySaving: 'Anti-dumping Duty Exempt',
+    transitTime: '28–30 Days Ocean FCL',
+    baseScore: 70,
+    resolvedScore: 94,
+    carrier: 'Apex Maritime India Ltd',
+    keyDoc: 'ISPM-15 Heat-Treated Pallet Cert',
   },
   {
     id: 'pune-frankfurt',
-    label: 'Pune → Frankfurt',
-    commodity: 'Precision CNC Auto Housings',
-    origin: 'Mumbai Air Cargo (BOM)',
-    destination: 'Frankfurt CargoCity (DE)',
-    transit: '16 Hours Air Priority',
-    dutySaved: 'Zero Delay',
-    ftaType: 'IATA Non-DG Clearance',
-    icon: 'plane',
-    steps: [
-      {
-        title: 'Precision Quality QC',
-        sub: 'PPAP level 3 clearance • Digitized packing manifest',
-        badge: 'Verified',
-        completed: true,
-      },
-      {
-        title: 'Security & Aviation Screening',
-        sub: 'IATA non-DG certification & dual-use audit pass',
-        badge: 'Passed',
-        completed: true,
-      },
-      {
-        title: 'Airport Cargo Terminal Gate-in',
-        sub: 'Airway Bill (AWB) verified • Customs examination',
-        badge: 'Airside Gate-In',
-        completed: true,
-      },
-      {
-        title: 'Customs LEO Release',
-        sub: 'Electronic LEO issued • Loaded on priority cargo flight',
-        badge: 'LEO Cleared',
-        completed: true,
-      },
-    ],
+    name: 'Pune → Frankfurt',
+    shortLabel: 'CNC',
+    commodity: 'CNC Precision Auto Housings',
+    originPort: 'Mumbai Air Cargo (BOM)',
+    destPort: 'Frankfurt CargoCity (DE)',
+    cargoValue: '₹18,90,000',
+    dutySaving: '0% GSP Preferential Duty',
+    transitTime: '16 Hours Air Priority',
+    baseScore: 74,
+    resolvedScore: 98,
+    carrier: 'Lufthansa Express Cargo',
+    keyDoc: 'IATA Non-DG Quality & PPAP Clearance',
   },
 ];
 
 export default function ExportRoadmapVisual() {
-  const [activeRouteId, setActiveRouteId] = useState<string>('nashik-dubai');
-  const [activeStepIndex, setActiveStepIndex] = useState<number>(3); // All 4 completed by default
+  const [activeId, setActiveId] = useState<string>('pune-frankfurt');
+  const [isResolved, setIsResolved] = useState<boolean>(false);
+  const [isSimulating, setIsSimulating] = useState<boolean>(false);
 
-  const route = ROUTES.find((r) => r.id === activeRouteId) || ROUTES[0];
+  const current = CORRIDORS.find((c) => c.id === activeId) || CORRIDORS[3];
+  const score = isResolved ? current.resolvedScore : current.baseScore;
 
-  const handleNextStep = () => {
-    setActiveStepIndex((prev) => (prev < 3 ? prev + 1 : 0));
+  const handleToggleResolve = () => {
+    setIsSimulating(true);
+    setTimeout(() => {
+      setIsResolved((prev) => !prev);
+      setIsSimulating(false);
+    }, 350);
+  };
+
+  const handleSelectCorridor = (id: string) => {
+    setActiveId(id);
+    setIsResolved(false);
   };
 
   return (
-    <div className="space-y-4 select-none">
-      {/* Route Switcher Pills */}
-      <div className="flex items-center gap-1.5 p-1 bg-slate-100/90 rounded-2xl border border-slate-200/80">
-        {ROUTES.map((r) => {
-          const isSelected = r.id === activeRouteId;
-          return (
-            <button
-              key={r.id}
-              type="button"
-              onClick={() => {
-                setActiveRouteId(r.id);
-                setActiveStepIndex(3);
-              }}
-              className={`relative flex-1 py-2 px-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer truncate text-center ${
-                isSelected
-                  ? 'text-orange-600 font-bold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/40'
-              }`}
-            >
-              {isSelected && (
-                <motion.div
-                  layoutId="roadmap-route-pill"
-                  className="absolute inset-0 bg-white rounded-xl shadow-xs border border-slate-200/80"
-                  transition={{ type: 'spring', stiffness: 450, damping: 35 }}
-                />
-              )}
-              <span className="relative z-10 truncate block text-[11px] sm:text-xs">
-                {r.label}
+    <div className="w-full select-none">
+      {/* High-Contrast Export Operations Console (Exact Reference Design) */}
+      <div className="rounded-3xl bg-[#0B0F19] text-white border border-slate-800/90 shadow-2xl p-5 sm:p-7 space-y-5 relative overflow-hidden">
+        {/* Subtle Ambient Radial Glow */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+
+        {/* 1. Header Bar */}
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-orange-500/15 border border-orange-500/30 text-orange-400 flex items-center justify-center shadow-xs">
+              <Zap className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-white tracking-tight">
+                  Export Operations Console
+                </span>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              </div>
+              <span className="text-xs text-slate-400 block">
+                Live Trade Corridor Telemetry
               </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Main Pathway Card */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-6 space-y-5 relative overflow-hidden">
-        {/* Subtle decorative glow */}
-        <div className="absolute top-0 right-0 w-40 h-40 bg-orange-500/5 rounded-full blur-2xl pointer-events-none -mr-10 -mt-10" />
-
-        {/* Header Telemetry Strip */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center shrink-0 shadow-2xs">
-              {route.icon === 'plane' ? (
-                <Plane className="w-4 h-4" />
-              ) : (
-                <Ship className="w-4 h-4" />
-              )}
-            </div>
-            <div className="min-w-0">
-              <h3 className="font-bold text-xs sm:text-sm text-slate-900 truncate">
-                {route.commodity}
-              </h3>
-              <p className="text-[11px] text-slate-500 flex items-center gap-1 truncate font-medium">
-                <span>{route.origin}</span>
-                <ArrowRight className="w-3 h-3 text-slate-400 shrink-0" />
-                <span className="text-slate-700 font-semibold">{route.destination}</span>
-              </p>
             </div>
           </div>
 
-          <div className="text-right shrink-0">
-            <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-              {route.ftaType}
-            </span>
-            <span className="block text-[10px] text-slate-500 mt-0.5 font-medium">
-              {route.dutySaved}
-            </span>
-          </div>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
+              isResolved
+                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40 shadow-xs'
+                : 'bg-amber-500/15 text-amber-300 border-amber-500/40'
+            }`}
+          >
+            {isResolved ? '● LEO Cleared for Gate-in' : '▲ Verification in Progress'}
+          </span>
         </div>
 
-        {/* Visual Export Pathway (Roadmap Stepper) */}
-        <div className="relative pl-6 space-y-4">
-          {/* Vertical Connecting Line */}
-          <div className="absolute left-[11px] top-3 bottom-3 w-0.5 bg-slate-200" />
-          <motion.div
-            className="absolute left-[11px] top-3 w-0.5 bg-linear-to-b from-orange-500 to-emerald-500"
-            initial={{ height: 0 }}
-            animate={{
-              height: `${(activeStepIndex / 3) * 100}%`,
-            }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
-          />
-
-          {route.steps.map((step, idx) => {
-            const isCompleted = idx <= activeStepIndex;
-            const isCurrent = idx === activeStepIndex;
-
+        {/* 2. Corridor Tabs */}
+        <div className="relative z-10 bg-[#131B2E]/90 p-1.5 rounded-2xl border border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          {CORRIDORS.map((c) => {
+            const active = c.id === activeId;
             return (
-              <div
-                key={step.title}
-                onClick={() => setActiveStepIndex(idx)}
-                className={`relative flex items-start justify-between gap-3 p-2.5 rounded-2xl border transition-all cursor-pointer ${
-                  isCurrent
-                    ? 'bg-orange-50/50 border-orange-300 shadow-2xs'
-                    : isCompleted
-                    ? 'bg-white border-slate-200/90 hover:border-slate-300'
-                    : 'bg-slate-50/50 border-slate-200/60 opacity-60'
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => handleSelectCorridor(c.id)}
+                className={`relative p-2 rounded-xl text-left transition-colors cursor-pointer min-w-0 ${
+                  active ? 'text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
                 }`}
               >
-                {/* Node Indicator Dot */}
-                <div
-                  className={`absolute -left-[27px] top-3 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all shadow-xs ${
-                    isCurrent
-                      ? 'bg-orange-600 text-white ring-4 ring-orange-100 scale-110'
-                      : isCompleted
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-white border-2 border-slate-300 text-slate-400'
-                  }`}
-                >
-                  {isCompleted ? <Check className="w-3 h-3 stroke-[3]" /> : idx + 1}
-                </div>
-
-                <div className="flex-1 min-w-0 pr-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-slate-400 font-mono">
-                      0{idx + 1}
-                    </span>
-                    <h4
-                      className={`font-bold text-xs truncate ${
-                        isCurrent ? 'text-orange-950' : 'text-slate-900'
-                      }`}
-                    >
-                      {step.title}
-                    </h4>
-                  </div>
-                  <p className="text-[11px] text-slate-500 mt-0.5 leading-snug truncate">
-                    {step.sub}
-                  </p>
-                </div>
-
-                <span
-                  className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full border self-center ${
-                    idx === 3 && isCompleted
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs'
-                      : isCurrent
-                      ? 'bg-orange-100 text-orange-800 border-orange-200'
-                      : isCompleted
-                      ? 'bg-slate-100 text-slate-700 border-slate-200'
-                      : 'bg-slate-50 text-slate-400 border-slate-200'
-                  }`}
-                >
-                  {step.badge}
+                {active && (
+                  <motion.div
+                    layoutId="console-active-corridor"
+                    className="absolute inset-0 bg-linear-to-r from-orange-600 to-orange-500 rounded-xl shadow-md shadow-orange-600/30"
+                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                  />
+                )}
+                <span className="relative z-10 block text-xs font-bold truncate">
+                  {c.name}
                 </span>
-              </div>
+                <span
+                  className={`relative z-10 block text-[11px] truncate mt-0.5 ${
+                    active ? 'text-orange-100' : 'text-slate-500'
+                  }`}
+                >
+                  {c.shortLabel}
+                </span>
+              </button>
             );
           })}
         </div>
 
-        {/* Footer Metrics & Interactive Action */}
-        <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
-            <Clock className="w-3.5 h-3.5 text-orange-600 shrink-0" />
-            <span>Transit: <strong>{route.transit}</strong></span>
+        {/* 3. Active Consignment Card & Visual Clearance Pipeline */}
+        <div className="relative z-10 p-5 rounded-2xl bg-[#131B2E] border border-slate-800/80 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
+            <div className="sm:col-span-8 min-w-0 space-y-1">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-orange-400 block">
+                Active Consignment
+              </span>
+              <h4 className="text-lg font-bold text-white truncate">
+                {current.commodity}
+              </h4>
+              <p className="text-xs text-slate-400 flex items-center gap-1.5 font-medium truncate">
+                <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                <span className="truncate">{current.originPort}</span>
+                <ArrowRight className="w-3 h-3 text-slate-500 shrink-0" />
+                <Globe2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                <span className="truncate">{current.destPort}</span>
+              </p>
+            </div>
+            <div className="sm:col-span-4 text-left sm:text-right shrink-0">
+              <span className="text-xs text-slate-400 block">Estimated Transit</span>
+              <span className="text-xs font-bold text-white mt-0.5 block whitespace-nowrap">
+                {current.transitTime}
+              </span>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleNextStep}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 font-semibold text-[11px] transition-colors cursor-pointer"
-          >
-            <RotateCcw className="w-3 h-3" />
-            <span>Step {activeStepIndex + 1} of 4</span>
-          </button>
+          {/* 4-Stage Visual Clearance Pipeline (Roadmap) */}
+          <div className="pt-2">
+            <div className="flex items-center justify-between text-xs text-slate-400 font-semibold mb-2.5">
+              <span>Factory Dispatch</span>
+              <span>CFS Gate-in</span>
+              <span>Customs Inspection</span>
+              <span>LEO Release</span>
+            </div>
+
+            {/* Visual Track with Connected Milestones */}
+            <div className="relative flex items-center justify-between">
+              <div className="absolute left-0 right-0 h-1 bg-slate-800 rounded-full" />
+              <div
+                className="absolute left-0 h-1 bg-linear-to-r from-orange-500 via-amber-400 to-emerald-500 rounded-full transition-all duration-500"
+                style={{ width: isResolved ? '100%' : '66%' }}
+              />
+
+              {/* Node 1 */}
+              <div className="relative w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center text-xs font-bold text-white shadow-xs">
+                <Check className="w-3.5 h-3.5 stroke-[3]" />
+              </div>
+
+              {/* Node 2 */}
+              <div className="relative w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center text-xs font-bold text-white shadow-xs">
+                <Check className="w-3.5 h-3.5 stroke-[3]" />
+              </div>
+
+              {/* Node 3 */}
+              <div
+                className={`relative w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                  isResolved
+                    ? 'bg-orange-600 text-white'
+                    : 'bg-amber-400 text-slate-900 ring-4 ring-amber-400/20'
+                }`}
+              >
+                {isResolved ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : '•'}
+              </div>
+
+              {/* Node 4 */}
+              <div
+                className={`relative w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                  isResolved
+                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/30'
+                    : 'bg-slate-800 text-slate-500'
+                }`}
+              >
+                {isResolved ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : '4'}
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* 4. Operational Metric Tiles (Bento Style) */}
+        <div className="relative z-10 grid grid-cols-2 gap-3">
+          {/* Tile 1: Export Readiness Score */}
+          <div className="p-4 rounded-2xl bg-[#131B2E] border border-slate-800/80 space-y-1.5">
+            <span className="text-xs font-semibold text-slate-400 block">
+              Export Readiness Score
+            </span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-3xl font-black font-mono text-orange-500">
+                {score}
+              </span>
+              <span className="text-sm text-slate-400">/ 100</span>
+            </div>
+            <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  isResolved ? 'bg-emerald-400' : 'bg-orange-500'
+                }`}
+                style={{ width: `${score}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Tile 2: Consignment Value */}
+          <div className="p-4 rounded-2xl bg-[#131B2E] border border-slate-800/80 space-y-1.5">
+            <span className="text-xs font-semibold text-slate-400 block">
+              Consignment Value
+            </span>
+            <div className="text-2xl font-bold font-mono text-white tracking-tight">
+              {current.cargoValue}
+            </div>
+            <span className="text-xs text-emerald-400 font-semibold block truncate">
+              {current.dutySaving}
+            </span>
+          </div>
+        </div>
+
+        {/* 5. Clearances Status Strip */}
+        <div className="relative z-10 p-3.5 rounded-xl bg-[#131B2E]/90 border border-slate-800/80 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <div className="min-w-0">
+              <span className="font-bold text-white block truncate">
+                {current.keyDoc}
+              </span>
+              <span className="text-[11px] text-slate-400 block truncate">
+                Verified Logistics Partner: {current.carrier}
+              </span>
+            </div>
+          </div>
+          <span
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 ml-2 ${
+              isResolved
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+            }`}
+          >
+            {isResolved ? 'Cleared ✓' : 'Sync Required'}
+          </span>
+        </div>
+
+        {/* 6. Interactive Clearance Simulation Button */}
+        <button
+          type="button"
+          onClick={handleToggleResolve}
+          disabled={isSimulating}
+          className="relative z-10 w-full py-3.5 px-4 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-orange-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] disabled:opacity-75"
+        >
+          <RefreshCw className={`w-4 h-4 ${isSimulating ? 'animate-spin' : ''}`} />
+          <span>
+            {isResolved
+              ? 'Reset Clearance Simulation'
+              : 'Run Live Customs LEO Clearance Simulation'}
+          </span>
+        </button>
       </div>
     </div>
   );
