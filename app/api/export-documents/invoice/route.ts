@@ -9,10 +9,21 @@ export const runtime = 'nodejs';
 export async function GET(req: NextRequest) {
   const { role, user } = await requireAuth();
   const { searchParams } = new URL(req.url);
-  const shipmentId = searchParams.get('shipmentId');
+  let shipmentId = searchParams.get('shipmentId');
+  const businessId = searchParams.get('businessId');
+
+  if (!shipmentId && businessId) {
+    const latestShipment = await prisma.shipment.findFirst({
+      where: { businessId },
+      orderBy: { createdAt: 'desc' },
+    });
+    if (latestShipment) {
+      shipmentId = latestShipment.id;
+    }
+  }
 
   if (!shipmentId) {
-    return NextResponse.json({ error: 'Shipment ID required' }, { status: 400 });
+    return NextResponse.json({ error: 'Shipment ID or Business ID required' }, { status: 400 });
   }
 
   const shipment = await prisma.shipment.findUnique({

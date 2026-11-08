@@ -21,6 +21,7 @@ import {
   Users,
   Scale,
   Activity,
+  Package,
 } from 'lucide-react';
 
 interface AppShellProps {
@@ -77,6 +78,7 @@ export default function AppShell({
     {
       label: 'EXPORT OPERATIONS',
       items: [
+        { name: 'Products & Markets', href: '/products', icon: Package },
         { name: 'Shipments', href: '/shipments', icon: Truck },
       ],
     },

@@ -22,6 +22,19 @@ export function middleware(request: NextRequest) {
   const sessionToken = request.cookies.get(SESSION_COOKIE)?.value;
   const tokenRole = getSessionRole(sessionToken);
 
+  // Protected Dashboard Routes: /dashboard and nested paths
+  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) {
+    if (!sessionToken || !tokenRole) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    if (tokenRole === 'ADMIN') {
+      return NextResponse.redirect(new URL('/admin', request.url));
+    }
+    if (tokenRole === 'PROVIDER') {
+      return NextResponse.redirect(new URL('/provider', request.url));
+    }
+  }
+
   // Protected Admin Routes: /admin and nested paths
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
     if (!sessionToken || !tokenRole) {
@@ -61,6 +74,8 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/dashboard',
+    '/dashboard/:path*',
     '/admin',
     '/admin/:path*',
     '/provider',

@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import AppShell from '@/components/AppShell';
+import EditCompanyProfileModal from '@/components/EditCompanyProfileModal';
 import { requireAuth } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { Package, Globe, ArrowRight } from 'lucide-react';
@@ -41,6 +42,16 @@ export default async function ProductsPage() {
               Configure product HS codes, default invoice values, and target export country mappings.
             </p>
           </div>
+
+          {business && (
+            <EditCompanyProfileModal
+              business={business}
+              currentDestinationName={products[0]?.destinations[0]?.country?.name}
+              currentDestinationIso={products[0]?.destinations[0]?.country?.isoCode}
+              buttonText="Update Destination Market"
+              triggerClassName="px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs shadow-xs transition-colors inline-flex items-center gap-2 cursor-pointer shrink-0"
+            />
+          )}
         </div>
 
         {/* Product Cards Grid */}
