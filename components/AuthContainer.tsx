@@ -74,7 +74,7 @@ export default function AuthContainer({ currentUser }: AuthContainerProps) {
             onClick={() => setActiveTab('login')}
             className={`flex-1 py-2 px-4 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'login'
-                ? 'bg-white text-blue-600 shadow-2xs font-bold'
+                ? 'bg-white text-orange-600 shadow-2xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -87,7 +87,7 @@ export default function AuthContainer({ currentUser }: AuthContainerProps) {
             onClick={() => setActiveTab('register')}
             className={`flex-1 py-2 px-4 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'register'
-                ? 'bg-white text-blue-600 shadow-2xs font-bold'
+                ? 'bg-white text-orange-600 shadow-2xs font-bold'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >

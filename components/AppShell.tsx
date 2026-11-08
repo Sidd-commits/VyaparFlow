@@ -158,7 +158,7 @@ export default function AppShell({
     : 'U';
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col lg:flex-row font-sans selection:bg-blue-100 selection:text-blue-900">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col lg:flex-row font-sans selection:bg-orange-100 selection:text-orange-900">
       {/* ─────────────────────────────────────────────────────────────
           1. DESKTOP SIDEBAR (FIXED / STICKY ON THE LEFT)
       ───────────────────────────────────────────────────────────── */}
@@ -178,7 +178,7 @@ export default function AppShell({
               prefetch={true}
               className="flex items-center gap-3 group"
             >
-              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-sm shadow-blue-600/30 group-hover:scale-105 transition-transform shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white font-bold shadow-sm shadow-orange-600/30 group-hover:scale-105 transition-transform shrink-0">
                 <Ship className="w-5 h-5" />
               </div>
               <div className="min-w-0">
@@ -210,20 +210,20 @@ export default function AppShell({
                         prefetch={true}
                         className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-all active:scale-[0.98] ${
                           active
-                            ? 'bg-blue-50 text-blue-700 font-semibold border border-blue-200/70 shadow-2xs'
+                            ? 'bg-orange-50 text-orange-700 font-semibold border border-orange-200/70 shadow-2xs'
                             : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 font-medium'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
                           <Icon
                             className={`w-4 h-4 shrink-0 ${
-                              active ? 'text-blue-600' : 'text-slate-400'
+                              active ? 'text-orange-600' : 'text-slate-400'
                             }`}
                           />
                           <span>{item.name}</span>
                         </div>
                         {active && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-orange-600" />
                         )}
                       </Link>
                     );
@@ -247,7 +247,7 @@ export default function AppShell({
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px] text-blue-600 font-semibold truncate">
+                <span className="text-[10px] text-orange-600 font-semibold truncate">
                   {currentRole === 'MSME'
                     ? 'MSME Exporter'
                     : currentRole === 'PROVIDER'
@@ -287,7 +287,7 @@ export default function AppShell({
           }
           className="flex items-center gap-2.5 group"
         >
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold shadow-xs group-hover:scale-105 transition-transform">
+          <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold shadow-xs group-hover:scale-105 transition-transform">
             <Ship className="w-4 h-4" />
           </div>
           <div>
@@ -306,7 +306,7 @@ export default function AppShell({
 
         <div className="flex items-center gap-2">
           {/* Quick Role Pill */}
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/80">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200/80">
             {currentRole === 'MSME' ? 'MSME' : currentRole === 'PROVIDER' ? 'PROVIDER' : 'ADMIN'}
           </span>
 
@@ -335,7 +335,7 @@ export default function AppShell({
             {/* Drawer Header */}
             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold">
+                <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold">
                   <Ship className="w-4 h-4" />
                 </div>
                 <div>
@@ -375,20 +375,20 @@ export default function AppShell({
                           onClick={() => setMobileMenuOpen(false)}
                           className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.98] ${
                             active
-                              ? 'bg-blue-50 text-blue-700 font-semibold border border-blue-200 shadow-2xs'
+                              ? 'bg-orange-50 text-orange-700 font-semibold border border-orange-200 shadow-2xs'
                               : 'text-slate-600 hover:bg-slate-50'
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
                             <Icon
                               className={`w-4 h-4 ${
-                                active ? 'text-blue-600' : 'text-slate-400'
+                                active ? 'text-orange-600' : 'text-slate-400'
                               }`}
                             />
                             <span>{item.name}</span>
                           </div>
                           {active && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-orange-600" />
                           )}
                         </Link>
                       );
@@ -408,7 +408,7 @@ export default function AppShell({
                   <span className="font-bold text-slate-900 block truncate">
                     {userName || userEmail?.split('@')[0]}
                   </span>
-                  <span className="text-[10px] text-blue-600 font-semibold block truncate">
+                  <span className="text-[10px] text-orange-600 font-semibold block truncate">
                     {currentRole === 'MSME'
                       ? 'MSME Exporter'
                       : currentRole === 'PROVIDER'

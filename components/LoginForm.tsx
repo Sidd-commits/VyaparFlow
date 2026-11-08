@@ -209,7 +209,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       {/* 2. AUTHENTICATION CARD */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xl shadow-slate-950/20 space-y-6 relative overflow-hidden">
         {/* Subtle decorative glow */}
-        <div className="absolute top-0 right-0 w-36 h-36 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10" />
+        <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10" />
 
         {/* PERSONA / PORTAL SELECTOR TABS */}
         <div className="space-y-2">
@@ -221,8 +221,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               type="button"
               onClick={() => setSelectedRole('MSME')}
               className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                selectedRole === 'MSME'
-                  ? 'bg-white text-blue-600 shadow-sm border border-slate-200'
+                selectedRole === 'MSME' ? 'bg-white text-orange-600 shadow-sm border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
               }`}
             >
@@ -247,8 +246,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           {/* Contextual Subtitle */}
           <div
             className={`p-2.5 rounded-xl border text-[11px] leading-relaxed transition-all ${
-              selectedRole === 'MSME'
-                ? 'bg-blue-50/70 border-blue-200/80 text-blue-950'
+              selectedRole === 'MSME' ? 'bg-orange-50/70 border-orange-200/80 text-orange-950'
                 : 'bg-blue-50/70 border-blue-200/80 text-blue-950'
             }`}
           >
@@ -268,7 +266,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         <div className="space-y-2">
           <a
             href={`/api/auth/google?role=${selectedRole}`}
-            className="w-full py-3.5 px-4 rounded-2xl border-2 border-slate-200 hover:border-blue-500 bg-white hover:bg-blue-50/20 text-slate-800 font-semibold text-sm transition-all flex items-center justify-center gap-3 shadow-xs hover:shadow-md hover:-translate-y-0.5 cursor-pointer group"
+            className="w-full py-3.5 px-4 rounded-2xl border-2 border-slate-200 hover:border-orange-500 bg-white hover:bg-orange-50/20 text-slate-800 font-semibold text-sm transition-all flex items-center justify-center gap-3 shadow-xs hover:shadow-md hover:-translate-y-0.5 cursor-pointer group"
           >
             <GoogleIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
             <span>
@@ -317,7 +315,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                     ? 'Enter service provider email address'
                     : 'Enter registered exporter email address'
                 }
-                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 text-xs transition-all outline-none"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 text-xs transition-all outline-none"
                 required
               />
             </div>
@@ -339,7 +337,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your account password"
-                className="w-full pl-10 pr-10 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 text-xs transition-all outline-none"
+                className="w-full pl-10 pr-10 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 text-xs transition-all outline-none"
                 required
               />
               <button
@@ -356,7 +354,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-600/20 transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 disabled:opacity-60"
+            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white bg-orange-600 hover:bg-orange-700 shadow-md shadow-orange-600/25 transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 disabled:opacity-60"
           >
             {isPending ? (
               <span className="flex items-center gap-2">
@@ -381,7 +379,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <div className="pt-3 border-t border-slate-100 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                <History className="w-3 h-3 text-blue-500" /> Recent on this device (click to fill):
+                <History className="w-3 h-3 text-orange-500" /> Recent on this device (click to fill):
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -391,8 +389,8 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                   onClick={() => handleSelectEmail(acc.email, acc.role)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
                     email === acc.email
-                      ? 'bg-blue-50 border-blue-400 text-blue-800 shadow-xs'
-                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50/50'
+                      ? 'bg-orange-50 border-orange-400 text-orange-800 shadow-xs'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-orange-50/50'
                   }`}
                   title="Click to fill email into form"
                 >

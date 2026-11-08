@@ -29,11 +29,11 @@ interface NavbarProps {
 }
 
 const NAV_SECTIONS = [
-  { id: 'overview', label: 'Architecture' },
-  { id: 'regulatory', label: 'Regulatory Engine' },
+  { id: 'overview', label: 'How It Works' },
+  { id: 'regulatory', label: 'Tariffs & FTAs' },
   { id: 'readiness', label: 'Readiness Index' },
   { id: 'documents', label: 'Document Vault' },
-  { id: 'ecosystem', label: 'Trade Ecosystem' },
+  { id: 'ecosystem', label: 'Ecosystem' },
 ];
 
 export default function Navbar({ currentRole, userEmail, userName }: NavbarProps) {
@@ -142,7 +142,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
               }}
               className="flex items-center gap-2.5 group active:scale-[0.98] transition-transform"
             >
-              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-sm shadow-blue-600/30 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white font-bold shadow-sm shadow-orange-600/30 group-hover:scale-105 transition-transform">
                 <Ship className="w-5 h-5" />
               </div>
               <div>
@@ -166,7 +166,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/dashboard'
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-orange-50 text-orange-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
@@ -179,7 +179,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/readiness'
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-orange-50 text-orange-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
@@ -192,7 +192,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/documents'
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-orange-50 text-orange-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
@@ -205,7 +205,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/certifications'
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-orange-50 text-orange-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
@@ -218,7 +218,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/packaging'
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-orange-50 text-orange-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
@@ -231,7 +231,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname.startsWith('/shipments')
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-orange-50 text-orange-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
@@ -248,7 +248,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/provider'
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-orange-50 text-orange-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
@@ -270,7 +270,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname.startsWith('/shipments')
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-orange-50 text-orange-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
@@ -287,7 +287,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/admin'
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-orange-50 text-orange-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
@@ -300,7 +300,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     prefetch={true}
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] flex items-center gap-1.5 ${
                       pathname === '/documents'
-                        ? 'bg-blue-50 text-blue-600 font-semibold'
+                        ? 'bg-orange-50 text-orange-600 font-semibold'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
@@ -321,7 +321,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     onClick={(e) => handleNavClick(e, sec.id)}
                     className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer active:scale-[0.98] ${
                       isActive
-                        ? 'bg-blue-50 text-blue-600 font-semibold border border-blue-200/80 shadow-xs'
+                        ? 'bg-orange-50 text-orange-600 font-semibold border border-orange-200/80 shadow-xs'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
                     }`}
                   >
@@ -343,21 +343,21 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                   className="flex items-center gap-2.5 pl-3 border-l border-slate-200 hover:opacity-85 transition-opacity active:scale-[0.98] group"
                   title="View & manage company profile and registrations"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-xs group-hover:bg-blue-600 transition-colors">
+                  <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-xs group-hover:bg-orange-600 transition-colors">
                     {userName ? userName.charAt(0).toUpperCase() : currentRole ? currentRole.charAt(0) : 'U'}
                   </div>
                   <div className="hidden sm:block text-left text-xs">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition-colors">
+                      <span className="font-bold text-slate-900 leading-tight group-hover:text-orange-600 transition-colors">
                         {userName || userEmail?.split('@')[0]}
                       </span>
                       <span
                         className={`text-[9px] font-bold px-1.5 py-0.2 rounded border ${
                           currentRole === 'MSME'
-                            ? 'bg-blue-50 text-blue-700 border-blue-200'
+                            ? 'bg-orange-50 text-orange-700 border-orange-200'
                             : currentRole === 'PROVIDER'
                             ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                            : 'bg-slate-900 text-blue-400 border-slate-700'
+                            : 'bg-slate-900 text-orange-400 border-slate-700'
                         }`}
                       >
                         {currentRole === 'MSME'
@@ -397,7 +397,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                 <Link
                   href="/login?tab=register"
                   prefetch={true}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-600/20 transition-all active:scale-[0.98] flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-orange-600 hover:bg-orange-700 shadow-sm shadow-orange-600/20 transition-all active:scale-[0.98] flex items-center gap-1.5 cursor-pointer"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
                   Register MSME
@@ -410,7 +410,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
               {!isLoggedIn && (
                 <Link
                   href="/login"
-                  className="sm:hidden px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white"
+                  className="sm:hidden px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-600 text-white"
                 >
                   Sign In
                 </Link>
@@ -442,7 +442,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                     key={sec.id}
                     href={`/#${sec.id}`}
                     onClick={(e) => handleNavClick(e, sec.id)}
-                    className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                    className="block px-3 py-2 rounded-xl text-xs font-semibold text-slate-800 hover:bg-orange-50 hover:text-orange-600 transition-colors"
                   >
                     {sec.label}
                   </Link>
@@ -460,7 +460,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
                 <Link
                   href="/login?tab=register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 px-3 rounded-xl bg-blue-600 text-white text-center text-xs font-semibold hover:bg-blue-700 shadow-xs"
+                  className="py-2.5 px-3 rounded-xl bg-orange-600 text-white text-center text-xs font-semibold hover:bg-orange-700 shadow-xs"
                 >
                   Register MSME
                 </Link>
@@ -471,7 +471,7 @@ export default function Navbar({ currentRole, userEmail, userName }: NavbarProps
               <Link
                 href={currentRole === 'PROVIDER' ? '/provider' : currentRole === 'ADMIN' ? '/admin' : '/dashboard'}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block w-full py-2.5 px-3 rounded-xl bg-blue-600 text-white text-center text-xs font-semibold hover:bg-blue-700"
+                className="block w-full py-2.5 px-3 rounded-xl bg-orange-600 text-white text-center text-xs font-semibold hover:bg-orange-700"
               >
                 Go to Dashboard
               </Link>

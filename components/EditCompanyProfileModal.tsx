@@ -157,7 +157,7 @@ export default function EditCompanyProfileModal({
         }
         title="Manage & update company profile information"
       >
-        <Edit3 className="w-3.5 h-3.5 text-blue-600" />
+        <Edit3 className="w-3.5 h-3.5 text-orange-600" />
         <span>{buttonText}</span>
       </button>
 
@@ -170,7 +170,7 @@ export default function EditCompanyProfileModal({
             {/* Modal Header */}
             <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white shadow-xs">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
@@ -215,7 +215,7 @@ export default function EditCompanyProfileModal({
             <form onSubmit={handleSubmit} className="p-6 space-y-5 text-xs">
               {/* Group 1: Company Identity */}
               <div className="space-y-4">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 block">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-orange-700 block">
                   1. Company &amp; Legal Entity Identity
                 </span>
 
@@ -229,7 +229,7 @@ export default function EditCompanyProfileModal({
                       value={formData.displayName}
                       onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
                       placeholder="e.g. Apex Global Exports"
-                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
                       required
                     />
                   </div>
@@ -243,7 +243,7 @@ export default function EditCompanyProfileModal({
                       value={formData.legalName}
                       onChange={(e) => setFormData({ ...formData, legalName: e.target.value })}
                       placeholder="e.g. Apex Global Exporters Pvt Ltd"
-                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
                       required
                     />
                   </div>
@@ -257,7 +257,7 @@ export default function EditCompanyProfileModal({
                     <select
                       value={formData.businessType}
                       onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
-                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
                     >
                       {BUSINESS_TYPE_OPTIONS.map((opt) => (
                         <option key={opt} value={opt}>
@@ -274,7 +274,7 @@ export default function EditCompanyProfileModal({
                     <select
                       value={formData.destinationIso}
                       onChange={(e) => setFormData({ ...formData, destinationIso: e.target.value })}
-                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
                     >
                       {TARGET_DESTINATION_OPTIONS.map((opt) => (
                         <option key={opt.isoCode} value={opt.isoCode}>
@@ -288,7 +288,7 @@ export default function EditCompanyProfileModal({
 
               {/* Group 2: Operating Location */}
               <div className="space-y-4 pt-2 border-t border-slate-100">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 block">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-orange-700 block">
                   2. Industrial Location &amp; Origin Factory
                 </span>
 
@@ -302,7 +302,7 @@ export default function EditCompanyProfileModal({
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                       placeholder="e.g. MIDC Industrial Area, Phase II"
-                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
                     />
                   </div>
 
@@ -314,7 +314,7 @@ export default function EditCompanyProfileModal({
                         value={formData.city}
                         onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                         placeholder="e.g. Mumbai / Pune / Nashik"
-                        className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
                       />
                     </div>
 
@@ -325,7 +325,7 @@ export default function EditCompanyProfileModal({
                         value={formData.state}
                         onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                         placeholder="e.g. Maharashtra"
-                        className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full p-2.5 rounded-xl border border-slate-300 bg-white font-medium text-xs focus:ring-2 focus:ring-orange-500 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -344,7 +344,7 @@ export default function EditCompanyProfileModal({
                   <Link
                     href="/business"
                     onClick={handleClose}
-                    className="text-[11px] font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    className="text-[11px] font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1"
                   >
                     <span>Upload Certificates</span>
                     <ExternalLink className="w-3 h-3" />
@@ -374,7 +374,7 @@ export default function EditCompanyProfileModal({
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs shadow-md shadow-orange-600/25 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {isPending ? (
                     <>

@@ -113,7 +113,7 @@ export default function ReadinessDrawer({
         {/* Header */}
         <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/70">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 block">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-orange-600 block">
               Readiness Breakdown
             </span>
             <h2 id="readiness-drawer-title" className="text-lg font-bold text-slate-900">
@@ -169,11 +169,11 @@ export default function ReadinessDrawer({
                     key={pillar.id}
                     href={pillar.href}
                     onClick={onClose}
-                    className="block p-3.5 rounded-xl border border-slate-200 bg-white hover:border-blue-300 hover:bg-blue-50/20 transition-all group"
+                    className="block p-3.5 rounded-xl border border-slate-200 bg-white hover:border-orange-300 hover:bg-orange-50/20 transition-all group"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 font-semibold text-slate-900 text-xs">
-                        <Icon className="w-4 h-4 text-slate-500 group-hover:text-blue-600 transition-colors" />
+                        <Icon className="w-4 h-4 text-slate-500 group-hover:text-orange-600 transition-colors" />
                         <span>{pillar.label}</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -191,7 +191,7 @@ export default function ReadinessDrawer({
                             ? 'bg-emerald-500'
                             : pillar.score >= 50
                             ? 'bg-amber-500'
-                            : 'bg-blue-600'
+                            : 'bg-orange-600'
                         }`}
                         style={{ width: `${pillar.score}%` }}
                       />
@@ -219,7 +219,7 @@ export default function ReadinessDrawer({
           <Link
             href="/readiness"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-xs"
+            className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-xs"
           >
             <span>Open Full Readiness Page</span>
             <ArrowRight className="w-3.5 h-3.5" />

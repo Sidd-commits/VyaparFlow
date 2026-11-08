@@ -37,14 +37,14 @@ export default async function LoginPage() {
           
           {/* Left Column: Clear Value Proposition */}
           <div className="lg:col-span-6 space-y-6 lg:pr-6 lg:sticky lg:top-24">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-blue-600" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200/80 text-orange-900 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-orange-600" />
               <span>Multi-Persona Export Platform</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-slate-900 tracking-tight leading-[1.15]">
               Cross-border trade, <br />
-              <span className="text-blue-600">
+              <span className="text-orange-600">
                 simplified for Indian exporters.
               </span>
             </h1>
@@ -56,7 +56,7 @@ export default async function LoginPage() {
             {/* Persona Highlights */}
             <div className="space-y-3 pt-1">
               <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-blue-50 text-orange-600 flex items-center justify-center shrink-0">
                   <Building2 className="w-5 h-5" />
                 </div>
                 <div>
@@ -94,7 +94,7 @@ export default async function LoginPage() {
 
             {/* Global Trade Corridor Pill */}
             <div className="flex items-center gap-2 text-xs text-slate-500 pt-1">
-              <MapPin className="w-4 h-4 text-blue-600 shrink-0" />
+              <MapPin className="w-4 h-4 text-orange-600 shrink-0" />
               <span>Pan-India Exporter Hubs: <strong>JNPT, Mundra, Hazira &amp; Chennai</strong> → Global Markets</span>
             </div>
           </div>

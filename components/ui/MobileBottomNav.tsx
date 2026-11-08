@@ -196,31 +196,31 @@ export default function MobileBottomNav({
             prefetch={true}
             className={`flex-1 min-h-[48px] py-1 flex flex-col items-center justify-center active:scale-95 transition-all relative ${
               active
-                ? 'text-blue-600 font-bold'
+                ? 'text-orange-600 font-bold'
                 : 'text-slate-500 hover:text-slate-900 font-medium'
             }`}
           >
             <div
               className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors relative ${
-                active ? 'bg-blue-50 text-blue-600 shadow-2xs' : 'text-slate-500'
+                active ? 'bg-orange-50 text-orange-600 shadow-2xs' : 'text-slate-500'
               }`}
             >
               <Icon className="w-4 h-4" />
               {item.badge && item.badge > 0 ? (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-white font-extrabold text-[9px] flex items-center justify-center shadow-xs">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-orange-600 text-white font-extrabold text-[9px] flex items-center justify-center shadow-xs">
                   {item.badge > 9 ? '9+' : item.badge}
                 </span>
               ) : null}
             </div>
             <span
               className={`text-[10px] tracking-tight leading-none mt-0.5 truncate max-w-[60px] ${
-                active ? 'text-blue-600 font-bold' : 'text-slate-600 font-medium'
+                active ? 'text-orange-600 font-bold' : 'text-slate-600 font-medium'
               }`}
             >
               {item.label}
             </span>
             {active && (
-              <span className="absolute bottom-1 w-4 h-0.5 rounded-full bg-blue-600" />
+              <span className="absolute bottom-1 w-4 h-0.5 rounded-full bg-orange-600" />
             )}
           </Link>
         );

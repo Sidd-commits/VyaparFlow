@@ -8,23 +8,27 @@
     --card-foreground: #0F172A;
     --popover: #FFFFFF;
     --popover-foreground: #0F172A;
-    --primary: #2563EB;
+    --primary: #EA580C;
     --primary-foreground: #FFFFFF;
     --secondary: #F8FAFC;
     --secondary-foreground: #0F172A;
     --muted: #F1F5F9;
     --muted-foreground: #64748B;
-    --accent: #EFF6FF;
-    --accent-foreground: #1D4ED8;
+    --accent: #FFF7ED;
+    --accent-foreground: #C2410C;
     --destructive: #EF4444;
     --destructive-foreground: #FFFFFF;
     --border: #E2E8F0;
     --input: #E2E8F0;
-    --ring: #2563EB;
+    --ring: #EA580C;
     --radius: 0.875rem;
     --font-serif: var(--font-jakarta), var(--font-geist-sans), system-ui, -apple-system, sans-serif;
     --font-sans: var(--font-jakarta), var(--font-geist-sans), system-ui, -apple-system, sans-serif;
     --font-mono: var(--font-geist-mono), ui-monospace, Menlo, monospace;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
@@ -94,6 +98,20 @@
 .bg-trade-grid-dark {
   background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+/* 3D Perspective & Transform Utilities */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.perspective-1200 {
+  perspective: 1200px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
 }
 
 /* Animations */

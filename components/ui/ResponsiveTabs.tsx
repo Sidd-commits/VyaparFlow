@@ -53,7 +53,7 @@ export default function ResponsiveTabs<T extends string>({
             {Icon && (
               <Icon
                 className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${
-                  isActive ? 'text-blue-400' : 'text-slate-400'
+                  isActive ? 'text-orange-400' : 'text-slate-400'
                 }`}
               />
             )}
@@ -66,7 +66,7 @@ export default function ResponsiveTabs<T extends string>({
                     : tab.badgeVariant === 'success'
                     ? 'bg-emerald-400 text-slate-900'
                     : isActive
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-orange-600 text-white'
                     : 'bg-slate-200 text-slate-700'
                 }`}
               >
