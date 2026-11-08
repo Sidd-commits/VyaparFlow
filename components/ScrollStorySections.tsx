@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import {
   Ship,
   ArrowRight,
@@ -184,50 +185,50 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </ul>
           </div>
 
-          {/* Right: The VyaparFlow Platform */}
-          <div className="rounded-3xl bg-slate-950 border border-slate-800 text-white p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
+          {/* Right: The VyaparFlow Platform (Harmonized Luminous Frosted Card) */}
+          <div className="rounded-3xl bg-linear-to-b from-white via-orange-50/15 to-white border border-orange-200/90 shadow-xl text-slate-900 p-6 sm:p-8 space-y-6 relative overflow-hidden">
             <div className="space-y-1.5 pt-1">
-              <span className="text-xs uppercase tracking-wider text-orange-400 font-bold">
+              <span className="text-xs uppercase tracking-wider text-orange-600 font-bold">
                 VyaparFlow Platform
               </span>
-              <h3 className="text-xl sm:text-2xl font-bold font-sans text-white">
+              <h3 className="text-xl sm:text-2xl font-bold font-sans text-slate-900">
                 One Single Source of Truth for Global Trade
               </h3>
             </div>
 
-            <ul className="space-y-3 text-xs text-slate-200">
-              <li className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <ul className="space-y-3 text-xs text-slate-700">
+              <li className="flex items-start gap-3 p-3.5 rounded-2xl bg-white/90 border border-slate-200/80 shadow-2xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="block text-white font-semibold">Automated Compliance Rules</strong>
-                  <span className="text-slate-400">
+                  <strong className="block text-slate-900 font-semibold">Automated Compliance Rules</strong>
+                  <span className="text-slate-600">
                     Select your commodity once. The platform automatically maps statutory guidelines, destination standards, and mandatory lab tests.
                   </span>
                 </div>
               </li>
-              <li className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 p-3.5 rounded-2xl bg-white/90 border border-slate-200/80 shadow-2xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="block text-white font-semibold">0–100 Real-Time Readiness Score</strong>
-                  <span className="text-slate-400">
+                  <strong className="block text-slate-900 font-semibold">0–100 Real-Time Readiness Score</strong>
+                  <span className="text-slate-600">
                     Detect and resolve every compliance item before cargo leaves your factory premises.
                   </span>
                 </div>
               </li>
-              <li className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 p-3.5 rounded-2xl bg-white/90 border border-slate-200/80 shadow-2xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="block text-white font-semibold">1-Click Compliant Document Vault</strong>
-                  <span className="text-slate-400">
+                  <strong className="block text-slate-900 font-semibold">1-Click Compliant Document Vault</strong>
+                  <span className="text-slate-600">
                     Generate export invoices, packing lists, and certificates of origin without repeated manual typing.
                   </span>
                 </div>
               </li>
-              <li className="flex items-start gap-3 p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <li className="flex items-start gap-3 p-3.5 rounded-2xl bg-white/90 border border-slate-200/80 shadow-2xs">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <strong className="block text-white font-semibold">Shared Partner Workspace</strong>
-                  <span className="text-slate-400">
+                  <strong className="block text-slate-900 font-semibold">Shared Partner Workspace</strong>
+                  <span className="text-slate-600">
                     MSME, freight forwarder, testing lab, and customs broker collaborate on one unified consignment record.
                   </span>
                 </div>
@@ -271,7 +272,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </div>
           </div>
 
-          {/* Clean Commodity Selector Chips */}
+          {/* Clean Commodity Selector Chips (Skiper UI style) */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {COMMODITIES.map((item, idx) => {
               const active = selectedCommodity === idx;
@@ -378,7 +379,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           </p>
         </div>
 
-        {/* 4 Pillars Grid */}
+        {/* 4 Pillars Grid (Vengeance UI Bento Style) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {/* Pillar 1 */}
           <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-200 transition-all">
@@ -488,6 +489,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
 
       {/* ─────────────────────────────────────────────────────────────
           STORY 04 — AUTOMATED 1-CLICK EXPORT DOCUMENT VAULT
+          (Harmonized Executive Paper Dossier — NO pitch-black terminal)
       ───────────────────────────────────────────────────────────── */}
       <section id="documents" className="scroll-mt-24 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
@@ -503,10 +505,10 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           </p>
         </div>
 
-        {/* Document Vault Interactive Previewer */}
-        <div className="max-w-5xl mx-auto bg-slate-950 text-white rounded-3xl border border-slate-800 shadow-2xl p-6 sm:p-10 space-y-8">
-          {/* Top Doc Type Switcher */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        {/* Executive Document Dossier Card */}
+        <div className="max-w-5xl mx-auto bg-white text-slate-900 rounded-3xl border border-slate-200/90 shadow-xl p-6 sm:p-10 space-y-8">
+          {/* Top Doc Type Switcher (Skiper UI style) */}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5">
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
@@ -514,7 +516,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   activeDocPreview === 'invoice'
                     ? 'bg-orange-600 text-white shadow-md shadow-orange-600/25'
-                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                    : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200'
                 }`}
               >
                 1. Commercial Invoice
@@ -525,7 +527,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   activeDocPreview === 'packing'
                     ? 'bg-orange-600 text-white shadow-md shadow-orange-600/25'
-                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                    : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200'
                 }`}
               >
                 2. Packing List
@@ -536,7 +538,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   activeDocPreview === 'coo'
                     ? 'bg-orange-600 text-white shadow-md shadow-orange-600/25'
-                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                    : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200'
                 }`}
               >
                 3. Certificate of Origin
@@ -547,53 +549,53 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   activeDocPreview === 'shippingBill'
                     ? 'bg-orange-600 text-white shadow-md shadow-orange-600/25'
-                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                    : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200'
                 }`}
               >
                 4. ICEGATE Shipping Bill
               </button>
             </div>
 
-            <span className="text-xs text-emerald-400 flex items-center gap-1.5 font-medium">
-              <CheckCircle2 className="w-4 h-4" />
+            <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full flex items-center gap-1.5 font-semibold">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               Auto-Validation Passed
             </span>
           </div>
 
-          {/* Interactive Document Layout */}
-          <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 sm:p-8 space-y-6 text-xs">
+          {/* Interactive Document Layout (Executive White Dossier) */}
+          <div className="bg-slate-50/70 rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-6 text-xs text-slate-900">
             {activeDocPreview === 'invoice' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-start border-b border-slate-800 pb-4">
+                <div className="flex justify-between items-start border-b border-slate-200 pb-4">
                   <div>
-                    <span className="text-orange-400 font-bold block text-sm">COMMERCIAL INVOICE #EXP-2026-0941</span>
-                    <span className="text-slate-400 text-xs mt-0.5 block">Incoterms 2020: CIF Jebel Ali Port, Dubai (UAE)</span>
+                    <span className="text-orange-600 font-bold block text-sm">COMMERCIAL INVOICE #EXP-2026-0941</span>
+                    <span className="text-slate-500 text-xs mt-0.5 block">Incoterms 2020: CIF Jebel Ali Port, Dubai (UAE)</span>
                   </div>
-                  <div className="text-right text-slate-400 text-xs">
+                  <div className="text-right text-slate-500 text-xs">
                     <span>Date: 11-SEP-2026</span>
-                    <span className="block text-emerald-400 font-medium">Currency: USD ($)</span>
+                    <span className="block text-emerald-700 font-bold">Currency: USD ($)</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 space-y-1">
+                  <div className="p-3.5 bg-white rounded-xl border border-slate-200 space-y-1 shadow-2xs">
                     <span className="text-slate-400 uppercase font-bold text-[10px] block">Exporter / Consignor</span>
-                    <strong className="text-white block font-semibold">Apex Agro &amp; Industrial Exports Ltd.</strong>
-                    <span className="text-slate-400 block">GSTIN: 27AABCA1234F1Z8 | IEC: 0312345678</span>
-                    <span className="text-slate-400 block">Nashik Hub, Maharashtra, India</span>
+                    <strong className="text-slate-900 block font-semibold">Apex Agro &amp; Industrial Exports Ltd.</strong>
+                    <span className="text-slate-500 block">GSTIN: 27AABCA1234F1Z8 | IEC: 0312345678</span>
+                    <span className="text-slate-500 block">Nashik Hub, Maharashtra, India</span>
                   </div>
-                  <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 space-y-1">
+                  <div className="p-3.5 bg-white rounded-xl border border-slate-200 space-y-1 shadow-2xs">
                     <span className="text-slate-400 uppercase font-bold text-[10px] block">Buyer / Consignee</span>
-                    <strong className="text-white block font-semibold">Emirates Global Fresh Produce FZ-LLC</strong>
-                    <span className="text-slate-400 block">TRN: 100234981200003</span>
-                    <span className="text-slate-400 block">Al Aweer Fruit Market, Dubai, UAE</span>
+                    <strong className="text-slate-900 block font-semibold">Emirates Global Fresh Produce FZ-LLC</strong>
+                    <span className="text-slate-500 block">TRN: 100234981200003</span>
+                    <span className="text-slate-500 block">Al Aweer Fruit Market, Dubai, UAE</span>
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 overflow-x-auto">
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200 overflow-x-auto shadow-2xs">
                   <table className="w-full text-left text-xs min-w-[400px]">
                     <thead>
-                      <tr className="border-b border-slate-800 text-slate-400">
+                      <tr className="border-b border-slate-200 text-slate-500">
                         <th className="pb-2">HS Code</th>
                         <th className="pb-2">Item Description</th>
                         <th className="pb-2">Qty</th>
@@ -601,47 +603,47 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                         <th className="pb-2 text-right">Total (USD)</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60 text-slate-200">
+                    <tbody className="divide-y divide-slate-100 text-slate-800">
                       <tr>
-                        <td className="py-2 text-orange-400 font-mono">0806.10.00</td>
-                        <td className="py-2">Sonaka Fresh Table Grapes (5kg Boxes)</td>
+                        <td className="py-2 text-orange-600 font-mono font-semibold">0806.10.00</td>
+                        <td className="py-2 font-medium">Sonaka Fresh Table Grapes (5kg Boxes)</td>
                         <td className="py-2">4,800 Boxes</td>
                         <td className="py-2">$8.50</td>
-                        <td className="py-2 text-right font-bold text-white font-mono">$40,800.00</td>
+                        <td className="py-2 text-right font-bold text-slate-900 font-mono">$40,800.00</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
 
-                <div className="flex justify-between items-center pt-2 text-xs text-slate-400 border-t border-slate-800">
-                  <span>CEPA Preferential Tariff: <strong className="text-emerald-400">0% Duty</strong> applied</span>
-                  <span className="text-white font-bold text-sm">Total CIF Value: $40,800.00</span>
+                <div className="flex justify-between items-center pt-2 text-xs text-slate-600 border-t border-slate-200">
+                  <span>CEPA Preferential Tariff: <strong className="text-emerald-700">0% Duty</strong> applied</span>
+                  <span className="text-slate-900 font-bold text-sm">Total CIF Value: $40,800.00</span>
                 </div>
               </div>
             )}
 
             {activeDocPreview === 'packing' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-start border-b border-slate-800 pb-4">
+                <div className="flex justify-between items-start border-b border-slate-200 pb-4">
                   <div>
-                    <span className="text-orange-400 font-bold block text-sm">STANDARDIZED EXPORT PACKING LIST #PL-9812</span>
-                    <span className="text-slate-400 text-xs mt-0.5 block">Container: 1x40ft HC Reefer | Pallet Count: 20 Euro Pallets</span>
+                    <span className="text-orange-600 font-bold block text-sm">STANDARDIZED EXPORT PACKING LIST #PL-9812</span>
+                    <span className="text-slate-500 text-xs mt-0.5 block">Container: 1x40ft HC Reefer | Pallet Count: 20 Euro Pallets</span>
                   </div>
-                  <div className="text-right text-slate-400 text-xs">
+                  <div className="text-right text-slate-500 text-xs">
                     <span>Total Packages: 4,800 Cartons</span>
-                    <span className="block text-emerald-400 font-medium">Net: 24,000 KG | Gross: 26,400 KG</span>
+                    <span className="block text-emerald-700 font-bold">Net: 24,000 KG | Gross: 26,400 KG</span>
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2 text-xs">
-                  <div className="flex justify-between text-slate-400 border-b border-slate-800/60 pb-1">
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200 space-y-2 text-xs shadow-2xs">
+                  <div className="flex justify-between text-slate-500 border-b border-slate-100 pb-1">
                     <span>Pallet Range: #PAL-01 to #PAL-20</span>
                     <span>240 Boxes per Pallet (5kg Corrugated Food-Grade)</span>
                   </div>
-                  <p className="text-slate-300">
+                  <p className="text-slate-700">
                     Pre-Cooling Specification: +0.5°C to +1.0°C Core Fruit Temperature Maintained. Humidity: 90–95% RH.
                   </p>
-                  <p className="text-emerald-400 font-medium">
+                  <p className="text-emerald-700 font-semibold">
                     ✓ ISPM-15 Heat-Treated Pallet Stamps Verified. Zero Wooden Pest Infestation.
                   </p>
                 </div>
@@ -650,21 +652,21 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
 
             {activeDocPreview === 'coo' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-start border-b border-slate-800 pb-4">
+                <div className="flex justify-between items-start border-b border-slate-200 pb-4">
                   <div>
-                    <span className="text-orange-400 font-bold block text-sm">PREFERENTIAL CERTIFICATE OF ORIGIN (CEPA FORM 1)</span>
-                    <span className="text-slate-400 text-xs mt-0.5 block">Issuing Authority: Directorate General of Foreign Trade (DGFT)</span>
+                    <span className="text-orange-600 font-bold block text-sm">PREFERENTIAL CERTIFICATE OF ORIGIN (CEPA FORM 1)</span>
+                    <span className="text-slate-500 text-xs mt-0.5 block">Issuing Authority: Directorate General of Foreign Trade (DGFT)</span>
                   </div>
-                  <div className="text-right text-emerald-400 text-xs font-medium">
+                  <div className="text-right text-emerald-700 text-xs font-semibold">
                     <span>Status: Digitally Signed &amp; QR Encoded</span>
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2 text-xs">
-                  <p className="text-slate-200">
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200 space-y-2 text-xs shadow-2xs">
+                  <p className="text-slate-800">
                     Rule of Origin Criteria: <strong>Wholly Obtained (WO)</strong> in India under Article 3.3 of India-UAE Comprehensive Economic Partnership Agreement (CEPA).
                   </p>
-                  <p className="text-slate-400">
+                  <p className="text-slate-500">
                     Verification Code: 7F9A-88C4-2B10 (Verifiable directly on UAE Customs portal).
                   </p>
                 </div>
@@ -673,18 +675,18 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
 
             {activeDocPreview === 'shippingBill' && (
               <div className="space-y-4">
-                <div className="flex justify-between items-start border-b border-slate-800 pb-4">
+                <div className="flex justify-between items-start border-b border-slate-200 pb-4">
                   <div>
-                    <span className="text-orange-400 font-bold block text-sm">ICEGATE SHIPPING BILL #SB-98214-JNPT</span>
-                    <span className="text-slate-400 text-xs mt-0.5 block">Customs Station: INNSA1 (Nhava Sheva, JNPT Port)</span>
+                    <span className="text-orange-600 font-bold block text-sm">ICEGATE SHIPPING BILL #SB-98214-JNPT</span>
+                    <span className="text-slate-500 text-xs mt-0.5 block">Customs Station: INNSA1 (Nhava Sheva, JNPT Port)</span>
                   </div>
-                  <div className="text-right text-emerald-400 text-xs font-medium">
+                  <div className="text-right text-emerald-700 text-xs font-semibold">
                     <span>Let Export Order (LEO) Status: GRANTED</span>
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800 space-y-2 text-xs">
-                  <div className="grid grid-cols-2 gap-2 text-slate-300">
+                <div className="p-3.5 bg-white rounded-xl border border-slate-200 space-y-2 text-xs shadow-2xs">
+                  <div className="grid grid-cols-2 gap-2 text-slate-700 font-medium">
                     <div>FOB Value: ₹33,86,400.00</div>
                     <div>RoDTEP Incentive: 1.4% (₹47,409.60)</div>
                     <div>Port of Loading: JNPT (Nhava Sheva)</div>
@@ -782,6 +784,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
 
       {/* ─────────────────────────────────────────────────────────────
           STORY 06 — 4-PILLAR COLLABORATIVE ECOSYSTEM CANVAS
+          (Harmonized Clean SaaS Workspace Cards — NO pitch-black terminal)
       ───────────────────────────────────────────────────────────── */}
       <section id="ecosystem" className="scroll-mt-24 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
@@ -850,7 +853,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </button>
           </div>
 
-          {/* Persona Detail Cards */}
+          {/* Persona Detail Cards (Harmonized Modern SaaS Cards) */}
           <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-xl">
             {activePersona === 'msme' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -881,27 +884,27 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                   </ul>
                 </div>
 
-                <div className="bg-slate-950 text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
-                  <div className="flex justify-between items-center text-xs border-b border-slate-800 pb-3">
-                    <span className="font-bold text-slate-400">ACTIVE CONSIGNMENT</span>
-                    <span className="text-emerald-400 font-bold bg-emerald-950/60 px-2.5 py-0.5 rounded-md border border-emerald-800/60 text-[11px]">
+                <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/90 space-y-4 shadow-xs">
+                  <div className="flex justify-between items-center text-xs border-b border-slate-200 pb-3">
+                    <span className="font-bold text-slate-500">ACTIVE CONSIGNMENT</span>
+                    <span className="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200 text-[11px]">
                       STATUS: 92% READY
                     </span>
                   </div>
-                  <div className="p-4 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2.5">
-                    <span className="text-xs font-bold block text-white">Alphonso Mango Pulp &rarr; Rotterdam (EU)</span>
-                    <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-2.5 shadow-2xs">
+                    <span className="text-xs font-bold block text-slate-900">Alphonso Mango Pulp &rarr; Rotterdam (EU)</span>
+                    <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                       <div className="bg-emerald-500 h-full w-[92%] rounded-full" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2.5 text-xs">
-                    <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800">
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
                       <span className="text-slate-400 block text-[10px] uppercase font-bold">HS Code</span>
-                      <strong className="text-white block mt-0.5 font-mono">2008.99.11</strong>
+                      <strong className="text-slate-900 block mt-0.5 font-mono">2008.99.11</strong>
                     </div>
-                    <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800">
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
                       <span className="text-slate-400 block text-[10px] uppercase font-bold">EU Preferential</span>
-                      <strong className="text-emerald-400 block mt-0.5 font-mono">0% REX Tariff</strong>
+                      <strong className="text-emerald-700 block mt-0.5 font-mono">0% REX Tariff</strong>
                     </div>
                   </div>
                 </div>
@@ -937,23 +940,23 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                   </ul>
                 </div>
 
-                <div className="bg-slate-950 text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
-                  <div className="flex justify-between items-center text-xs border-b border-slate-800 pb-3">
-                    <span className="font-bold text-slate-400">CARRIER CONSOLE</span>
-                    <span className="text-orange-400 font-bold bg-orange-950/60 px-2.5 py-0.5 rounded-md border border-orange-800/60 text-[11px]">
+                <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/90 space-y-4 shadow-xs">
+                  <div className="flex justify-between items-center text-xs border-b border-slate-200 pb-3">
+                    <span className="font-bold text-slate-500">CARRIER CONSOLE</span>
+                    <span className="text-orange-700 font-bold bg-orange-50 px-2.5 py-0.5 rounded-md border border-orange-200 text-[11px]">
                       SwiftGlobe Logistics
                     </span>
                   </div>
-                  <div className="p-4 bg-slate-900/90 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                  <div className="p-4 bg-white rounded-xl border border-slate-200 flex justify-between items-center text-xs shadow-2xs">
                     <div>
-                      <strong className="block text-white">40ft HC Reefer Container</strong>
-                      <span className="text-slate-400 text-[11px]">JNPT Port &rarr; Jebel Ali (UAE)</span>
+                      <strong className="block text-slate-900">40ft HC Reefer Container</strong>
+                      <span className="text-slate-500 text-[11px]">JNPT Port &rarr; Jebel Ali (UAE)</span>
                     </div>
-                    <span className="px-3 py-1 rounded-lg bg-orange-500/20 text-orange-400 font-bold border border-orange-500/30 font-mono">
+                    <span className="px-3 py-1 rounded-lg bg-orange-50 text-orange-700 font-bold border border-orange-200 font-mono">
                       ₹1,24,000
                     </span>
                   </div>
-                  <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-xl text-xs text-emerald-300 font-medium">
+                  <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 font-medium">
                     ✓ Booking Confirmed | Container Dispatched from Packhouse
                   </div>
                 </div>
@@ -989,25 +992,25 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                   </ul>
                 </div>
 
-                <div className="bg-slate-950 text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
-                  <div className="flex justify-between items-center text-xs border-b border-slate-800 pb-3">
-                    <span className="font-bold text-slate-400">QUALITY TESTING LAB</span>
-                    <span className="text-emerald-400 font-bold bg-emerald-950/60 px-2.5 py-0.5 rounded-md border border-emerald-800/60 text-[11px]">
+                <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/90 space-y-4 shadow-xs">
+                  <div className="flex justify-between items-center text-xs border-b border-slate-200 pb-3">
+                    <span className="font-bold text-slate-500">QUALITY TESTING LAB</span>
+                    <span className="text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200 text-[11px]">
                       CertifyLab India (NABL)
                     </span>
                   </div>
-                  <div className="p-4 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1.5 text-xs">
-                    <div className="flex justify-between font-bold">
+                  <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-1.5 text-xs shadow-2xs">
+                    <div className="flex justify-between font-bold text-slate-900">
                       <span>Phytosanitary &amp; Pesticide Residue</span>
-                      <span className="text-emerald-400 font-medium">PASSED ✓</span>
+                      <span className="text-emerald-700 font-medium">PASSED ✓</span>
                     </div>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-slate-500">
                       MRL compliance verified under EU Regulation 396/2005
                     </p>
                   </div>
-                  <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-xs text-slate-300 flex items-center justify-between">
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs text-slate-700 flex items-center justify-between shadow-2xs">
                     <span>Cert #NABL-2026-8941</span>
-                    <span className="text-emerald-400 font-bold">Vault Synced ✓</span>
+                    <span className="text-emerald-700 font-bold">Vault Synced ✓</span>
                   </div>
                 </div>
               </div>
@@ -1042,25 +1045,25 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                   </ul>
                 </div>
 
-                <div className="bg-slate-950 text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
-                  <div className="flex justify-between items-center text-xs border-b border-slate-800 pb-3">
-                    <span className="font-bold text-slate-400">CUSTOMS DESK</span>
-                    <span className="text-orange-400 font-bold bg-orange-950/60 px-2.5 py-0.5 rounded-md border border-orange-800/60 text-[11px]">
+                <div className="bg-slate-50/80 p-6 rounded-2xl border border-slate-200/90 space-y-4 shadow-xs">
+                  <div className="flex justify-between items-center text-xs border-b border-slate-200 pb-3">
+                    <span className="font-bold text-slate-500">CUSTOMS DESK</span>
+                    <span className="text-orange-700 font-bold bg-orange-50 px-2.5 py-0.5 rounded-md border border-orange-200 text-[11px]">
                       Apex Maritime Services
                     </span>
                   </div>
-                  <div className="p-4 bg-slate-900/90 rounded-xl border border-slate-800 space-y-1.5 text-xs">
-                    <div className="flex justify-between font-bold">
+                  <div className="p-4 bg-white rounded-xl border border-slate-200 space-y-1.5 text-xs shadow-2xs">
+                    <div className="flex justify-between font-bold text-slate-900">
                       <span>Shipping Bill #SB-98214-JNPT</span>
-                      <span className="text-emerald-400 font-medium">LEO ISSUED ✓</span>
+                      <span className="text-emerald-700 font-medium">LEO ISSUED ✓</span>
                     </div>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-slate-500">
                       Port of Loading: Jawaharlal Nehru Port (JNPT), Nhava Sheva
                     </p>
                   </div>
-                  <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-xs text-slate-300 flex items-center justify-between">
+                  <div className="p-3 bg-white rounded-xl border border-slate-200 text-xs text-slate-700 flex items-center justify-between shadow-2xs">
                     <span>RoDTEP Rebate: <strong>1.4%</strong></span>
-                    <span className="text-emerald-400 font-bold">Customs Cleared ✓</span>
+                    <span className="text-emerald-700 font-bold">Customs Cleared ✓</span>
                   </div>
                 </div>
               </div>
@@ -1122,8 +1125,9 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
 
       {/* ─────────────────────────────────────────────────────────────
           STORY 08 — FINAL ENTERPRISE CTA
+          (Harmonized Deep Midnight & Warm Amber Aura)
       ───────────────────────────────────────────────────────────── */}
-      <section className="bg-slate-950 rounded-3xl border border-slate-800 p-8 sm:p-14 text-white shadow-2xl relative overflow-hidden text-center space-y-8">
+      <section className="bg-linear-to-br from-slate-900 via-slate-950 to-orange-950/40 rounded-3xl border border-slate-800 p-8 sm:p-14 text-white shadow-2xl relative overflow-hidden text-center space-y-8">
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -1137,7 +1141,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             Ready to Take Your MSME Products to Global Markets?
           </h2>
 
-          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
             Run an instant 0–100 export readiness check. Discover bilateral FTA duty savings, identify mandatory lab tests, and generate compliant documentation today.
           </p>
 
@@ -1162,7 +1166,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
 
                 <Link
                   href="/login?tab=register"
-                  className="px-8 py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold text-base border border-slate-700 transition-all flex items-center gap-2.5 cursor-pointer"
+                  className="px-8 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-base border border-slate-700 transition-all flex items-center gap-2.5 cursor-pointer"
                 >
                   <Building2 className="w-5 h-5 text-orange-400" />
                   <span>Register MSME / Provider</span>
@@ -1171,7 +1175,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             )}
           </div>
 
-          <p className="text-xs text-slate-500 pt-4">
+          <p className="text-xs text-slate-400 pt-4">
             No long commitments &bull; DGFT &amp; CBIC compliance aligned &bull; Made in India
           </p>
         </div>

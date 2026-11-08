@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Ship,
   ArrowRight,
@@ -119,9 +119,9 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    // Subtle 3D tilt (+-4.5 deg max)
-    const rotateY = ((x - centerX) / centerX) * 4.5;
-    const rotateX = -((y - centerY) / centerY) * 4.5;
+    // Gentle 3D perspective tilt
+    const rotateY = ((x - centerX) / centerX) * 3.5;
+    const rotateX = -((y - centerY) / centerY) * 3.5;
     setTilt({ x: rotateX, y: rotateY });
     setMousePos({ x: (x / rect.width) * 100, y: (y / rect.height) * 100 });
   };
@@ -152,39 +152,39 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
       onMouseLeave={handleMouseLeave}
       className="relative mx-auto w-full max-w-xl group perspective-1200"
     >
-      {/* Dynamic 3D ambient orange/amber backlight */}
-      <div className="absolute -inset-2 bg-linear-to-tr from-orange-600/25 via-amber-500/20 to-orange-400/10 rounded-3xl blur-2xl opacity-70 group-hover:opacity-90 transition-opacity pointer-events-none" />
+      {/* AniMaster Style: Ambient warm lighting aura */}
+      <div className="absolute -inset-2 bg-linear-to-tr from-orange-500/15 via-amber-400/10 to-orange-200/10 rounded-3xl blur-2xl opacity-70 group-hover:opacity-90 transition-opacity pointer-events-none" />
 
-      {/* 3D Elevated Glassmorphic Console Card */}
+      {/* Vengeance UI Style: Frosted glass elevated console card that harmonizes with page */}
       <div
         style={{
           transform: `perspective(1200px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
           transition: 'transform 0.15s ease-out',
         }}
-        className="relative rounded-3xl bg-slate-950/95 border border-slate-800 shadow-2xl p-5 sm:p-7 text-white space-y-5 overflow-hidden"
+        className="relative rounded-3xl bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-[0_20px_50px_-10px_rgba(234,88,12,0.09)] p-5 sm:p-7 text-slate-900 space-y-5 overflow-hidden"
       >
         {/* Subtle Specular Shine Overlay */}
         <div
           className="absolute inset-0 rounded-3xl pointer-events-none opacity-40 transition-opacity duration-300"
           style={{
-            background: `radial-gradient(circle 350px at ${mousePos.x}% ${mousePos.y}%, rgba(255,255,255,0.07), transparent 80%)`,
+            background: `radial-gradient(circle 350px at ${mousePos.x}% ${mousePos.y}%, rgba(234,88,12,0.04), transparent 80%)`,
           }}
         />
 
         {/* Console Header Bar */}
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-orange-600/20 border border-orange-500/40 flex items-center justify-center text-orange-400 shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200 text-orange-600 flex items-center justify-center shadow-2xs">
               <Zap className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-white tracking-tight">
+                <span className="text-xs font-bold text-slate-900 tracking-tight">
                   Export Operations Console
                 </span>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               </div>
-              <span className="text-[11px] text-slate-400 block">
+              <span className="text-[11px] text-slate-500 block">
                 Live Trade Corridor Telemetry
               </span>
             </div>
@@ -192,18 +192,18 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
 
           {/* Dynamic LEO Status Badge */}
           <span
-            className={`px-3 py-1 rounded-full text-xs font-bold border transition-all ${
+            className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
               isResolved
-                ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40 shadow-xs'
-                : 'bg-orange-500/15 text-orange-400 border-orange-500/40'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-2xs'
+                : 'bg-amber-50 text-amber-800 border-amber-200'
             }`}
           >
             {isResolved ? '● LEO Cleared for Port Gate-in' : '▲ Verification in Progress'}
           </span>
         </div>
 
-        {/* Corridor Selector Chips */}
-        <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {/* Skiper UI Style: Sliding pill corridor tabs */}
+        <div className="relative z-10 bg-slate-100/80 p-1.5 rounded-2xl border border-slate-200/80 grid grid-cols-2 sm:grid-cols-4 gap-1.5">
           {CORRIDORS.map((c) => {
             const active = c.id === activeId;
             return (
@@ -211,14 +211,19 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
                 key={c.id}
                 type="button"
                 onClick={() => setActiveId(c.id)}
-                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                  active
-                    ? 'bg-orange-600 text-white border-orange-500 font-bold shadow-md shadow-orange-600/30'
-                    : 'bg-slate-900/90 text-slate-300 border-slate-800 hover:bg-slate-850 hover:text-white'
+                className={`relative p-2 rounded-xl text-left transition-colors cursor-pointer select-none ${
+                  active ? 'text-white font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
                 }`}
               >
-                <span className="block text-xs font-bold truncate">{c.name}</span>
-                <span className="block text-[10px] opacity-80 truncate mt-0.5">
+                {active && (
+                  <motion.div
+                    layoutId="hero-active-corridor"
+                    className="absolute inset-0 bg-linear-to-r from-orange-600 to-orange-500 rounded-xl shadow-sm shadow-orange-600/30"
+                    transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                  />
+                )}
+                <span className="relative z-10 block text-xs font-bold truncate">{c.name}</span>
+                <span className={`relative z-10 block text-[10px] truncate mt-0.5 ${active ? 'text-orange-100' : 'text-slate-400'}`}>
                   {c.commodity.split(' ')[0]}
                 </span>
               </button>
@@ -227,34 +232,34 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
         </div>
 
         {/* Active Corridor Card & Route Progression */}
-        <div className="relative z-10 p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
+        <div className="relative z-10 p-4.5 rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-4">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <span className="text-[11px] uppercase tracking-wider font-bold text-orange-400 block">
+              <span className="text-[11px] uppercase tracking-wider font-bold text-orange-600 block">
                 Active Consignment
               </span>
-              <h4 className="text-base sm:text-lg font-bold text-white mt-0.5">
+              <h4 className="text-base sm:text-lg font-bold text-slate-900 mt-0.5">
                 {current.commodity}
               </h4>
-              <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-1">
-                <MapPin className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+              <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-1 font-medium">
+                <MapPin className="w-3.5 h-3.5 text-orange-600 shrink-0" />
                 <span>{current.originPort}</span>
-                <ArrowRight className="w-3 h-3 text-slate-500 shrink-0" />
-                <Globe2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                <ArrowRight className="w-3 h-3 text-slate-400" />
+                <Globe2 className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                 <span>{current.destPort}</span>
               </p>
             </div>
             <div className="text-right">
-              <span className="text-xs text-slate-400 block">Estimated Transit</span>
-              <span className="text-xs font-bold text-slate-200 mt-0.5 block">
+              <span className="text-[11px] text-slate-500 block font-medium">Estimated Transit</span>
+              <span className="text-xs font-bold text-slate-800 mt-0.5 block">
                 {current.transitTime}
               </span>
             </div>
           </div>
 
-          {/* 4-Stage Visual Clearance Pipeline */}
+          {/* AniMaster Style: 4-Stage Visual Clearance Pipeline */}
           <div className="pt-2">
-            <div className="flex items-center justify-between text-[11px] text-slate-400 font-semibold mb-2">
+            <div className="flex items-center justify-between text-[11px] text-slate-500 font-semibold mb-2">
               <span>Factory Dispatch</span>
               <span>CFS Gate-in</span>
               <span>Customs Inspection</span>
@@ -263,29 +268,29 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
 
             {/* Pipeline Track with Glowing Nodes */}
             <div className="relative flex items-center justify-between">
-              <div className="absolute left-0 right-0 h-1 bg-slate-800 rounded-full" />
+              <div className="absolute left-0 right-0 h-1.5 bg-slate-200 rounded-full" />
               <div
-                className="absolute left-0 h-1 bg-linear-to-r from-orange-500 to-emerald-400 rounded-full transition-all duration-500"
+                className="absolute left-0 h-1.5 bg-linear-to-r from-orange-500 to-emerald-500 rounded-full transition-all duration-700 ease-out"
                 style={{ width: isResolved ? '100%' : '66%' }}
               />
 
               {/* Node 1 */}
-              <div className="relative w-6 h-6 rounded-full bg-orange-600 border-2 border-slate-950 flex items-center justify-center text-[10px] font-bold text-white shadow-xs">
+              <div className="relative w-6 h-6 rounded-full bg-orange-600 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white shadow-xs">
                 ✓
               </div>
               {/* Node 2 */}
-              <div className="relative w-6 h-6 rounded-full bg-orange-600 border-2 border-slate-950 flex items-center justify-center text-[10px] font-bold text-white shadow-xs">
+              <div className="relative w-6 h-6 rounded-full bg-orange-600 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white shadow-xs">
                 ✓
               </div>
               {/* Node 3 */}
-              <div className={`relative w-6 h-6 rounded-full border-2 border-slate-950 flex items-center justify-center text-[10px] font-bold transition-all ${
-                isResolved ? 'bg-orange-600 text-white' : 'bg-amber-400 text-slate-950 animate-pulse'
+              <div className={`relative w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold transition-all ${
+                isResolved ? 'bg-orange-600 text-white' : 'bg-amber-400 text-slate-900 animate-pulse'
               }`}>
                 {isResolved ? '✓' : '•'}
               </div>
               {/* Node 4 */}
-              <div className={`relative w-6 h-6 rounded-full border-2 border-slate-950 flex items-center justify-center text-[10px] font-bold transition-all ${
-                isResolved ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/40' : 'bg-slate-800 text-slate-500'
+              <div className={`relative w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold transition-all ${
+                isResolved ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/30' : 'bg-slate-200 text-slate-500'
               }`}>
                 {isResolved ? '✓' : '4'}
               </div>
@@ -293,23 +298,23 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
           </div>
         </div>
 
-        {/* Key Operational Metrics (Dual Elevated Tiles) */}
+        {/* Vengeance UI Bento Style: Key Operational Metrics */}
         <div className="relative z-10 grid grid-cols-2 gap-3">
           {/* Tile 1: Readiness Score */}
-          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-            <span className="text-[11px] font-semibold text-slate-400 block">
+          <div className="p-4 rounded-2xl bg-orange-50/50 border border-orange-200/80 space-y-1">
+            <span className="text-[11px] font-semibold text-slate-500 block">
               Export Readiness Score
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-3xl font-extrabold font-mono text-orange-500">
+              <span className="text-3xl font-black font-mono text-orange-600">
                 {score}
               </span>
               <span className="text-xs text-slate-400 font-semibold">/ 100</span>
             </div>
-            <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1.5">
+            <div className="w-full bg-orange-200/60 h-1.5 rounded-full overflow-hidden mt-1.5">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
-                  isResolved ? 'bg-emerald-500' : 'bg-orange-500'
+                  isResolved ? 'bg-emerald-500' : 'bg-orange-600'
                 }`}
                 style={{ width: `${score}%` }}
               />
@@ -317,28 +322,28 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
           </div>
 
           {/* Tile 2: Cargo & Duty Arbitrage */}
-          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-            <span className="text-[11px] font-semibold text-slate-400 block">
+          <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-200/80 space-y-1">
+            <span className="text-[11px] font-semibold text-slate-500 block">
               Consignment Value
             </span>
-            <div className="text-2xl font-bold font-mono text-white tracking-tight">
+            <div className="text-2xl font-bold font-mono text-slate-900 tracking-tight">
               {current.cargoValue}
             </div>
-            <span className="text-[11px] text-emerald-400 font-semibold block truncate">
+            <span className="text-[11px] text-emerald-700 font-semibold block truncate">
               {current.dutySaving}
             </span>
           </div>
         </div>
 
         {/* Clearances Status Strip */}
-        <div className="relative z-10 p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between text-xs">
+        <div className="relative z-10 p-3.5 rounded-xl bg-white border border-slate-200/80 flex items-center justify-between text-xs shadow-2xs">
           <div className="flex items-center gap-2.5 min-w-0">
-            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
             <div className="min-w-0">
-              <span className="font-bold text-white block truncate">
+              <span className="font-bold text-slate-900 block truncate">
                 {current.keyDoc}
               </span>
-              <span className="text-[10px] text-slate-400 block truncate">
+              <span className="text-[10px] text-slate-500 block truncate font-medium">
                 Verified Logistics Partner: {current.carrier}
               </span>
             </div>
@@ -346,20 +351,22 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
           <span
             className={`px-2.5 py-1 rounded-lg text-[10px] font-bold shrink-0 ml-2 ${
               isResolved
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                : 'bg-amber-50 text-amber-800 border border-amber-200'
             }`}
           >
             {isResolved ? 'Cleared ✓' : 'Sync Required'}
           </span>
         </div>
 
-        {/* Interactive Simulation Action Button */}
-        <button
+        {/* AniMaster Magnetic Button */}
+        <motion.button
           type="button"
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
           onClick={handleToggleResolve}
           disabled={isSimulating}
-          className="relative z-10 w-full py-3.5 px-4 rounded-2xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-lg shadow-orange-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] disabled:opacity-75"
+          className="relative z-10 w-full py-3.5 px-4 rounded-2xl bg-linear-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white font-bold text-xs sm:text-sm shadow-md shadow-orange-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] disabled:opacity-75"
         >
           <RefreshCw className={`w-4 h-4 ${isSimulating ? 'animate-spin' : ''}`} />
           <span>
@@ -367,7 +374,7 @@ export default function HeroExportCockpit({ isLoggedIn }: { isLoggedIn: boolean 
               ? 'Reset Clearance Simulation'
               : 'Run Live Customs LEO Clearance Simulation'}
           </span>
-        </button>
+        </motion.button>
 
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 
 interface InteractiveReadinessGaugeProps {
   score: number;
@@ -21,10 +22,14 @@ export default function InteractiveReadinessGauge({
   const gradientId = isHealthy ? 'gauge-emerald' : score >= 60 ? 'gauge-amber' : 'gauge-orange';
 
   return (
-    <div className="relative group/gauge flex flex-col items-center justify-center shrink-0 cursor-default">
-      {/* 3D Ambient Glow behind gauge */}
+    <motion.div
+      whileHover={{ scale: 1.04 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className="relative group/gauge flex flex-col items-center justify-center shrink-0 cursor-default"
+    >
+      {/* AniMaster Style: 3D Ambient Glow behind gauge */}
       <div
-        className={`absolute inset-0 rounded-full blur-xl opacity-30 group-hover/gauge:opacity-50 transition-opacity pointer-events-none ${
+        className={`absolute inset-0 rounded-full blur-xl opacity-25 group-hover/gauge:opacity-45 transition-opacity pointer-events-none ${
           isHealthy
             ? 'bg-emerald-500'
             : score >= 60
@@ -34,7 +39,7 @@ export default function InteractiveReadinessGauge({
       />
 
       {/* SVG Circular Progress Meter */}
-      <div className="relative w-28 h-28 flex items-center justify-center transition-transform duration-300 group-hover/gauge:scale-105">
+      <div className="relative w-28 h-28 flex items-center justify-center">
         <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
           <defs>
             <linearGradient id="gauge-orange" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -62,8 +67,8 @@ export default function InteractiveReadinessGauge({
             className="transition-colors"
           />
 
-          {/* Active Progress Stroke with 3D shadow */}
-          <circle
+          {/* AniMaster Animated SVG Stroke with 3D drop-shadow */}
+          <motion.circle
             cx="50"
             cy="50"
             r={radius}
@@ -71,9 +76,10 @@ export default function InteractiveReadinessGauge({
             stroke={`url(#${gradientId})`}
             strokeWidth="7"
             strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset }}
+            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
             strokeLinecap="round"
-            className="transition-all duration-700 ease-out"
             style={{
               filter: isHealthy
                 ? 'drop-shadow(0 4px 6px rgba(16, 185, 129, 0.35))'
@@ -82,7 +88,7 @@ export default function InteractiveReadinessGauge({
           />
         </svg>
 
-        {/* Center Numbers */}
+        {/* Center Numbers with Crisp Typography */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
           <span
             className={`text-2xl font-black font-mono tracking-tight leading-none ${
@@ -101,7 +107,7 @@ export default function InteractiveReadinessGauge({
         </div>
       </div>
 
-      {/* Mini status indicator */}
+      {/* Skiper UI Mini Pill Status Indicator */}
       <span
         className={`mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-2xs ${
           isHealthy
@@ -111,6 +117,6 @@ export default function InteractiveReadinessGauge({
       >
         {isHealthy ? 'Export Cleared' : 'Audit In-Progress'}
       </span>
-    </div>
+    </motion.div>
   );
 }

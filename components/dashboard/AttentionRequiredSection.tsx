@@ -129,11 +129,11 @@ export default function AttentionRequiredSection({
             return (
               <div
                 key={item.id || idx}
-                className="p-4 sm:px-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/50 transition-colors"
+                className="p-4 sm:px-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-orange-50/20 transition-all duration-150 group"
               >
                 <div className="space-y-1 min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-bold text-slate-900 truncate">
+                    <span className="text-sm font-bold text-slate-900 truncate group-hover:text-orange-950 transition-colors">
                       {item.title}
                     </span>
                     <StatusBadge status={statusText} variant={statusVariant} />
@@ -149,9 +149,9 @@ export default function AttentionRequiredSection({
                   <Link
                     href={item.actionUrl || '/documents'}
                     prefetch={true}
-                    className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold active:scale-[0.98] transition-all ${
+                    className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold active:scale-[0.98] transition-all cursor-pointer ${
                       idx === 0
-                        ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-2xs'
+                        ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-2xs hover:shadow-sm'
                         : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
                     }`}
                   >

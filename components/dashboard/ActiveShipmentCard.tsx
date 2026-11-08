@@ -2,12 +2,14 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import {
   Truck,
   ArrowRight,
   Plus,
   ExternalLink,
   MapPin,
+  CheckCircle2,
 } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 
@@ -59,7 +61,7 @@ export default function ActiveShipmentCard({ activeShipment }: ActiveShipmentCar
 
           <Link
             href="/shipments"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow-2xs transition-colors shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow-2xs transition-colors shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Create shipment</span>
@@ -79,7 +81,7 @@ export default function ActiveShipmentCard({ activeShipment }: ActiveShipmentCar
         <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
           Active Shipment
         </h2>
-        <span className="text-xs text-slate-500 font-mono">
+        <span className="text-xs text-slate-500 font-mono font-medium">
           #{activeShipment.shipmentNumber}
         </span>
       </div>
@@ -104,8 +106,34 @@ export default function ActiveShipmentCard({ activeShipment }: ActiveShipmentCar
           </div>
         </div>
 
+        {/* AniMaster Style: 4-Stage Connected Tracking Stepper */}
+        <div className="py-1">
+          <div className="flex items-center justify-between text-[11px] text-slate-500 font-medium mb-1.5">
+            <span>Booking Confirmed</span>
+            <span>Port Gate-In</span>
+            <span>Customs LEO</span>
+            <span>Vessel In-Transit</span>
+          </div>
+          <div className="relative flex items-center justify-between">
+            <div className="absolute left-0 right-0 h-1 bg-slate-100 rounded-full" />
+            <div className="absolute left-0 h-1 bg-linear-to-r from-orange-500 to-emerald-500 rounded-full w-2/3" />
+            <div className="relative w-5 h-5 rounded-full bg-orange-600 border-2 border-white flex items-center justify-center text-[9px] font-bold text-white shadow-2xs">
+              ✓
+            </div>
+            <div className="relative w-5 h-5 rounded-full bg-orange-600 border-2 border-white flex items-center justify-center text-[9px] font-bold text-white shadow-2xs">
+              ✓
+            </div>
+            <div className="relative w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[9px] font-bold text-white shadow-2xs">
+              ✓
+            </div>
+            <div className="relative w-5 h-5 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[9px] font-bold text-slate-400">
+              4
+            </div>
+          </div>
+        </div>
+
         {/* Compact Metadata & Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs pt-2">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-600">
             <span>
               Invoice Value: <strong className="text-slate-900 font-semibold font-mono">₹{activeShipment.value.toLocaleString('en-IN')}</strong>
@@ -119,7 +147,7 @@ export default function ActiveShipmentCard({ activeShipment }: ActiveShipmentCar
           <div className="flex items-center gap-2 shrink-0">
             <Link
               href={`/shipments/${activeShipment.id}/tracking`}
-              className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer"
             >
               <MapPin className="w-3.5 h-3.5 text-orange-600" />
               <span>Tracking</span>
@@ -127,7 +155,7 @@ export default function ActiveShipmentCard({ activeShipment }: ActiveShipmentCar
 
             <Link
               href={`/shipments/${activeShipment.id}`}
-              className="px-3.5 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs transition-colors inline-flex items-center gap-1 shadow-2xs cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs transition-colors inline-flex items-center gap-1 shadow-2xs cursor-pointer"
             >
               <span>View shipment</span>
               <ArrowRight className="w-3.5 h-3.5" />

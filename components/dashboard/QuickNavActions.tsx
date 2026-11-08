@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import {
   FileText,
   Award,
@@ -57,28 +58,35 @@ export default function QuickNavActions() {
         Quick Access
       </h2>
 
+      {/* Skiper UI Bento Grid with Vengeance Displacement Hover */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
         {ACTIONS.map((action) => {
           const Icon = action.icon;
           return (
-            <Link
+            <motion.div
               key={action.name}
-              href={action.href}
-              prefetch={true}
-              className="p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:border-orange-300 hover:bg-orange-50/20 active:scale-[0.97] transition-all flex flex-col justify-between group"
+              whileHover={{ y: -2, scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             >
-              <div className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-200/80 group-hover:bg-orange-100/50 group-hover:border-orange-200 text-slate-600 group-hover:text-orange-600 flex items-center justify-center transition-colors">
-                <Icon className="w-3.5 h-3.5" />
-              </div>
-              <div className="mt-2 space-y-0.5">
-                <span className="block font-bold text-slate-900 text-xs truncate">
-                  {action.name}
-                </span>
-                <span className="block text-[10px] text-slate-400 truncate">
-                  {action.desc}
-                </span>
-              </div>
-            </Link>
+              <Link
+                href={action.href}
+                prefetch={true}
+                className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-orange-300 hover:shadow-md hover:shadow-orange-600/5 transition-all flex flex-col justify-between group h-full block"
+              >
+                <div className="w-8 h-8 rounded-xl bg-slate-50 border border-slate-200/80 group-hover:bg-orange-50 group-hover:border-orange-200 text-slate-600 group-hover:text-orange-600 flex items-center justify-center transition-colors">
+                  <Icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                </div>
+                <div className="mt-2.5 space-y-0.5">
+                  <span className="block font-bold text-slate-900 text-xs truncate group-hover:text-orange-600 transition-colors">
+                    {action.name}
+                  </span>
+                  <span className="block text-[10px] text-slate-400 truncate">
+                    {action.desc}
+                  </span>
+                </div>
+              </Link>
+            </motion.div>
           );
         })}
       </div>
