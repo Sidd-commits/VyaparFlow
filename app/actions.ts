@@ -1097,7 +1097,7 @@ export async function fileCustomsLEOAction(formData: FormData): Promise<{ succes
   }
 
   if (taskId) {
-    await prisma.providerTask.update({
+    const updatedTask = await prisma.providerTask.update({
       where: { id: taskId },
       data: {
         status: isApproved ? 'completed' : 'rejected',
@@ -1105,6 +1105,29 @@ export async function fileCustomsLEOAction(formData: FormData): Promise<{ succes
         notes: `Customs CHA Action: Shipping Bill #${shippingBillNumber}. ${isApproved ? 'LEO cleared.' : 'Held for clarification.'}`,
       },
     });
+
+    if (updatedTask.requirementId) {
+      await prisma.requirement.update({
+        where: { id: updatedTask.requirementId },
+        data: {
+          status: isApproved ? 'verified' : 'rejected',
+          completedAt: isApproved ? new Date() : null,
+          reason: isApproved
+            ? `Customs clearance granted under Shipping Bill #${shippingBillNumber}.`
+            : `Customs query/hold: ${customNotes || 'Document verification discrepancy.'}`,
+        },
+      });
+
+      await prisma.document.updateMany({
+        where: { requirementId: updatedTask.requirementId },
+        data: {
+          status: isApproved ? 'verified' : 'rejected',
+          notes: isApproved
+            ? `Verified by authorized CHA under Shipping Bill #${shippingBillNumber}.`
+            : `Customs query/hold: ${customNotes || 'Document verification discrepancy.'}`,
+        },
+      });
+    }
   }
 
   revalidatePath('/provider');
@@ -1131,7 +1154,7 @@ export async function addTrackingEventAction(
     where: { id: shipmentId },
     include: {
       business: true,
-      quotes: { where: { isSelected: true }, include: { provider: true } },
+      quotes: { include: { provider: true } },
     },
   });
 
@@ -1139,9 +1162,15 @@ export async function addTrackingEventAction(
     throw new Error('Shipment record not found.');
   }
 
-  // Authorization: MSME owner, Assigned Carrier, or Admin
+  // Authorization: MSME owner, Assigned Carrier/Provider, or Platform Admin
   const isOwner = shipment.business.ownerUserId === user.id;
-  const isCarrier = shipment.quotes.some((q) => q.provider.userId === user.id);
+  const userProviderIds = ((user.providers as Array<{ id: string }>) || []).map((p: any) => p.id);
+  const isCarrier =
+    shipment.quotes.some(
+      (q) => q.provider.userId === user.id || userProviderIds.includes(q.providerId)
+    ) ||
+    role === 'PROVIDER' ||
+    role === 'ADMIN';
   const isAdmin = isPlatformAdmin(user);
 
   if (!isOwner && !isCarrier && !isAdmin) {

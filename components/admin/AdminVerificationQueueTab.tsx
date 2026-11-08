@@ -268,7 +268,7 @@ export default function AdminVerificationQueueTab({ documents }: AdminVerificati
                   {/* Right Actions */}
                   <div className="flex items-center gap-2 shrink-0">
                     <a
-                      href={`/${doc.storageKey}`}
+                      href={`/api/documents/${doc.id}`}
                       target="_blank"
                       rel="noreferrer"
                       className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors flex items-center gap-1 border border-slate-200 shadow-2xs"

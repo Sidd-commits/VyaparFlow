@@ -20,7 +20,12 @@ import {
   XCircle,
   FlaskConical,
 } from 'lucide-react';
-import { verifyDocumentAction, updateProviderTaskAction, completeLabAuditAction } from '@/app/actions';
+import {
+  verifyDocumentAction,
+  updateProviderTaskAction,
+  completeLabAuditAction,
+  fileCustomsLEOAction,
+} from '@/app/actions';
 
 interface TaskItem {
   id: string;
@@ -383,7 +388,7 @@ export default function ProviderVerificationDeck({
 
                       {doc && (
                         <a
-                          href={`/${doc.storageKey}`}
+                          href={`/api/documents/${doc.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs flex items-center gap-1.5 shadow-xs border border-slate-300 transition-colors shrink-0"
@@ -481,23 +486,99 @@ export default function ProviderVerificationDeck({
                           </button>
                         </div>
                       </form>
-                    ) : (
-                      /* Standard Document Verification / CHA Clearance Form */
-                      <div className="flex flex-wrap items-center gap-3">
-                        {doc && (
-                          <form
-                            action={async () => {
-                              await verifyDocumentAction(doc.id, 'verified');
-                            }}
+                    ) : task.type === 'CUSTOMS_CHA' ? (
+                      /* Customs House Agent (CHA) LEO Clearance Desk */
+                      <form
+                        action={async (formData: FormData) => {
+                          await fileCustomsLEOAction(formData);
+                        }}
+                        className="space-y-3 text-xs"
+                      >
+                        <input type="hidden" name="taskId" value={task.id} />
+                        <input type="hidden" name="shipmentId" value={task.shipment?.id || ''} />
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block font-semibold text-slate-700 mb-1">
+                              ICEGATE Shipping Bill Number
+                            </label>
+                            <input
+                              type="text"
+                              name="shippingBillNumber"
+                              placeholder="e.g. SB-891042"
+                              defaultValue={`SB-${Date.now().toString().slice(-6)}`}
+                              className="w-full p-2.5 rounded-xl border border-slate-300 bg-white text-xs font-mono font-bold"
+                              required
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block font-semibold text-slate-700 mb-1">
+                              Port of Export / Customs Checkpoint
+                            </label>
+                            <input
+                              type="text"
+                              name="portLocation"
+                              placeholder="e.g. JNPT Customs Terminal, Nhava Sheva"
+                              defaultValue="JNPT Customs Terminal, Nhava Sheva"
+                              className="w-full p-2.5 rounded-xl border border-slate-300 bg-white text-xs font-medium"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block font-semibold text-slate-700 mb-1">
+                            Customs Verification &amp; Examination Note
+                          </label>
+                          <input
+                            type="text"
+                            name="notes"
+                            placeholder="e.g. Commercial invoice, packaging &amp; Chamber stamp scrutinized."
+                            defaultValue="Statutory documents verified. Assessment cleared for Let Export Order (LEO)."
+                            className="w-full p-2.5 rounded-xl border border-slate-300 bg-white text-xs font-medium"
+                          />
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3 pt-1">
+                          <button
+                            type="submit"
+                            name="decision"
+                            value="approve"
+                            className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
                           >
-                            <button
-                              type="submit"
-                              className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5" /> Approve &amp; Clear Blocker
-                            </button>
-                          </form>
-                        )}
+                            <ShieldCheck className="w-3.5 h-3.5" /> Issue Let Export Order (LEO) Clearance
+                          </button>
+
+                          <button
+                            type="submit"
+                            name="decision"
+                            value="reject"
+                            className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                          >
+                            <FileX2 className="w-3.5 h-3.5" /> Place on Customs Query / Hold
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      /* Standard Document Verification Form */
+                      <div className="flex flex-wrap items-center gap-3">
+                        <form
+                          action={async () => {
+                            if (doc) {
+                              await verifyDocumentAction(doc.id, 'verified');
+                            } else {
+                              await updateProviderTaskAction(task.id, 'completed', 'Audit verified and cleared by partner.');
+                            }
+                          }}
+                        >
+                          <button
+                            type="submit"
+                            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Approve &amp; Clear Blocker
+                          </button>
+                        </form>
 
                         <form
                           action={async (formData: FormData) => {

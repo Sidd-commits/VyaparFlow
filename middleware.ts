@@ -59,6 +59,19 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Redirect Provider accessing MSME-specific routes to appropriate provider workspace
+  if (sessionToken && tokenRole === 'PROVIDER') {
+    if (pathname === '/documents') {
+      return NextResponse.redirect(new URL('/provider?tab=verification', request.url));
+    }
+    if (pathname === '/business') {
+      return NextResponse.redirect(new URL('/provider?tab=profile', request.url));
+    }
+    if (['/certifications', '/packaging', '/products', '/readiness'].includes(pathname)) {
+      return NextResponse.redirect(new URL('/provider', request.url));
+    }
+  }
+
   // Redirect Admin accessing MSME-specific routes to appropriate admin operations view
   if (sessionToken && tokenRole === 'ADMIN') {
     if (pathname === '/documents') {
