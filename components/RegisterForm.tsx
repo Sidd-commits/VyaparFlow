@@ -87,13 +87,13 @@ export default function RegisterForm({ action }: RegisterFormProps) {
             <Truck className="w-5 h-5" />
           </div>
         ) : (
-          <div className="w-10 h-10 rounded-xl bg-orange-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+          <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
             <Building2 className="w-5 h-5" />
           </div>
         )}
 
         <div>
-          <h2 className="text-xl font-bold font-serif text-slate-900">
+          <h2 className="text-xl font-bold font-sans text-slate-900">
             {role === 'PROVIDER'
               ? 'Service Provider Partner Registration'
               : 'Create MSME Exporter Account'}
@@ -140,19 +140,19 @@ export default function RegisterForm({ action }: RegisterFormProps) {
               onClick={() => setRole('MSME')}
               className={`p-4 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between gap-3 cursor-pointer ${
                 role === 'MSME'
-                  ? 'border-orange-500 bg-orange-50/60 shadow-md ring-4 ring-orange-500/10'
+                  ? 'border-blue-500 bg-blue-50/60 shadow-md ring-4 ring-blue-500/10'
                   : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/60'
               }`}
             >
               <div className="flex items-start justify-between">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-colors ${
-                  role === 'MSME' ? 'bg-orange-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700'
+                  role === 'MSME' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700'
                 }`}>
                   <Building2 className="w-5 h-5" />
                 </div>
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                   role === 'MSME'
-                    ? 'bg-orange-100 text-orange-800 border-orange-200'
+                    ? 'bg-blue-100 text-blue-800 border-blue-200'
                     : 'bg-slate-100 text-slate-600 border-slate-200'
                 }`}>
                   Exporters
@@ -161,7 +161,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
               <div>
                 <h4 className="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
                   MSME Exporter
-                  {role === 'MSME' && <CheckCircle2 className="w-4 h-4 text-orange-600 shrink-0" />}
+                  {role === 'MSME' && <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />}
                 </h4>
                 <p className="text-[11px] text-slate-600 leading-snug mt-1">
                   Evaluate export readiness score, generate trade docs & book freight
@@ -218,7 +218,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                 ? 'e.g. Vikram Sharma'
                 : 'e.g. Ramesh Shah'
             }
-            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs transition-all"
+            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none text-xs transition-all"
             required
           />
         </div>
@@ -234,7 +234,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                 ? 'contact@freightpartner.com'
                 : 'ramesh@exportco.com'
             }
-            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs transition-all"
+            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none text-xs transition-all"
             required
           />
         </div>
@@ -249,7 +249,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
             type="password"
             name="password"
             placeholder="Choose a strong password"
-            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none text-xs transition-all"
+            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none text-xs transition-all"
             required
           />
         </div>
@@ -263,7 +263,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                 type="text"
                 name="businessName"
                 placeholder="e.g. Acme Organic Exports Pvt Ltd"
-                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none transition-all"
+                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none transition-all"
                 required
               />
             </div>
@@ -274,7 +274,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
                 type="text"
                 name="productName"
                 placeholder="e.g. Organic Alphonso Mangoes"
-                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 outline-none transition-all"
+                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none transition-all"
                 required
               />
             </div>
@@ -314,7 +314,7 @@ export default function RegisterForm({ action }: RegisterFormProps) {
           className={`w-full py-3.5 rounded-xl text-white font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-60 ${
             role === 'PROVIDER'
               ? 'bg-blue-600 hover:bg-blue-700'
-              : 'bg-orange-600 hover:bg-orange-700'
+              : 'bg-blue-600 hover:bg-blue-700'
           }`}
         >
           {isPending ? (

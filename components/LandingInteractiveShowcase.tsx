@@ -159,7 +159,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Live Interactive Simulator</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black font-serif text-white tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-black font-sans text-white tracking-tight">
                 Simulate Your Cross-Border Export Readiness
               </h2>
               <p className="text-slate-400 text-xs sm:text-sm max-w-2xl leading-relaxed">
@@ -215,7 +215,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
                   <span className="text-[11px] font-bold uppercase tracking-wider text-orange-400">
                     {selectedCorridor.category}
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-black text-white font-serif mt-0.5">
+                  <h3 className="text-xl sm:text-2xl font-black text-white font-sans mt-0.5">
                     {selectedCorridor.productName}
                   </h3>
                 </div>
@@ -313,7 +313,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
                 {/* Score Progress Visual */}
                 <div className="space-y-2">
                   <div className="flex items-baseline justify-between">
-                    <span className="text-4xl sm:text-5xl font-black font-serif text-white">
+                    <span className="text-4xl sm:text-5xl font-black font-sans text-white">
                       {selectedCorridor.readinessScore}
                       <span className="text-xl font-normal text-slate-500"> / 100</span>
                     </span>
@@ -386,7 +386,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
             <Layers className="w-3.5 h-3.5 text-orange-600" />
             <span>Integrated Trade Architecture</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 font-serif">
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 font-sans">
             One Single Operating Canvas for All Trade Stakeholders
           </h2>
           <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
@@ -454,7 +454,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold">
                   <span>🏢 Indian MSME Manufacturer</span>
                 </div>
-                <h3 className="text-2xl font-bold font-serif text-slate-900">
+                <h3 className="text-2xl font-bold font-sans text-slate-900">
                   Factory-Floor Readiness & Auto-Generated Export Documentation
                 </h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
@@ -509,7 +509,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold">
                   <span>🚢 Freight Forwarder & Logistics Partner</span>
                 </div>
-                <h3 className="text-2xl font-bold font-serif text-slate-900">
+                <h3 className="text-2xl font-bold font-sans text-slate-900">
                   Verified Cargo Demand & Guaranteed Lead Times
                 </h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
@@ -557,7 +557,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
                   <span>🔬 NABL & APEDA Accredited Laboratory</span>
                 </div>
-                <h3 className="text-2xl font-bold font-serif text-slate-900">
+                <h3 className="text-2xl font-bold font-sans text-slate-900">
                   Digital Certificate Issuance & Quality Assurance
                 </h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
@@ -604,7 +604,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-300 text-slate-800 text-xs font-bold">
                   <span>🛡️ Licensed Customs House Agent (CHA)</span>
                 </div>
-                <h3 className="text-2xl font-bold font-serif text-slate-900">
+                <h3 className="text-2xl font-bold font-sans text-slate-900">
                   Shipping Bill Filing & Port Customs Clearance
                 </h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
@@ -650,7 +650,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
       {/* 3. NATIONAL IMPACT METRICS */}
       <section className="bg-linear-to-r from-orange-600 via-amber-600 to-yellow-600 rounded-3xl p-8 sm:p-12 text-white shadow-2xl space-y-8">
         <div className="text-center max-w-3xl mx-auto space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-black font-serif tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-black font-sans tracking-tight">
             Built for India&apos;s $1 Trillion Export Economy
           </h2>
           <p className="text-white/90 text-sm">
@@ -660,7 +660,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20">
-            <span className="text-3xl sm:text-4xl font-black font-serif block">100%</span>
+            <span className="text-3xl sm:text-4xl font-black font-sans block">100%</span>
             <span className="text-xs uppercase tracking-wider font-semibold opacity-90 mt-1 block">
               Deterministic Rules
             </span>
@@ -668,7 +668,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
           </div>
 
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20">
-            <span className="text-3xl sm:text-4xl font-black font-serif block">&lt; 3 Min</span>
+            <span className="text-3xl sm:text-4xl font-black font-sans block">&lt; 3 Min</span>
             <span className="text-xs uppercase tracking-wider font-semibold opacity-90 mt-1 block">
               Readiness Audit
             </span>
@@ -676,7 +676,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
           </div>
 
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20">
-            <span className="text-3xl sm:text-4xl font-black font-serif block">0–100</span>
+            <span className="text-3xl sm:text-4xl font-black font-sans block">0–100</span>
             <span className="text-xs uppercase tracking-wider font-semibold opacity-90 mt-1 block">
               Compliance Scoring
             </span>
@@ -684,7 +684,7 @@ export default function LandingInteractiveShowcase({ isLoggedIn }: { isLoggedIn:
           </div>
 
           <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20">
-            <span className="text-3xl sm:text-4xl font-black font-serif block">1-Click</span>
+            <span className="text-3xl sm:text-4xl font-black font-sans block">1-Click</span>
             <span className="text-xs uppercase tracking-wider font-semibold opacity-90 mt-1 block">
               Document Vault
             </span>

@@ -185,7 +185,7 @@ export default function EnterpriseDocumentUpload({
             <Upload className="w-4 h-4" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-slate-900 font-serif">
+            <h4 className="text-sm font-bold text-slate-900 font-sans">
               Upload Compliance Document
             </h4>
             <p className="text-[11px] text-slate-500">

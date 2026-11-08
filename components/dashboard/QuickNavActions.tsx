@@ -65,9 +65,9 @@ export default function QuickNavActions() {
               key={action.name}
               href={action.href}
               prefetch={true}
-              className="p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:border-orange-300 hover:bg-orange-50/20 active:scale-[0.97] transition-all flex flex-col justify-between group"
+              className="p-3 rounded-xl bg-white border border-slate-200/90 shadow-2xs hover:border-blue-300 hover:bg-blue-50/20 active:scale-[0.97] transition-all flex flex-col justify-between group"
             >
-              <div className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-200/80 group-hover:bg-orange-100/50 group-hover:border-orange-200 text-slate-600 group-hover:text-orange-600 flex items-center justify-center transition-colors">
+              <div className="w-7 h-7 rounded-lg bg-slate-50 border border-slate-200/80 group-hover:bg-blue-100/50 group-hover:border-blue-200 text-slate-600 group-hover:text-blue-600 flex items-center justify-center transition-colors">
                 <Icon className="w-3.5 h-3.5" />
               </div>
               <div className="mt-2 space-y-0.5">

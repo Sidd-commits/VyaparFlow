@@ -81,11 +81,11 @@ export default function DashboardHeader({
         {/* Right: Target Corridor & Profile Completeness Trigger */}
         <div className="flex flex-wrap items-center gap-3 text-xs">
           {/* Destination Corridor Pill */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-orange-50/70 border border-orange-200 text-orange-900 font-semibold">
-            <Globe2 className="w-4 h-4 text-orange-600 shrink-0" />
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50/70 border border-blue-200 text-blue-900 font-semibold">
+            <Globe2 className="w-4 h-4 text-blue-600 shrink-0" />
             <span>
-              Target: <strong className="font-bold text-orange-950">{destination}</strong>{' '}
-              <span className="text-[11px] text-orange-700 uppercase">({destIso})</span>
+              Target: <strong className="font-bold text-blue-950">{destination}</strong>{' '}
+              <span className="text-[11px] text-blue-700 uppercase">({destIso})</span>
             </span>
           </div>
 

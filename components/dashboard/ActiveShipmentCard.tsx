@@ -59,7 +59,7 @@ export default function ActiveShipmentCard({ activeShipment }: ActiveShipmentCar
 
           <Link
             href="/shipments"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold shadow-2xs transition-colors shrink-0 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-2xs transition-colors shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Create shipment</span>
@@ -121,13 +121,13 @@ export default function ActiveShipmentCard({ activeShipment }: ActiveShipmentCar
               href={`/shipments/${activeShipment.id}/tracking`}
               className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs transition-colors inline-flex items-center gap-1.5 cursor-pointer"
             >
-              <MapPin className="w-3.5 h-3.5 text-orange-600" />
+              <MapPin className="w-3.5 h-3.5 text-blue-600" />
               <span>Tracking</span>
             </Link>
 
             <Link
               href={`/shipments/${activeShipment.id}`}
-              className="px-3.5 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-semibold text-xs transition-colors inline-flex items-center gap-1 shadow-2xs cursor-pointer"
+              className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition-colors inline-flex items-center gap-1 shadow-2xs cursor-pointer"
             >
               <span>View shipment</span>
               <ArrowRight className="w-3.5 h-3.5" />

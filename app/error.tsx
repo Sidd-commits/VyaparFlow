@@ -33,7 +33,7 @@ export default function ErrorBoundary({ error, reset }: ErrorProps) {
             <AlertTriangle className="w-3.5 h-3.5" />
             <span>Service Notice</span>
           </div>
-          <h2 className="text-2xl font-black text-white tracking-tight font-serif">
+          <h2 className="text-2xl font-black text-white tracking-tight font-sans">
             Unable to Complete Operation
           </h2>
           <p className="text-xs text-slate-400 leading-relaxed max-w-md mx-auto">

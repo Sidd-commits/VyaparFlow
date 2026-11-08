@@ -102,11 +102,11 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
       ───────────────────────────────────────────────────────────── */}
       <section id="overview" className="scroll-mt-24 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-100 text-orange-900 border border-orange-300 text-xs font-mono font-bold uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-orange-600" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 text-blue-900 border border-blue-200 text-xs font-mono font-bold uppercase tracking-wider">
+            <span className="w-2 h-2 rounded-full bg-blue-600" />
             <span>01 — Problem & Transformation</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-serif tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-sans tracking-tight leading-tight">
             The $350B Export Barrier: <br className="hidden sm:inline" />
             Fragmented Chaos vs. One Clear Operating System.
           </h2>
@@ -127,7 +127,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
               <span className="text-xs font-mono uppercase tracking-wider text-red-600 font-bold">
                 Manual & Disconnected
               </span>
-              <h3 className="text-xl sm:text-2xl font-bold font-serif text-slate-900">
+              <h3 className="text-xl sm:text-2xl font-bold font-sans text-slate-900">
                 14 Isolated Portals & WhatsApp Groups
               </h3>
             </div>
@@ -174,15 +174,15 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
 
           {/* Right: The VyaparFlow Operating System */}
           <div className="rounded-3xl bg-[#0B132B] border border-slate-800 text-white p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 px-4 py-1.5 bg-orange-600/30 border-b border-l border-orange-500/40 text-orange-300 text-[11px] font-bold font-mono uppercase tracking-wider rounded-bl-xl">
+            <div className="absolute top-0 right-0 px-4 py-1.5 bg-blue-600/30 border-b border-l border-blue-500/40 text-blue-300 text-[11px] font-bold font-mono uppercase tracking-wider rounded-bl-xl">
               VyaparFlow Operating Engine
             </div>
 
             <div className="space-y-2 pt-2">
-              <span className="text-xs font-mono uppercase tracking-wider text-orange-400 font-bold">
+              <span className="text-xs font-mono uppercase tracking-wider text-blue-400 font-bold">
                 Deterministic & Unified
               </span>
-              <h3 className="text-xl sm:text-2xl font-bold font-serif text-white">
+              <h3 className="text-xl sm:text-2xl font-bold font-sans text-white">
                 One Single Source of Truth for Global Trade
               </h3>
             </div>
@@ -235,10 +235,10 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
       <section id="regulatory" className="scroll-mt-24 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 text-xs font-mono font-bold uppercase tracking-wider">
-            <Scale className="w-3.5 h-3.5 text-orange-600" />
+            <Scale className="w-3.5 h-3.5 text-blue-600" />
             <span>02 — Deterministic Engine</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-serif tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-sans tracking-tight leading-tight">
             100% Deterministic Rules. <br className="hidden sm:inline" />
             Zero AI Hallucinations in Customs Compliance.
           </h2>
@@ -251,10 +251,10 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
         <div className="max-w-5xl mx-auto bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-10 space-y-8">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5">
             <div>
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-orange-600 block">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-600 block">
                 Live Tariff & Agreement Simulator
               </span>
-              <h3 className="text-xl font-bold font-serif text-slate-900 mt-0.5">
+              <h3 className="text-xl font-bold font-sans text-slate-900 mt-0.5">
                 Select an Indian Export Product to Inspect Duty Arbitrage
               </h3>
             </div>
@@ -293,15 +293,15 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
               <div className="bg-[#FAF9F6] rounded-2xl border border-slate-300 p-6 space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <span className="text-xs font-mono font-bold text-orange-600 uppercase tracking-wider">
+                    <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-wider">
                       Trade Corridor: {current.corridor}
                     </span>
-                    <h4 className="text-2xl font-bold font-serif text-slate-900 mt-1">
+                    <h4 className="text-2xl font-bold font-sans text-slate-900 mt-1">
                       {current.title} (HS Code: {current.hs})
                     </h4>
                   </div>
                   <div className="px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-mono font-bold text-slate-800 shadow-xs">
-                    Agreement: <strong className="text-orange-600">{current.fta}</strong>
+                    Agreement: <strong className="text-blue-600">{current.fta}</strong>
                   </div>
                 </div>
 
@@ -323,12 +323,12 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                     <span className="text-[11px] text-emerald-800 font-bold block">Unlocked via CEPA / REX</span>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-orange-50 border border-orange-200 space-y-1">
-                    <span className="text-orange-900 font-mono text-[10px] uppercase font-bold block">
+                  <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 space-y-1">
+                    <span className="text-blue-900 font-mono text-[10px] uppercase font-bold block">
                       Net Cost Arbitrage Saved
                     </span>
-                    <span className="text-lg font-black text-orange-700 font-mono">{current.dutySaving}</span>
-                    <span className="text-[11px] text-orange-800 block">Direct bottom-line savings</span>
+                    <span className="text-lg font-black text-blue-700 font-mono">{current.dutySaving}</span>
+                    <span className="text-[11px] text-blue-800 block">Direct bottom-line savings</span>
                   </div>
                 </div>
 
@@ -356,11 +356,11 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
       ───────────────────────────────────────────────────────────── */}
       <section id="readiness" className="scroll-mt-24 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-100 text-orange-900 border border-orange-300 text-xs font-mono font-bold uppercase tracking-wider">
-            <CheckCircle2 className="w-3.5 h-3.5 text-orange-600" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 text-blue-900 border border-blue-200 text-xs font-mono font-bold uppercase tracking-wider">
+            <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
             <span>03 — Weighted Scoring Engine</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-serif tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-sans tracking-tight leading-tight">
             The 0–100 Export Readiness Index. <br className="hidden sm:inline" />
             Explainable Audits Across 4 Core Pillars.
           </h2>
@@ -372,14 +372,14 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
         {/* 4 Pillars Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {/* Pillar 1 */}
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-300 transition-all">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-blue-200 transition-all">
             <div className="flex items-center justify-between">
-              <span className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center font-mono font-bold text-orange-600 text-sm">
+              <span className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center font-mono font-bold text-blue-600 text-sm">
                 01
               </span>
               <span className="text-xs font-mono font-bold text-slate-500">25 Points Max</span>
             </div>
-            <h3 className="text-lg font-bold font-serif text-slate-900">
+            <h3 className="text-lg font-bold font-sans text-slate-900">
               Enterprise & Bank Registrations
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
@@ -398,14 +398,14 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           </div>
 
           {/* Pillar 2 */}
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-300 transition-all">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-blue-200 transition-all">
             <div className="flex items-center justify-between">
-              <span className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center font-mono font-bold text-orange-600 text-sm">
+              <span className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center font-mono font-bold text-blue-600 text-sm">
                 02
               </span>
               <span className="text-xs font-mono font-bold text-slate-500">25 Points Max</span>
             </div>
-            <h3 className="text-lg font-bold font-serif text-slate-900">
+            <h3 className="text-lg font-bold font-sans text-slate-900">
               Product & Standards Compliance
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
@@ -424,14 +424,14 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           </div>
 
           {/* Pillar 3 */}
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-300 transition-all">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-blue-200 transition-all">
             <div className="flex items-center justify-between">
-              <span className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center font-mono font-bold text-orange-600 text-sm">
+              <span className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center font-mono font-bold text-blue-600 text-sm">
                 03
               </span>
               <span className="text-xs font-mono font-bold text-slate-500">25 Points Max</span>
             </div>
-            <h3 className="text-lg font-bold font-serif text-slate-900">
+            <h3 className="text-lg font-bold font-sans text-slate-900">
               Document Vault Completeness
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
@@ -450,14 +450,14 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           </div>
 
           {/* Pillar 4 */}
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-orange-300 transition-all">
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 hover:shadow-md hover:border-blue-200 transition-all">
             <div className="flex items-center justify-between">
-              <span className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center font-mono font-bold text-orange-600 text-sm">
+              <span className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center font-mono font-bold text-blue-600 text-sm">
                 04
               </span>
               <span className="text-xs font-mono font-bold text-slate-500">25 Points Max</span>
             </div>
-            <h3 className="text-lg font-bold font-serif text-slate-900">
+            <h3 className="text-lg font-bold font-sans text-slate-900">
               Carrier & Port Handoff
             </h3>
             <p className="text-xs text-slate-600 leading-relaxed">
@@ -483,10 +483,10 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
       <section id="documents" className="scroll-mt-24 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 text-xs font-mono font-bold uppercase tracking-wider">
-            <FileText className="w-3.5 h-3.5 text-orange-600" />
+            <FileText className="w-3.5 h-3.5 text-blue-600" />
             <span>04 — Document Generation Engine</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-serif tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-sans tracking-tight leading-tight">
             1-Click Verified Document Generation. <br className="hidden sm:inline" />
             ICEGATE, CEPA, and e-Sanchit Ready.
           </h2>
@@ -505,7 +505,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 onClick={() => setActiveDocPreview('invoice')}
                 className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
                   activeDocPreview === 'invoice'
-                    ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
                     : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                 }`}
               >
@@ -516,7 +516,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 onClick={() => setActiveDocPreview('packing')}
                 className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
                   activeDocPreview === 'packing'
-                    ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
                     : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                 }`}
               >
@@ -527,7 +527,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 onClick={() => setActiveDocPreview('coo')}
                 className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
                   activeDocPreview === 'coo'
-                    ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
                     : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                 }`}
               >
@@ -538,7 +538,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 onClick={() => setActiveDocPreview('shippingBill')}
                 className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
                   activeDocPreview === 'shippingBill'
-                    ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30'
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
                     : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
                 }`}
               >
@@ -558,7 +558,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
               <div className="space-y-4">
                 <div className="flex justify-between items-start border-b border-slate-800 pb-4">
                   <div>
-                    <span className="text-orange-400 font-bold block">COMMERCIAL INVOICE #EXP-2026-0941</span>
+                    <span className="text-blue-400 font-bold block">COMMERCIAL INVOICE #EXP-2026-0941</span>
                     <span className="text-slate-400 text-[11px]">Incoterms 2020: CIF Jebel Ali Port, Dubai (UAE)</span>
                   </div>
                   <div className="text-right text-slate-400 text-[11px]">
@@ -595,7 +595,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                     </thead>
                     <tbody className="divide-y divide-slate-800/60 text-slate-200">
                       <tr>
-                        <td className="py-2 text-orange-400">0806.10.00</td>
+                        <td className="py-2 text-blue-400">0806.10.00</td>
                         <td className="py-2">Sonaka Fresh Table Grapes (5kg Boxes)</td>
                         <td className="py-2">4,800 Boxes</td>
                         <td className="py-2">$8.50</td>
@@ -616,7 +616,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
               <div className="space-y-4">
                 <div className="flex justify-between items-start border-b border-slate-800 pb-4">
                   <div>
-                    <span className="text-orange-400 font-bold block">STANDARDIZED EXPORT PACKING LIST #PL-9812</span>
+                    <span className="text-blue-400 font-bold block">STANDARDIZED EXPORT PACKING LIST #PL-9812</span>
                     <span className="text-slate-400 text-[11px]">Container: 1x40ft HC Reefer | Pallet Count: 20 Euro Pallets</span>
                   </div>
                   <div className="text-right text-slate-400 text-[11px]">
@@ -644,7 +644,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
               <div className="space-y-4">
                 <div className="flex justify-between items-start border-b border-slate-800 pb-4">
                   <div>
-                    <span className="text-orange-400 font-bold block">PREFERENTIAL CERTIFICATE OF ORIGIN (CEPA FORM 1)</span>
+                    <span className="text-blue-400 font-bold block">PREFERENTIAL CERTIFICATE OF ORIGIN (CEPA FORM 1)</span>
                     <span className="text-slate-400 text-[11px]">Issuing Authority: Directorate General of Foreign Trade (DGFT)</span>
                   </div>
                   <div className="text-right text-emerald-400 text-[11px]">
@@ -667,7 +667,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
               <div className="space-y-4">
                 <div className="flex justify-between items-start border-b border-slate-800 pb-4">
                   <div>
-                    <span className="text-orange-400 font-bold block">ICEGATE SHIPPING BILL #SB-98214-JNPT</span>
+                    <span className="text-blue-400 font-bold block">ICEGATE SHIPPING BILL #SB-98214-JNPT</span>
                     <span className="text-slate-400 text-[11px]">Customs Station: INNSA1 (Nhava Sheva, JNPT Port)</span>
                   </div>
                   <div className="text-right text-emerald-400 text-[11px]">
@@ -694,11 +694,11 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
       ───────────────────────────────────────────────────────────── */}
       <section id="shipments" className="scroll-mt-24 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-100 text-orange-900 border border-orange-300 text-xs font-mono font-bold uppercase tracking-wider">
-            <Truck className="w-3.5 h-3.5 text-orange-600" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 text-blue-900 border border-blue-200 text-xs font-mono font-bold uppercase tracking-wider">
+            <Truck className="w-3.5 h-3.5 text-blue-600" />
             <span>05 — Connected Telemetry</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-serif tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-sans tracking-tight leading-tight">
             Factory Gate to Global Destination. <br className="hidden sm:inline" />
             Real-Time Cross-Border Milestone Tracking.
           </h2>
@@ -751,10 +751,10 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             </div>
 
             {/* Stage 5 */}
-            <div className="p-4 rounded-2xl bg-orange-50 border border-orange-200 space-y-2 animate-pulse-subtle">
-              <div className="flex items-center justify-between text-[11px] font-mono font-bold text-orange-800">
+            <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 space-y-2 animate-pulse-subtle">
+              <div className="flex items-center justify-between text-[11px] font-mono font-bold text-blue-800">
                 <span>05. OCEAN FREIGHT</span>
-                <Ship className="w-3.5 h-3.5 text-orange-600" />
+                <Ship className="w-3.5 h-3.5 text-blue-600" />
               </div>
               <strong className="block text-xs text-slate-900">Vessel In-Transit</strong>
               <p className="text-[11px] text-slate-600">Arabian Sea Corridor (ETA 48h)</p>
@@ -779,10 +779,10 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
       <section id="ecosystem" className="scroll-mt-24 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 text-xs font-mono font-bold uppercase tracking-wider">
-            <Workflow className="w-3.5 h-3.5 text-orange-600" />
+            <Workflow className="w-3.5 h-3.5 text-blue-600" />
             <span>06 — Collaborative Architecture</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-serif tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-sans tracking-tight leading-tight">
             One Single Operating Canvas. <br className="hidden sm:inline" />
             Synchronous Handoff for All Trade Partners.
           </h2>
@@ -799,7 +799,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
               onClick={() => setActivePersona('msme')}
               className={`py-2 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
                 activePersona === 'msme'
-                  ? 'bg-white text-orange-600 shadow-xs border border-slate-200'
+                  ? 'bg-white text-blue-600 shadow-xs border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -849,11 +849,11 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             {activePersona === 'msme' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div className="space-y-4">
-                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-orange-800 text-xs font-bold font-mono shadow-2xs">
-                    <span className="w-1.5 h-1.5 rounded-full bg-orange-600 shrink-0" />
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold font-mono shadow-2xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0" />
                     <span>ROLE: MSME EXPORTER</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 tracking-tight leading-snug">
+                  <h3 className="text-2xl sm:text-3xl font-bold font-sans text-slate-900 tracking-tight leading-snug">
                     Factory Readiness &amp; Instant Export Documentation
                   </h3>
                   <p className="text-slate-600 text-sm leading-relaxed">
@@ -909,7 +909,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0" />
                     <span>ROLE: FREIGHT FORWARDER &amp; CARRIER</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 tracking-tight leading-snug">
+                  <h3 className="text-2xl sm:text-3xl font-bold font-sans text-slate-900 tracking-tight leading-snug">
                     Pre-Verified Cargo Bookings &amp; Zero Detention Risk
                   </h3>
                   <p className="text-slate-600 text-sm leading-relaxed">
@@ -961,7 +961,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
                     <span>ROLE: NABL &amp; APEDA QUALITY LAB</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 tracking-tight leading-snug">
+                  <h3 className="text-2xl sm:text-3xl font-bold font-sans text-slate-900 tracking-tight leading-snug">
                     Digital Lab Certificates &amp; Tamper-Proof Test Reports
                   </h3>
                   <p className="text-slate-600 text-sm leading-relaxed">
@@ -1014,7 +1014,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                     <span className="w-1.5 h-1.5 rounded-full bg-slate-700 shrink-0" />
                     <span>ROLE: CUSTOMS HOUSE AGENT (CHA)</span>
                   </div>
-                  <h3 className="text-2xl sm:text-3xl font-bold font-serif text-slate-900 tracking-tight leading-snug">
+                  <h3 className="text-2xl sm:text-3xl font-bold font-sans text-slate-900 tracking-tight leading-snug">
                     ICEGATE Shipping Bill Filing &amp; Port Customs Clearance
                   </h3>
                   <p className="text-slate-600 text-sm leading-relaxed">
@@ -1039,7 +1039,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                 <div className="bg-[#090D16] text-white p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
                   <div className="flex justify-between items-center text-xs font-mono border-b border-slate-800 pb-3">
                     <span className="font-bold tracking-wider text-slate-400">CUSTOMS CLEARANCE DESK</span>
-                    <span className="text-orange-400 font-bold bg-orange-950/60 px-2.5 py-0.5 rounded-md border border-orange-800/60">
+                    <span className="text-blue-400 font-bold bg-blue-950/60 px-2.5 py-0.5 rounded-md border border-blue-800/60">
                       Apex CHA Associates
                     </span>
                   </div>
@@ -1066,12 +1066,12 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
       {/* ─────────────────────────────────────────────────────────────
           STORY 07 — NATIONAL TRADE IMPACT METRICS
       ───────────────────────────────────────────────────────────── */}
-      <section className="bg-linear-to-r from-orange-600 via-orange-500 to-amber-600 rounded-3xl p-8 sm:p-14 text-white shadow-2xl space-y-8">
+      <section className="bg-linear-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 sm:p-14 text-white shadow-2xl space-y-8">
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 border border-white/30 text-white text-xs font-mono font-bold uppercase tracking-wider">
             National Impact Architecture
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-serif tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-sans tracking-tight">
             Built for India&apos;s $1 Trillion Export Mission
           </h2>
           <p className="text-white/90 text-sm sm:text-base leading-relaxed">
@@ -1081,7 +1081,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
-            <span className="text-3xl sm:text-5xl font-black font-serif font-mono block">100%</span>
+            <span className="text-3xl sm:text-5xl font-black font-sans font-mono block">100%</span>
             <span className="text-xs uppercase tracking-wider font-bold opacity-90 mt-2 block font-mono">
               Deterministic Rules
             </span>
@@ -1089,7 +1089,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           </div>
 
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
-            <span className="text-3xl sm:text-5xl font-black font-serif font-mono block">&lt; 3 Min</span>
+            <span className="text-3xl sm:text-5xl font-black font-sans font-mono block">&lt; 3 Min</span>
             <span className="text-xs uppercase tracking-wider font-bold opacity-90 mt-2 block font-mono">
               Readiness Audit
             </span>
@@ -1097,7 +1097,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           </div>
 
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
-            <span className="text-3xl sm:text-5xl font-black font-serif font-mono block">0–100</span>
+            <span className="text-3xl sm:text-5xl font-black font-sans font-mono block">0–100</span>
             <span className="text-xs uppercase tracking-wider font-bold opacity-90 mt-2 block font-mono">
               Weighted Scoring
             </span>
@@ -1105,7 +1105,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           </div>
 
           <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
-            <span className="text-3xl sm:text-5xl font-black font-serif font-mono block">1-Click</span>
+            <span className="text-3xl sm:text-5xl font-black font-sans font-mono block">1-Click</span>
             <span className="text-xs uppercase tracking-wider font-bold opacity-90 mt-2 block font-mono">
               Document Vault
             </span>
@@ -1118,16 +1118,16 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
           STORY 08 — FINAL ENTERPRISE COMMAND CENTER CTA
       ───────────────────────────────────────────────────────────── */}
       <section className="bg-[#090D16] rounded-3xl border border-slate-800 p-8 sm:p-14 text-white shadow-2xl relative overflow-hidden text-center space-y-8">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-xs font-mono font-bold uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-mono font-bold uppercase tracking-wider">
             <Terminal className="w-3.5 h-3.5" />
             <span>Launch Your Export Readiness Audit</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-serif text-white tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-sans text-white tracking-tight leading-tight">
             Ready to Take Your MSME Products to Global Markets?
           </h2>
 
@@ -1139,7 +1139,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
             {isLoggedIn ? (
               <Link
                 href="/dashboard"
-                className="px-8 py-4 rounded-2xl bg-linear-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-base shadow-xl shadow-orange-600/30 transition-all flex items-center gap-2.5 group cursor-pointer"
+                className="px-8 py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-base shadow-xl shadow-blue-600/20 transition-all flex items-center gap-2.5 group cursor-pointer"
               >
                 <span>Go to Your Active Dashboard</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -1148,7 +1148,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
               <>
                 <Link
                   href="/login"
-                  className="px-8 py-4 rounded-2xl bg-linear-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-base shadow-xl shadow-orange-600/30 transition-all flex items-center gap-2.5 group cursor-pointer"
+                  className="px-8 py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-base shadow-xl shadow-blue-600/20 transition-all flex items-center gap-2.5 group cursor-pointer"
                 >
                   <span>Sign In to Portal</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -1158,7 +1158,7 @@ export default function ScrollStorySections({ isLoggedIn }: ScrollStoryProps) {
                   href="/login?tab=register"
                   className="px-8 py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold text-base border border-slate-700 transition-all flex items-center gap-2.5 cursor-pointer"
                 >
-                  <Building2 className="w-5 h-5 text-orange-400" />
+                  <Building2 className="w-5 h-5 text-blue-400" />
                   <span>Register MSME / Provider</span>
                 </Link>
               </>

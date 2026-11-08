@@ -209,7 +209,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       {/* 2. AUTHENTICATION CARD */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xl shadow-slate-950/20 space-y-6 relative overflow-hidden">
         {/* Subtle decorative glow */}
-        <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10" />
+        <div className="absolute top-0 right-0 w-36 h-36 bg-blue-500/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10" />
 
         {/* PERSONA / PORTAL SELECTOR TABS */}
         <div className="space-y-2">
@@ -222,7 +222,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
               onClick={() => setSelectedRole('MSME')}
               className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                 selectedRole === 'MSME'
-                  ? 'bg-white text-orange-600 shadow-sm border border-slate-200'
+                  ? 'bg-white text-blue-600 shadow-sm border border-slate-200'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
               }`}
             >
@@ -248,7 +248,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <div
             className={`p-2.5 rounded-xl border text-[11px] leading-relaxed transition-all ${
               selectedRole === 'MSME'
-                ? 'bg-orange-50/70 border-orange-200/80 text-orange-950'
+                ? 'bg-blue-50/70 border-blue-200/80 text-blue-950'
                 : 'bg-blue-50/70 border-blue-200/80 text-blue-950'
             }`}
           >
@@ -268,11 +268,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         <div className="space-y-2">
           <a
             href={`/api/auth/google?role=${selectedRole}`}
-            className={`w-full py-3.5 px-4 rounded-2xl border-2 transition-all flex items-center justify-center gap-3 shadow-xs hover:shadow-md hover:-translate-y-0.5 cursor-pointer group ${
-              selectedRole === 'PROVIDER'
-                ? 'border-slate-200 hover:border-blue-500 bg-white hover:bg-blue-50/20 text-slate-800 font-bold text-sm'
-                : 'border-slate-200 hover:border-orange-500 bg-white hover:bg-orange-50/20 text-slate-800 font-bold text-sm'
-            }`}
+            className="w-full py-3.5 px-4 rounded-2xl border-2 border-slate-200 hover:border-blue-500 bg-white hover:bg-blue-50/20 text-slate-800 font-semibold text-sm transition-all flex items-center justify-center gap-3 shadow-xs hover:shadow-md hover:-translate-y-0.5 cursor-pointer group"
           >
             <GoogleIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
             <span>
@@ -300,7 +296,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block font-bold text-slate-900 text-xs">
-                Work Email Address <span className="text-orange-600">*</span>
+                Work Email Address <span className="text-blue-600">*</span>
               </label>
               <span className="text-[10px] text-slate-500 font-medium">
                 {selectedRole === 'PROVIDER'
@@ -321,7 +317,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                     ? 'Enter service provider email address'
                     : 'Enter registered exporter email address'
                 }
-                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 text-xs transition-all outline-none"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 text-xs transition-all outline-none"
                 required
               />
             </div>
@@ -330,7 +326,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block font-bold text-slate-900 text-xs">
-                Account Password <span className="text-orange-600">*</span>
+                Account Password <span className="text-blue-600">*</span>
               </label>
               <span className="text-[10px] text-slate-500 font-medium">Test accounts: password123</span>
             </div>
@@ -343,7 +339,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your account password"
-                className="w-full pl-10 pr-10 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 text-xs transition-all outline-none"
+                className="w-full pl-10 pr-10 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 text-xs transition-all outline-none"
                 required
               />
               <button
@@ -360,11 +356,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <button
             type="submit"
             disabled={isPending}
-            className={`w-full py-3.5 rounded-xl font-bold text-sm text-white shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 disabled:opacity-60 ${
-              selectedRole === 'PROVIDER'
-                ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/30 hover:shadow-blue-600/40'
-                : 'bg-linear-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 shadow-orange-600/30 hover:shadow-orange-600/40'
-            }`}
+            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-600/20 transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 disabled:opacity-60"
           >
             {isPending ? (
               <span className="flex items-center gap-2">
@@ -389,7 +381,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <div className="pt-3 border-t border-slate-100 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                <History className="w-3 h-3 text-orange-500" /> Recent on this device (click to fill):
+                <History className="w-3 h-3 text-blue-500" /> Recent on this device (click to fill):
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -399,8 +391,8 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                   onClick={() => handleSelectEmail(acc.email, acc.role)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
                     email === acc.email
-                      ? 'bg-orange-50 border-orange-400 text-orange-800 shadow-xs'
-                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-orange-50/50'
+                      ? 'bg-blue-50 border-blue-400 text-blue-800 shadow-xs'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50/50'
                   }`}
                   title="Click to fill email into form"
                 >
@@ -431,7 +423,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 <button
                   type="button"
                   onClick={onSwitchToRegister}
-                  className="text-blue-600 font-bold hover:underline cursor-pointer"
+                  className="text-blue-600 font-semibold hover:underline cursor-pointer"
                 >
                   Register as Service Provider →
                 </button>
@@ -442,7 +434,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 <button
                   type="button"
                   onClick={onSwitchToRegister}
-                  className="text-orange-600 font-bold hover:underline cursor-pointer"
+                  className="text-blue-600 font-semibold hover:underline cursor-pointer"
                 >
                   Register new MSME account →
                 </button>
@@ -460,7 +452,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           className="w-full p-3.5 text-left flex items-center justify-between hover:bg-slate-800/50 transition-colors cursor-pointer text-xs"
         >
           <div className="flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
             <span className="font-bold text-slate-200">
               Need Pre-configured Test Accounts? ({selectedRole} selected)
             </span>
@@ -474,7 +466,7 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         {showHelperAccounts && (
           <div className="p-4 pt-1 border-t border-slate-800 bg-slate-950/60 space-y-2 text-xs animate-in fade-in duration-150">
             <p className="text-[11px] text-slate-400">
-              Click any account below to auto-fill its credentials. Password for test accounts is <code className="bg-slate-800 px-1.5 py-0.5 rounded font-mono text-orange-300 font-bold border border-slate-700">password123</code>:
+              Click any account below to auto-fill its credentials. Password for test accounts is <code className="bg-slate-800 px-1.5 py-0.5 rounded font-mono text-blue-300 font-bold border border-slate-700">password123</code>:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
               <div
@@ -485,13 +477,13 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 }}
                 className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
                   selectedRole === 'MSME' && email === 'msme@apex-exports.com'
-                    ? 'border-orange-500 bg-slate-900 ring-1 ring-orange-500/50'
-                    : 'border-slate-800 hover:border-orange-500/60 bg-slate-900/60 hover:bg-slate-900'
+                    ? 'border-blue-500 bg-slate-900 ring-1 ring-blue-500/50'
+                    : 'border-slate-800 hover:border-blue-500/60 bg-slate-900/60 hover:bg-slate-900'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-xs text-white">MSME Exporter 1 (Agro)</span>
-                  <span className="text-[9px] bg-orange-500/20 text-orange-400 border border-orange-500/30 px-1.5 py-0.2 rounded font-bold">Mango &rarr; UAE</span>
+                  <span className="text-[9px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.2 rounded font-bold">Mango &rarr; UAE</span>
                 </div>
                 <p className="text-[10px] text-slate-400 truncate mt-0.5">msme@apex-exports.com</p>
               </div>
@@ -504,8 +496,8 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 }}
                 className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
                   selectedRole === 'MSME' && email === 'msme2@konkan-spices.com'
-                    ? 'border-orange-500 bg-slate-900 ring-1 ring-orange-500/50'
-                    : 'border-slate-800 hover:border-orange-500/60 bg-slate-900/60 hover:bg-slate-900'
+                    ? 'border-blue-500 bg-slate-900 ring-1 ring-blue-500/50'
+                    : 'border-slate-800 hover:border-blue-500/60 bg-slate-900/60 hover:bg-slate-900'
                 }`}
               >
                 <div className="flex items-center justify-between">

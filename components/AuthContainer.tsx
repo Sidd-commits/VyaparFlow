@@ -68,14 +68,14 @@ export default function AuthContainer({ currentUser }: AuthContainerProps) {
 
       {/* Tab Switcher Header */}
       <div className="flex items-center justify-center">
-        <div className="bg-slate-900/80 backdrop-blur-md p-1.5 rounded-2xl flex items-center gap-1.5 shadow-xl border border-slate-800/80 max-w-md w-full">
+        <div className="bg-slate-100 p-1 rounded-xl flex items-center gap-1 border border-slate-200 max-w-md w-full">
           <button
             type="button"
             onClick={() => setActiveTab('login')}
-            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            className={`flex-1 py-2 px-4 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'login'
-                ? 'bg-linear-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-600/30 font-extrabold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                ? 'bg-white text-blue-600 shadow-2xs font-bold'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <LogIn className="w-4 h-4" />
@@ -85,10 +85,10 @@ export default function AuthContainer({ currentUser }: AuthContainerProps) {
           <button
             type="button"
             onClick={() => setActiveTab('register')}
-            className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+            className={`flex-1 py-2 px-4 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'register'
-                ? 'bg-linear-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-600/30 font-extrabold'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                ? 'bg-white text-blue-600 shadow-2xs font-bold'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <UserPlus className="w-4 h-4" />

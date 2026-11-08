@@ -2,27 +2,27 @@
 
 @layer base {
   :root {
-    --background: #FAF9F6;
-    --foreground: #090D16;
+    --background: #FFFFFF;
+    --foreground: #0F172A;
     --card: #FFFFFF;
-    --card-foreground: #090D16;
+    --card-foreground: #0F172A;
     --popover: #FFFFFF;
-    --popover-foreground: #090D16;
-    --primary: #EA580C;
+    --popover-foreground: #0F172A;
+    --primary: #2563EB;
     --primary-foreground: #FFFFFF;
-    --secondary: #F1F5F9;
+    --secondary: #F8FAFC;
     --secondary-foreground: #0F172A;
-    --muted: #F8FAFC;
-    --muted-foreground: #475569;
-    --accent: #FFF7ED;
-    --accent-foreground: #C2410C;
-    --destructive: #DC2626;
+    --muted: #F1F5F9;
+    --muted-foreground: #64748B;
+    --accent: #EFF6FF;
+    --accent-foreground: #1D4ED8;
+    --destructive: #EF4444;
     --destructive-foreground: #FFFFFF;
     --border: #E2E8F0;
     --input: #E2E8F0;
-    --ring: #EA580C;
-    --radius: 1rem;
-    --font-serif: var(--font-newsreader), "Playfair Display", Georgia, serif;
+    --ring: #2563EB;
+    --radius: 0.875rem;
+    --font-serif: var(--font-jakarta), var(--font-geist-sans), system-ui, -apple-system, sans-serif;
     --font-sans: var(--font-jakarta), var(--font-geist-sans), system-ui, -apple-system, sans-serif;
     --font-mono: var(--font-geist-mono), ui-monospace, Menlo, monospace;
   }

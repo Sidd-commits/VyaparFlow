@@ -64,7 +64,7 @@ export default function ExportReadinessSummary({
             <button
               type="button"
               onClick={() => setIsDrawerOpen(true)}
-              className="text-xs font-semibold text-orange-600 hover:text-orange-700 inline-flex items-center gap-1 transition-colors cursor-pointer group"
+              className="text-xs font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 transition-colors cursor-pointer group"
             >
               <span>View score breakdown</span>
               <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -83,7 +83,7 @@ export default function ExportReadinessSummary({
                 ? 'bg-emerald-500'
                 : totalScore >= 60
                 ? 'bg-amber-500'
-                : 'bg-orange-600'
+                : 'bg-blue-600'
             }`}
             style={{ width: `${totalScore}%` }}
           />
