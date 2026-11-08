@@ -2,7 +2,7 @@
 
 import React, { useState, useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Building2, Truck, ArrowRight, UserPlus, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Building2, Truck, ArrowRight, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
 import { saveRecentAccount } from '@/lib/recentAccounts';
 
 interface RegisterFormProps {
@@ -79,50 +79,36 @@ export default function RegisterForm({ action }: RegisterFormProps) {
   };
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-xl space-y-6">
+    <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-900/5 space-y-6 font-sans">
       {/* Header Banner */}
-      <div className="flex items-center gap-3 pb-3 border-b border-slate-100">
-        {role === 'PROVIDER' ? (
-          <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-            <Truck className="w-5 h-5" />
-          </div>
-        ) : (
-          <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-            <Building2 className="w-5 h-5" />
-          </div>
-        )}
-
-        <div>
-          <h2 className="text-xl font-bold font-sans text-slate-900">
-            {role === 'PROVIDER'
-              ? 'Service Provider Partner Registration'
-              : 'Create MSME Exporter Account'}
-          </h2>
-          <p className="text-xs text-slate-500">
-            {role === 'PROVIDER'
-              ? 'CHA, Freight Forwarder & Laboratory Partner onboarding'
-              : 'Sign up to begin export readiness evaluation & compliance setup'}
-          </p>
-        </div>
+      <div className="space-y-1 pb-4 border-b border-slate-100">
+        <h2 className="text-xl sm:text-2xl font-bold font-sans text-slate-900 tracking-tight">
+          Create your VyaparFlow account
+        </h2>
+        <p className="text-xs text-slate-600">
+          {role === 'MSME'
+            ? 'Start your 0–100 export readiness evaluation and automate statutory documents.'
+            : 'Join as a verified Freight Forwarder, NABL Laboratory, or Customs Broker.'}
+        </p>
       </div>
 
       {/* Alert Banner (if error or warning) */}
       {errorInfo && (
         <div
-          className={`p-4 rounded-2xl border text-xs flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-200 shadow-xs ${
+          className={`p-4 rounded-2xl border text-xs flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-200 shadow-2xs ${
             errorInfo.type === 'error'
-              ? 'bg-rose-50 border-rose-200 text-rose-900'
-              : 'bg-amber-50 border-amber-200 text-amber-900'
+              ? 'bg-rose-50 border-rose-200 text-rose-950'
+              : 'bg-amber-50 border-amber-200 text-amber-950'
           }`}
         >
           <AlertCircle
-            className={`w-5 h-5 shrink-0 mt-0.5 ${
+            className={`w-4 h-4 shrink-0 mt-0.5 ${
               errorInfo.type === 'error' ? 'text-rose-600' : 'text-amber-600'
             }`}
           />
-          <div className="flex-1">
+          <div className="flex-1 space-y-0.5">
             <h4 className="font-bold text-xs">{errorInfo.title}</h4>
-            <p className="mt-0.5 text-[11px] leading-relaxed opacity-90">{errorInfo.desc}</p>
+            <p className="text-[11px] leading-relaxed opacity-90">{errorInfo.desc}</p>
           </div>
         </div>
       )}
@@ -130,39 +116,41 @@ export default function RegisterForm({ action }: RegisterFormProps) {
       <form onSubmit={handleSubmit} className="space-y-4 text-xs">
         {/* Category / Persona Selector - Side-by-Side Blocks */}
         <div className="space-y-2">
-          <label className="block font-bold text-slate-900 text-xs">
-            Select Account Category *
+          <label className="block font-bold text-slate-700 text-xs">
+            Account Type
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Category 1: MSME Exporter */}
             <button
               type="button"
               onClick={() => setRole('MSME')}
-              className={`p-4 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between gap-3 cursor-pointer ${
-                role === 'MSME' ? 'border-orange-500 bg-orange-50/60 shadow-md ring-4 ring-orange-500/10'
-                  : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/60'
+              className={`p-3.5 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between gap-2.5 cursor-pointer ${
+                role === 'MSME'
+                  ? 'border-orange-500 bg-orange-50/50 shadow-2xs ring-2 ring-orange-500/15'
+                  : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/50'
               }`}
             >
               <div className="flex items-start justify-between">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-colors ${
-                  role === 'MSME' ? 'bg-orange-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700'
-                }`}>
-                  <Building2 className="w-5 h-5" />
+                <div
+                  className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold transition-colors ${
+                    role === 'MSME' ? 'bg-orange-600 text-white shadow-2xs' : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  <Building2 className="w-4 h-4" />
                 </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                  role === 'MSME' ? 'bg-orange-100 text-orange-800 border-orange-200'
-                    : 'bg-slate-100 text-slate-600 border-slate-200'
-                }`}>
-                  Exporters
-                </span>
+                {role === 'MSME' && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                    Selected
+                  </span>
+                )}
               </div>
               <div>
                 <h4 className="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
-                  MSME Exporter
-                  {role === 'MSME' && <CheckCircle2 className="w-4 h-4 text-orange-600 shrink-0" />}
+                  <span>MSME Exporter</span>
+                  {role === 'MSME' && <CheckCircle2 className="w-3.5 h-3.5 text-orange-600 shrink-0" />}
                 </h4>
-                <p className="text-[11px] text-slate-600 leading-snug mt-1">
-                  Evaluate export readiness score, generate trade docs & book freight
+                <p className="text-[11px] text-slate-500 leading-snug mt-0.5">
+                  Indian manufacturers exporting agricultural, chemical, or engineered products.
                 </p>
               </div>
             </button>
@@ -171,33 +159,33 @@ export default function RegisterForm({ action }: RegisterFormProps) {
             <button
               type="button"
               onClick={() => setRole('PROVIDER')}
-              className={`p-4 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between gap-3 cursor-pointer ${
+              className={`p-3.5 rounded-2xl border-2 text-left transition-all relative flex flex-col justify-between gap-2.5 cursor-pointer ${
                 role === 'PROVIDER'
-                  ? 'border-blue-500 bg-blue-50/60 shadow-md ring-4 ring-blue-500/10'
-                  : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/60'
+                  ? 'border-orange-500 bg-orange-50/50 shadow-2xs ring-2 ring-orange-500/15'
+                  : 'border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/50'
               }`}
             >
               <div className="flex items-start justify-between">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold transition-colors ${
-                  role === 'PROVIDER' ? 'bg-blue-600 text-white shadow-sm' : 'bg-slate-100 text-slate-700'
-                }`}>
-                  <Truck className="w-5 h-5" />
+                <div
+                  className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold transition-colors ${
+                    role === 'PROVIDER' ? 'bg-orange-600 text-white shadow-2xs' : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  <Truck className="w-4 h-4" />
                 </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                  role === 'PROVIDER'
-                    ? 'bg-blue-100 text-blue-800 border-blue-200'
-                    : 'bg-slate-100 text-slate-600 border-slate-200'
-                }`}>
-                  Partners
-                </span>
+                {role === 'PROVIDER' && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                    Selected
+                  </span>
+                )}
               </div>
               <div>
                 <h4 className="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
-                  Service Provider
-                  {role === 'PROVIDER' && <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />}
+                  <span>Service Provider</span>
+                  {role === 'PROVIDER' && <CheckCircle2 className="w-3.5 h-3.5 text-orange-600 shrink-0" />}
                 </h4>
-                <p className="text-[11px] text-slate-600 leading-snug mt-1">
-                  CHA customs clearance, test laboratories & freight forwarders
+                <p className="text-[11px] text-slate-500 leading-snug mt-0.5">
+                  Licensed freight forwarders, NABL-accredited test labs, and customs brokers.
                 </p>
               </div>
             </button>
@@ -206,100 +194,92 @@ export default function RegisterForm({ action }: RegisterFormProps) {
         </div>
 
         {/* Full Name */}
-        <div>
-          <label className="block font-bold text-slate-900 mb-1">Full Name *</label>
+        <div className="space-y-1">
+          <label className="block font-semibold text-slate-700">Full Name</label>
           <input
             type="text"
             name="name"
-            placeholder={
-              role === 'PROVIDER'
-                ? 'e.g. Vikram Sharma'
-                : 'e.g. Ramesh Shah'
-            }
-            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none text-xs transition-all"
+            placeholder={role === 'PROVIDER' ? 'Vikram Sharma' : 'Ramesh Shah'}
+            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none text-xs transition-all"
             required
           />
         </div>
 
         {/* Email Address */}
-        <div>
-          <label className="block font-bold text-slate-900 mb-1">Work / Business Email *</label>
+        <div className="space-y-1">
+          <label className="block font-semibold text-slate-700">Work Email Address</label>
           <input
             type="email"
             name="email"
-            placeholder={
-              role === 'PROVIDER'
-                ? 'contact@freightpartner.com'
-                : 'ramesh@exportco.com'
-            }
-            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none text-xs transition-all"
+            placeholder={role === 'PROVIDER' ? 'contact@freightpartner.com' : 'ramesh@exportco.com'}
+            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none text-xs transition-all"
             required
           />
         </div>
 
         {/* Account Password */}
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="block font-bold text-slate-900">Password *</label>
-            <span className="text-[10px] text-slate-500 font-medium">Min. 6 characters</span>
+        <div className="space-y-1">
+          <div className="flex items-center justify-between">
+            <label className="block font-semibold text-slate-700">Password</label>
+            <span className="text-[10px] text-slate-500">Min. 6 characters</span>
           </div>
           <input
             type="password"
             name="password"
-            placeholder="Choose a strong password"
-            className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none text-xs transition-all"
+            placeholder="Create a secure password"
+            className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none text-xs transition-all"
             required
           />
         </div>
 
         {/* Conditional Role Fields */}
         {role === 'MSME' ? (
-          <div className="space-y-4 pt-2 border-t border-slate-100">
-            <div>
-              <label className="block font-bold text-slate-900 mb-1">Legal Company / Business Name *</label>
+          <div className="space-y-3 pt-2 border-t border-slate-100">
+            <div className="space-y-1">
+              <label className="block font-semibold text-slate-700">Legal Company / Business Name</label>
               <input
                 type="text"
                 name="businessName"
-                placeholder="e.g. Acme Organic Exports Pvt Ltd"
-                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none transition-all"
+                placeholder="e.g. Apex Agro Processing & Exports Pvt Ltd"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all"
                 required
               />
             </div>
 
-            <div>
-              <label className="block font-bold text-slate-900 mb-1">Primary Export Product / Commodity *</label>
+            <div className="space-y-1">
+              <label className="block font-semibold text-slate-700">Primary Export Commodity</label>
               <input
                 type="text"
                 name="productName"
-                placeholder="e.g. Organic Alphonso Mangoes"
-                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none transition-all"
+                placeholder="e.g. Alphonso Mango Pulp / CNC Automotive Components"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all"
                 required
               />
             </div>
           </div>
         ) : (
-          <div className="space-y-4 pt-2 border-t border-slate-100">
-            <div>
-              <label className="block font-bold text-slate-900 mb-1">Provider / Agency Legal Name *</label>
+          <div className="space-y-3 pt-2 border-t border-slate-100">
+            <div className="space-y-1">
+              <label className="block font-semibold text-slate-700">Provider / Organization Name</label>
               <input
                 type="text"
                 name="providerName"
-                placeholder="e.g. Apex International Logistics Ltd"
-                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-blue-500/15 focus:border-blue-600 outline-none transition-all"
+                placeholder="e.g. SwiftGlobe Logistics India Ltd"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium text-xs focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all"
                 required
               />
             </div>
 
-            <div>
-              <label className="block font-bold text-slate-900 mb-1">Service Domain *</label>
+            <div className="space-y-1">
+              <label className="block font-semibold text-slate-700">Service Category</label>
               <select
                 name="businessCategory"
-                className="w-full p-3 rounded-xl border border-slate-300 bg-white text-slate-900 font-bold text-xs"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 font-medium text-xs focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 outline-none transition-all cursor-pointer"
                 required
               >
-                <option value="Freight">🚢 International Ocean & Air Freight Forwarding</option>
-                <option value="Testing">🧪 Testing & Certification Laboratory</option>
-                <option value="CHA">📋 Customs House Agent (CHA)</option>
+                <option value="Freight">International Ocean &amp; Air Freight Forwarding</option>
+                <option value="Testing">Testing &amp; Quality Certification Laboratory</option>
+                <option value="CHA">Customs House Agent (CHA) &amp; Port Clearances</option>
               </select>
             </div>
           </div>
@@ -309,23 +289,20 @@ export default function RegisterForm({ action }: RegisterFormProps) {
         <button
           type="submit"
           disabled={isPending}
-          className={`w-full py-3.5 rounded-xl text-white font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-60 ${
-            role === 'PROVIDER' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-orange-600 hover:bg-orange-700'
-          }`}
+          className="w-full py-3 rounded-xl text-white font-semibold text-xs sm:text-sm bg-orange-600 hover:bg-orange-700 shadow-md shadow-orange-600/20 transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.99] disabled:opacity-60"
         >
           {isPending ? (
             <span className="flex items-center gap-2">
               <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-              Creating account...
+              <span>Creating your account...</span>
             </span>
-          ) : role === 'PROVIDER' ? (
-            <>
-              <Truck className="w-4 h-4" />
-              Register Service Partner Account →
-            </>
           ) : (
             <>
-              <span>Create Account & Continue to Setup</span>
+              <span>
+                {role === 'PROVIDER'
+                  ? 'Register Service Provider Account'
+                  : 'Create MSME Account & Continue to Setup'}
+              </span>
               <ArrowRight className="w-4 h-4" />
             </>
           )}

@@ -3,7 +3,8 @@ import Navbar from '@/components/Navbar';
 import AuthContainer from '@/components/AuthContainer';
 import { getActiveUser } from '@/app/actions';
 import { redirect } from 'next/navigation';
-import { Ship, ShieldCheck, CheckCircle2, TrendingUp, Globe2, Sparkles, Building2, MapPin } from 'lucide-react';
+import VyaparFlowLogo from '@/components/VyaparFlowLogo';
+import { ShieldCheck } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,90 +29,48 @@ export default async function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans relative">
-      {/* Navbar with clean light mode styling */}
+    <div className="min-h-screen bg-[#FAF9F6] text-slate-900 flex flex-col font-sans selection:bg-orange-100 selection:text-orange-900 relative">
+      {/* Navbar */}
       <Navbar currentRole={role} userEmail={user?.email} userName={user?.name} />
 
-      <main className="max-w-7xl mx-auto py-8 sm:py-14 px-4 sm:px-6 lg:px-8 w-full flex-1 flex items-start justify-center">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start w-full">
-          
-          {/* Left Column: Clear Value Proposition */}
-          <div className="lg:col-span-6 space-y-6 lg:pr-6 lg:sticky lg:top-24">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200/80 text-orange-900 text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-orange-600" />
-              <span>Multi-Persona Export Platform</span>
-            </div>
+      {/* Subtle ambient lighting */}
+      <div className="absolute top-16 left-1/2 -translate-x-1/2 w-full max-w-4xl h-80 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
 
-            <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-slate-900 tracking-tight leading-[1.15]">
-              Cross-border trade, <br />
-              <span className="text-orange-600">
-                simplified for Indian exporters.
-              </span>
-            </h1>
-
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              VyaparFlow unites MSME manufacturers, freight forwarders, testing laboratories, and customs house agents on one clean, deterministic platform.
-            </p>
-
-            {/* Persona Highlights */}
-            <div className="space-y-3 pt-1">
-              <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 text-orange-600 flex items-center justify-center shrink-0">
-                  <Building2 className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs text-slate-900">For Indian MSME Exporters</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    0–100 Readiness scores, automated commercial invoice/packing list PDFs, and carrier comparison quotes.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
-                  <Globe2 className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs text-slate-900">For Service Providers (Freight / Lab / CHA)</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    Fulfill ocean/air bids, upload phytosanitary & quality test reports, and execute customs shipping bill clearances.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs text-slate-900">For Platform Administrators</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    Configure deterministic product-country compliance rules, inspect document vaults, and audit dispatch trails.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Global Trade Corridor Pill */}
-            <div className="flex items-center gap-2 text-xs text-slate-500 pt-1">
-              <MapPin className="w-4 h-4 text-orange-600 shrink-0" />
-              <span>Pan-India Exporter Hubs: <strong>JNPT, Mundra, Hazira &amp; Chennai</strong> → Global Markets</span>
-            </div>
+      <main className="max-w-2xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col items-center justify-center relative z-10">
+        {/* Top Focused Brand Header */}
+        <div className="text-center space-y-2 mb-6">
+          <div className="inline-flex justify-center items-center">
+            <VyaparFlowLogo size={42} showText={true} />
           </div>
+          <p className="text-xs sm:text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
+            Pan-India Export Logistics &amp; Regulatory Compliance Platform
+          </p>
+        </div>
 
-          {/* Right Auth Card Column */}
-          <div className="lg:col-span-6 w-full max-w-lg mx-auto">
-            <Suspense fallback={<div className="text-center py-12 text-sm text-slate-400">Loading authentication interface...</div>}>
-              <AuthContainer currentUser={user} />
-            </Suspense>
-          </div>
+        {/* Central Authentication Container */}
+        <div className="w-full">
+          <Suspense
+            fallback={
+              <div className="text-center py-12 text-xs text-slate-500 flex items-center justify-center gap-2">
+                <span className="w-4 h-4 border-2 border-orange-500/30 border-t-orange-600 rounded-full animate-spin" />
+                <span>Loading authentication portal...</span>
+              </div>
+            }
+          >
+            <AuthContainer currentUser={user} />
+          </Suspense>
+        </div>
 
+        {/* Trust & Security Badge */}
+        <div className="flex items-center justify-center gap-2 text-[11px] text-slate-500 mt-8 font-medium">
+          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>256-bit TLS Encryption &bull; DGFT &amp; ICEGATE Compliant</span>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="text-center text-xs text-slate-500 py-4 border-t border-slate-200 bg-white">
-        © 2026 VyaparFlow Platform — Indian MSME Export Logistics Operating System
+      {/* Clean Minimal Footer */}
+      <footer className="text-center text-[11px] text-slate-500 py-4 border-t border-slate-200 bg-white/80">
+        &copy; 2026 VyaparFlow. Built for Indian MSME Cross-Border Exporters.
       </footer>
     </div>
   );

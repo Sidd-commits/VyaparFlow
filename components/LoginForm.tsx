@@ -16,11 +16,14 @@ import {
   Eye,
   EyeOff,
   AlertCircle,
-  Sparkles,
   History,
   X,
   ChevronDown,
   ChevronUp,
+  Building2,
+  Ship,
+  KeyRound,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface LoginFormProps {
@@ -55,7 +58,7 @@ const ERROR_MESSAGES: Record<string, { title: string; desc: string; type: 'error
   },
   google_not_configured: {
     title: 'Google OAuth Not Configured',
-    desc: 'GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing in .env. Please sign in with email/password.',
+    desc: 'GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing in environment variables. Please sign in with email/password.',
     type: 'warning',
   },
   google_auth_failed: {
@@ -169,37 +172,37 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
   const errorInfo = errorCode ? ERROR_MESSAGES[errorCode] : null;
 
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4 font-sans">
       {/* 1. ALERT BANNER (IF ERROR OR NOTICE) */}
       {errorInfo && (
         <div
-          className={`p-4 rounded-2xl border text-xs flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-200 shadow-xs ${
+          className={`p-4 rounded-2xl border text-xs flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-200 shadow-2xs ${
             errorInfo.type === 'error'
-              ? 'bg-rose-50 border-rose-200 text-rose-900'
+              ? 'bg-rose-50 border-rose-200 text-rose-950'
               : errorInfo.type === 'info'
-              ? 'bg-blue-50 border-blue-200 text-blue-900'
-              : 'bg-amber-50 border-amber-200 text-amber-900'
+              ? 'bg-orange-50 border-orange-200 text-orange-950'
+              : 'bg-amber-50 border-amber-200 text-amber-950'
           }`}
         >
           <AlertCircle
-            className={`w-5 h-5 shrink-0 mt-0.5 ${
+            className={`w-4 h-4 shrink-0 mt-0.5 ${
               errorInfo.type === 'error'
                 ? 'text-rose-600'
                 : errorInfo.type === 'info'
-                ? 'text-blue-600'
+                ? 'text-orange-600'
                 : 'text-amber-600'
             }`}
           />
           <div className="space-y-1 min-w-0 flex-1">
-            <h4 className="font-bold">{errorInfo.title}</h4>
+            <h4 className="font-bold text-xs">{errorInfo.title}</h4>
             <p className="opacity-90 leading-relaxed text-[11px]">{errorInfo.desc}</p>
             {errorCode === 'user_not_found' && onSwitchToRegister && (
               <button
                 type="button"
                 onClick={onSwitchToRegister}
-                className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-900 underline hover:text-amber-950 cursor-pointer"
+                className="mt-1.5 inline-flex items-center gap-1.5 text-[11px] font-bold text-orange-700 underline hover:text-orange-800 cursor-pointer"
               >
-                Create / Register this account now →
+                Create a new account now &rarr;
               </button>
             )}
           </div>
@@ -207,82 +210,66 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
       )}
 
       {/* 2. AUTHENTICATION CARD */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-2xl shadow-slate-950/20 space-y-6 relative overflow-hidden">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-900/5 space-y-6 relative overflow-hidden">
         {/* Subtle decorative glow */}
-        <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/10 rounded-full blur-3xl pointer-events-none -mr-10 -mt-10" />
+        <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/5 rounded-full blur-2xl pointer-events-none -mr-10 -mt-10" />
 
-        {/* PERSONA / PORTAL SELECTOR TABS */}
+        {/* ROLE SELECTION TABS */}
         <div className="space-y-2">
-          <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-            Select Portal to Sign Into:
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            Sign In As:
           </label>
-          <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-2xl border border-slate-200">
+          <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100/90 rounded-2xl border border-slate-200/80">
             <button
               type="button"
               onClick={() => setSelectedRole('MSME')}
-              className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                selectedRole === 'MSME' ? 'bg-white text-orange-600 shadow-sm border border-slate-200'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+              className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                selectedRole === 'MSME'
+                  ? 'bg-white text-orange-600 shadow-2xs font-bold border border-slate-200/80'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span className="text-sm">🏢</span>
-              <span className="truncate">MSME Exporter</span>
+              <Building2 className="w-3.5 h-3.5" />
+              <span>MSME Exporter</span>
             </button>
 
             <button
               type="button"
               onClick={() => setSelectedRole('PROVIDER')}
-              className={`py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+              className={`py-2 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 selectedRole === 'PROVIDER'
-                  ? 'bg-white text-blue-600 shadow-sm border border-slate-200'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
+                  ? 'bg-white text-orange-600 shadow-2xs font-bold border border-slate-200/80'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              <span className="text-sm">🚢</span>
-              <span className="truncate">Service Provider</span>
+              <Ship className="w-3.5 h-3.5" />
+              <span>Service Provider</span>
             </button>
           </div>
 
-          {/* Contextual Subtitle */}
-          <div
-            className={`p-2.5 rounded-xl border text-[11px] leading-relaxed transition-all ${
-              selectedRole === 'MSME' ? 'bg-orange-50/70 border-orange-200/80 text-orange-950'
-                : 'bg-blue-50/70 border-blue-200/80 text-blue-950'
-            }`}
-          >
-            {selectedRole === 'MSME' ? (
-              <p>
-                <strong>🏢 Exporter Command Center:</strong> Access factory export readiness, documents, and carrier quotes.
-              </p>
-            ) : (
-              <p>
-                <strong>🚢 Service Provider Desk:</strong> Fulfill freight forwarder bids, quarantine testing, and customs CHA filings.
-              </p>
-            )}
-          </div>
+          <p className="text-[11px] text-slate-500 font-medium px-1">
+            {selectedRole === 'MSME'
+              ? 'Access factory export readiness, statutory documents, and freight quotes.'
+              : 'Access freight forwarder bids, quarantine testing reports, and customs CHA filings.'}
+          </p>
         </div>
 
         {/* PRIMARY GOOGLE SSO BUTTON */}
         <div className="space-y-2">
           <a
             href={`/api/auth/google?role=${selectedRole}`}
-            className="w-full py-3.5 px-4 rounded-2xl border-2 border-slate-200 hover:border-orange-500 bg-white hover:bg-orange-50/20 text-slate-800 font-semibold text-sm transition-all flex items-center justify-center gap-3 shadow-xs hover:shadow-md hover:-translate-y-0.5 cursor-pointer group"
+            className="w-full py-3 px-4 rounded-xl border border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm transition-all flex items-center justify-center gap-2.5 shadow-2xs cursor-pointer group active:scale-[0.99]"
           >
-            <GoogleIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
-            <span>
-              Continue with Google (as {selectedRole === 'PROVIDER' ? 'Service Provider' : 'MSME Exporter'})
-            </span>
+            <GoogleIcon className="w-4 h-4 shrink-0" />
+            <span>Continue with Google</span>
           </a>
-          <p className="text-[11px] text-center text-slate-500 font-medium">
-            Fast, secure single sign-on with authorized Google accounts
-          </p>
         </div>
 
-        {/* OR WORK EMAIL DIVIDER */}
-        <div className="relative flex items-center justify-center my-2">
+        {/* OR DIVIDER */}
+        <div className="relative flex items-center justify-center my-3">
           <div className="border-t border-slate-200 w-full" />
-          <span className="bg-slate-100 text-slate-600 px-3.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider shrink-0 border border-slate-200 shadow-xs mx-2">
-            or work email
+          <span className="bg-white text-slate-500 px-3 text-[11px] uppercase tracking-wider shrink-0 font-medium">
+            or continue with email
           </span>
           <div className="border-t border-slate-200 w-full" />
         </div>
@@ -291,19 +278,12 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <input type="hidden" name="preferredRole" value={selectedRole} />
 
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block font-bold text-slate-900 text-xs">
-                Work Email Address <span className="text-blue-600">*</span>
-              </label>
-              <span className="text-[10px] text-slate-500 font-medium">
-                {selectedRole === 'PROVIDER'
-                  ? 'e.g. quotes@freightcorp.com'
-                  : 'e.g. ramesh@exportco.com'}
-              </span>
-            </div>
+          <div className="space-y-1.5">
+            <label className="block font-semibold text-slate-700 text-xs">
+              Work Email Address
+            </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
               <input
                 id="email-input"
                 type="email"
@@ -312,24 +292,23 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={
                   selectedRole === 'PROVIDER'
-                    ? 'Enter service provider email address'
-                    : 'Enter registered exporter email address'
+                    ? 'provider@freight.com'
+                    : 'exporter@company.com'
                 }
-                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 text-xs transition-all outline-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 text-xs transition-all outline-none"
                 required
               />
             </div>
           </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block font-bold text-slate-900 text-xs">
-                Account Password <span className="text-blue-600">*</span>
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="block font-semibold text-slate-700 text-xs">
+                Password
               </label>
-              <span className="text-[10px] text-slate-500 font-medium">Test accounts: password123</span>
             </div>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
               <input
                 id="password-input"
                 type={showPassword ? 'text' : 'password'}
@@ -337,13 +316,13 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your account password"
-                className="w-full pl-10 pr-10 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-900 placeholder:text-slate-500 font-medium focus:bg-white focus:ring-4 focus:ring-orange-500/15 focus:border-orange-600 text-xs transition-all outline-none"
+                className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 font-medium focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 text-xs transition-all outline-none"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-3.5 text-slate-500 hover:text-slate-800 p-0.5 cursor-pointer"
+                className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer"
                 title={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -354,20 +333,16 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white bg-orange-600 hover:bg-orange-700 shadow-md shadow-orange-600/25 transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 disabled:opacity-60"
+            className="w-full py-3 rounded-xl font-semibold text-xs sm:text-sm text-white bg-orange-600 hover:bg-orange-700 shadow-md shadow-orange-600/20 transition-all cursor-pointer flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.99] disabled:opacity-60"
           >
             {isPending ? (
               <span className="flex items-center gap-2">
                 <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                Signing in...
+                <span>Signing in...</span>
               </span>
             ) : (
               <>
-                <span>
-                  {selectedRole === 'PROVIDER'
-                    ? 'Sign In to Service Provider Portal'
-                    : 'Sign In to Exporter Dashboard'}
-                </span>
+                <span>Sign In to {selectedRole === 'PROVIDER' ? 'Provider Portal' : 'Exporter Dashboard'}</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -377,34 +352,32 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         {/* RECENT ACCOUNTS AUTO-FILL CHIPS */}
         {savedAccounts.length > 0 && (
           <div className="pt-3 border-t border-slate-100 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                <History className="w-3 h-3 text-orange-500" /> Recent on this device (click to fill):
-              </span>
-            </div>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+              <History className="w-3 h-3 text-orange-600" /> Recent on this device:
+            </span>
             <div className="flex flex-wrap gap-1.5">
               {savedAccounts.slice(0, 3).map((acc) => (
                 <div
                   key={acc.email}
                   onClick={() => handleSelectEmail(acc.email, acc.role)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
                     email === acc.email
-                      ? 'bg-orange-50 border-orange-400 text-orange-800 shadow-xs'
-                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-orange-50/50'
+                      ? 'bg-orange-50 border-orange-300 text-orange-900 shadow-2xs'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-200 hover:bg-orange-50/40'
                   }`}
                   title="Click to fill email into form"
                 >
-                  <span className="truncate max-w-[180px]">{acc.email}</span>
-                  <span className="text-[9px] bg-white px-1.5 py-0.2 rounded border border-slate-200 text-slate-500 font-bold">
+                  <span className="truncate max-w-[160px] text-[11px]">{acc.email}</span>
+                  <span className="text-[9px] bg-white px-1 py-0.5 rounded border border-slate-200 text-slate-500 font-bold">
                     {acc.role}
                   </span>
                   <button
                     type="button"
                     onClick={(e) => handleRemoveSaved(e, acc.email)}
-                    className="text-slate-400 hover:text-red-500 ml-1 p-0.5 rounded"
+                    className="text-slate-400 hover:text-rose-600 ml-0.5 p-0.5 rounded cursor-pointer"
                     title="Remove from device memory"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-2.5 h-2.5" />
                   </button>
                 </div>
               ))}
@@ -415,151 +388,144 @@ export default function LoginForm({ onSwitchToRegister }: LoginFormProps) {
         {/* SWITCH TO REGISTER */}
         {onSwitchToRegister && (
           <div className="text-center pt-2 text-xs text-slate-600 border-t border-slate-100">
-            {selectedRole === 'PROVIDER' ? (
-              <>
-                Looking to partner as a carrier or lab?{' '}
-                <button
-                  type="button"
-                  onClick={onSwitchToRegister}
-                  className="text-blue-600 font-semibold hover:underline cursor-pointer"
-                >
-                  Register as Service Provider →
-                </button>
-              </>
-            ) : (
-              <>
-                Don&apos;t have an exporter account yet?{' '}
-                <button
-                  type="button"
-                  onClick={onSwitchToRegister}
-                  className="text-blue-600 font-semibold hover:underline cursor-pointer"
-                >
-                  Register new MSME account →
-                </button>
-              </>
-            )}
+            Don&apos;t have an account yet?{' '}
+            <button
+              type="button"
+              onClick={onSwitchToRegister}
+              className="text-orange-600 font-semibold hover:underline cursor-pointer"
+            >
+              Create an account &rarr;
+            </button>
           </div>
         )}
       </div>
 
-      {/* 3. TEST / SEEDED ACCOUNTS HELPER (COLLAPSED BY DEFAULT) */}
-      <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl overflow-hidden shadow-lg">
+      {/* 3. TEST / SEEDED ACCOUNTS HELPER (CLEAN LIGHT THEME ACCORDION — ZERO DARK CYBERPUNK) */}
+      <div className="bg-orange-50/40 border border-orange-200/80 rounded-2xl overflow-hidden shadow-2xs">
         <button
           type="button"
           onClick={() => setShowHelperAccounts(!showHelperAccounts)}
-          className="w-full p-3.5 text-left flex items-center justify-between hover:bg-slate-800/50 transition-colors cursor-pointer text-xs"
+          className="w-full p-3.5 text-left flex items-center justify-between hover:bg-orange-100/40 transition-colors cursor-pointer text-xs"
         >
           <div className="flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            <span className="font-bold text-slate-200">
-              Need Pre-configured Test Accounts? ({selectedRole} selected)
+            <KeyRound className="w-3.5 h-3.5 text-orange-600" />
+            <span className="font-semibold text-slate-800">
+              Need Demo / Test Credentials?
+            </span>
+            <span className="text-[10px] bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-bold border border-orange-200">
+              1-Click Fill
             </span>
           </div>
-          <div className="flex items-center gap-1 text-slate-400 font-medium text-[11px]">
+          <div className="flex items-center gap-1 text-slate-500 font-medium text-[11px]">
             <span>{showHelperAccounts ? 'Hide' : 'Show accounts'}</span>
             {showHelperAccounts ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
           </div>
         </button>
 
         {showHelperAccounts && (
-          <div className="p-4 pt-1 border-t border-slate-800 bg-slate-950/60 space-y-2 text-xs animate-in fade-in duration-150">
-            <p className="text-[11px] text-slate-400">
-              Click any account below to auto-fill its credentials. Password for test accounts is <code className="bg-slate-800 px-1.5 py-0.5 rounded font-mono text-blue-300 font-bold border border-slate-700">password123</code>:
+          <div className="p-4 pt-1 border-t border-orange-200/70 bg-white/70 space-y-2.5 text-xs animate-in fade-in duration-150">
+            <p className="text-[11px] text-slate-600">
+              Click any verified test account below to auto-fill its credentials. Password is <code className="bg-orange-100/70 px-1.5 py-0.5 rounded font-mono text-orange-900 font-bold border border-orange-200">password123</code>:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+              {/* MSME 1 */}
               <div
                 onClick={() => {
                   setSelectedRole('MSME');
                   setEmail('msme@apex-exports.com');
                   setPassword('password123');
                 }}
-                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                   selectedRole === 'MSME' && email === 'msme@apex-exports.com'
-                    ? 'border-blue-500 bg-slate-900 ring-1 ring-blue-500/50'
-                    : 'border-slate-800 hover:border-blue-500/60 bg-slate-900/60 hover:bg-slate-900'
+                    ? 'border-orange-500 bg-orange-50 shadow-2xs ring-1 ring-orange-500/30'
+                    : 'border-slate-200 bg-white hover:border-orange-300 hover:bg-orange-50/30'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-white">MSME Exporter 1 (Agro)</span>
-                  <span className="text-[9px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.2 rounded font-bold">Mango &rarr; UAE</span>
+                  <span className="font-semibold text-xs text-slate-900">MSME Exporter 1</span>
+                  <span className="text-[9px] bg-orange-50 text-orange-700 border border-orange-200 px-1.5 py-0.5 rounded font-bold">Mango &rarr; UAE</span>
                 </div>
-                <p className="text-[10px] text-slate-400 truncate mt-0.5">msme@apex-exports.com</p>
+                <p className="text-[10px] text-slate-500 truncate mt-0.5 font-mono">msme@apex-exports.com</p>
               </div>
 
+              {/* MSME 2 */}
               <div
                 onClick={() => {
                   setSelectedRole('MSME');
                   setEmail('msme2@konkan-spices.com');
                   setPassword('password123');
                 }}
-                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                   selectedRole === 'MSME' && email === 'msme2@konkan-spices.com'
-                    ? 'border-blue-500 bg-slate-900 ring-1 ring-blue-500/50'
-                    : 'border-slate-800 hover:border-blue-500/60 bg-slate-900/60 hover:bg-slate-900'
+                    ? 'border-orange-500 bg-orange-50 shadow-2xs ring-1 ring-orange-500/30'
+                    : 'border-slate-200 bg-white hover:border-orange-300 hover:bg-orange-50/30'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-white">MSME Exporter 2 (Spices)</span>
-                  <span className="text-[9px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.2 rounded font-bold">Turmeric &rarr; USA</span>
+                  <span className="font-semibold text-xs text-slate-900">MSME Exporter 2</span>
+                  <span className="text-[9px] bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded font-bold">Spices &rarr; USA</span>
                 </div>
-                <p className="text-[10px] text-slate-400 truncate mt-0.5">msme2@konkan-spices.com</p>
+                <p className="text-[10px] text-slate-500 truncate mt-0.5 font-mono">msme2@konkan-spices.com</p>
               </div>
 
+              {/* Freight Forwarder */}
               <div
                 onClick={() => {
                   setSelectedRole('PROVIDER');
                   setEmail('provider@freight.com');
                   setPassword('password123');
                 }}
-                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                   selectedRole === 'PROVIDER' && email === 'provider@freight.com'
-                    ? 'border-blue-500 bg-slate-900 ring-1 ring-blue-500/50'
-                    : 'border-slate-800 hover:border-blue-500/60 bg-slate-900/60 hover:bg-slate-900'
+                    ? 'border-orange-500 bg-orange-50 shadow-2xs ring-1 ring-orange-500/30'
+                    : 'border-slate-200 bg-white hover:border-orange-300 hover:bg-orange-50/30'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-white">Freight Forwarder</span>
-                  <span className="text-[9px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.2 rounded font-bold">Logistics</span>
+                  <span className="font-semibold text-xs text-slate-900">Freight Forwarder</span>
+                  <span className="text-[9px] bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded font-bold">Ocean &amp; Air</span>
                 </div>
-                <p className="text-[10px] text-slate-400 truncate mt-0.5">provider@freight.com</p>
+                <p className="text-[10px] text-slate-500 truncate mt-0.5 font-mono">provider@freight.com</p>
               </div>
 
+              {/* Lab */}
               <div
                 onClick={() => {
                   setSelectedRole('PROVIDER');
                   setEmail('lab@certify.com');
                   setPassword('password123');
                 }}
-                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                   selectedRole === 'PROVIDER' && email === 'lab@certify.com'
-                    ? 'border-purple-500 bg-slate-900 ring-1 ring-purple-500/50'
-                    : 'border-slate-800 hover:border-purple-500/60 bg-slate-900/60 hover:bg-slate-900'
+                    ? 'border-orange-500 bg-orange-50 shadow-2xs ring-1 ring-orange-500/30'
+                    : 'border-slate-200 bg-white hover:border-orange-300 hover:bg-orange-50/30'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-white">Testing Lab</span>
-                  <span className="text-[9px] bg-purple-500/20 text-purple-400 border border-purple-500/30 px-1.5 py-0.2 rounded font-bold">Phytosanitary</span>
+                  <span className="font-semibold text-xs text-slate-900">Testing Laboratory</span>
+                  <span className="text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded font-bold">NABL Certified</span>
                 </div>
-                <p className="text-[10px] text-slate-400 truncate mt-0.5">lab@certify.com</p>
+                <p className="text-[10px] text-slate-500 truncate mt-0.5 font-mono">lab@certify.com</p>
               </div>
 
+              {/* CHA */}
               <div
                 onClick={() => {
                   setSelectedRole('PROVIDER');
                   setEmail('cha@customs.com');
                   setPassword('password123');
                 }}
-                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
+                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer sm:col-span-2 ${
                   selectedRole === 'PROVIDER' && email === 'cha@customs.com'
-                    ? 'border-emerald-500 bg-slate-900 ring-1 ring-emerald-500/50'
-                    : 'border-slate-800 hover:border-emerald-500/60 bg-slate-900/60 hover:bg-slate-900'
+                    ? 'border-orange-500 bg-orange-50 shadow-2xs ring-1 ring-orange-500/30'
+                    : 'border-slate-200 bg-white hover:border-orange-300 hover:bg-orange-50/30'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-white">Customs House Agent</span>
-                  <span className="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.2 rounded font-bold">Customs CHA</span>
+                  <span className="font-semibold text-xs text-slate-900">Customs House Agent (CHA)</span>
+                  <span className="text-[9px] bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 rounded font-bold">Port Customs &amp; LEO</span>
                 </div>
-                <p className="text-[10px] text-slate-400 truncate mt-0.5">cha@customs.com</p>
+                <p className="text-[10px] text-slate-500 truncate mt-0.5 font-mono">cha@customs.com</p>
               </div>
             </div>
           </div>
