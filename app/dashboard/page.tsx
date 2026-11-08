@@ -8,6 +8,7 @@ import AttentionRequiredSection from '@/components/dashboard/AttentionRequiredSe
 import ActiveShipmentCard from '@/components/dashboard/ActiveShipmentCard';
 import QuickNavActions from '@/components/dashboard/QuickNavActions';
 import TariffIntelligenceCard from '@/components/dashboard/TariffIntelligenceCard';
+import ScrollAssembleCard from '@/components/ui/ScrollAssembleCard';
 import { requireAuth } from '@/app/actions';
 import { prisma } from '@/lib/prisma';
 import { calculateReadinessScore } from '@/lib/services/readiness';
@@ -79,35 +80,49 @@ export default async function DashboardPage() {
     <AppShell currentRole={role} userEmail={user?.email} userName={user?.name}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* LEVEL 1 — Context & Header */}
-        <DashboardHeader
-          user={user}
-          business={business}
-          product={product ? { name: product.name, hsCode: product.hsCode } : null}
-          destinationCountryName={destination?.country.name}
-          destinationCountryIso={destination?.country.isoCode}
-        />
+        <ScrollAssembleCard direction="top" distance={20} delay={0.05}>
+          <DashboardHeader
+            user={user}
+            business={business}
+            product={product ? { name: product.name, hsCode: product.hsCode } : null}
+            destinationCountryName={destination?.country.name}
+            destinationCountryIso={destination?.country.isoCode}
+          />
+        </ScrollAssembleCard>
 
         {readinessData ? (
           <div className="space-y-6">
             {/* LEVEL 1 — Export Readiness Summary (Score & 1-line plain status) */}
-            <ExportReadinessSummary
-              readinessData={readinessData}
-              productName={product?.name}
-              destinationCountryName={destination?.country.name}
-              destinationCountryIso={destination?.country.isoCode}
-            />
+            <ScrollAssembleCard direction="bottom" distance={20} delay={0.1}>
+              <ExportReadinessSummary
+                readinessData={readinessData}
+                productName={product?.name}
+                destinationCountryName={destination?.country.name}
+                destinationCountryIso={destination?.country.isoCode}
+              />
+            </ScrollAssembleCard>
 
             {/* LEVEL 1 — What Needs Your Attention (Action Queue max 3 items) */}
-            <AttentionRequiredSection readinessData={readinessData} />
+            <ScrollAssembleCard direction="bottom" distance={20} delay={0.16}>
+              <AttentionRequiredSection readinessData={readinessData} />
+            </ScrollAssembleCard>
 
             {/* LEVEL 2 — Active Shipment Operational Status */}
-            <ActiveShipmentCard activeShipment={activeShipment} />
+            <ScrollAssembleCard direction="bottom" distance={20} delay={0.22}>
+              <ActiveShipmentCard activeShipment={activeShipment} />
+            </ScrollAssembleCard>
 
             {/* LEVEL 3 — Quick Navigation Actions */}
-            <QuickNavActions />
+            <ScrollAssembleCard direction="bottom" distance={20} delay={0.28}>
+              <QuickNavActions />
+            </ScrollAssembleCard>
 
             {/* LEVEL 4 — Collapsible Tariff Intelligence */}
-            {tariffData && <TariffIntelligenceCard data={tariffData} />}
+            {tariffData && (
+              <ScrollAssembleCard direction="bottom" distance={20} delay={0.34}>
+                <TariffIntelligenceCard data={tariffData} />
+              </ScrollAssembleCard>
+            )}
           </div>
         ) : (
           <div className="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-6">
