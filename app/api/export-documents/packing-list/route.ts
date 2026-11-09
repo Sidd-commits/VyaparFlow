@@ -66,6 +66,7 @@ export async function GET(req: NextRequest) {
     paymentTerms: '100% L/C at Sight',
     weight: shipment.weight,
     packages: shipment.packages,
+    businessType: shipment.business.businessType,
   });
 
   return new NextResponse(new Uint8Array(pdfBuffer), {

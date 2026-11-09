@@ -64,6 +64,7 @@ export async function GET(req: NextRequest) {
     totalValue: shipment.value,
     currency: shipment.currency,
     paymentTerms: '100% Irrevocable Letter of Credit (L/C at Sight)',
+    businessType: shipment.business.businessType,
   });
 
   return new NextResponse(new Uint8Array(pdfBuffer), {
