@@ -3,6 +3,7 @@ import { runDestinationSwitcherTest } from './integration/destination_switcher.t
 import { runLiveDestinationE2ETest } from './e2e/live_destination_e2e.test';
 import { runServerActionE2ETest } from './e2e/server_action_e2e.test';
 import { runTenantIsolationE2ETest } from './e2e/tenant_isolation_e2e.test';
+import { runLiveCrossRoleWalkthrough } from './e2e/live_cross_role_walkthrough';
 import { runAdminAuthorizationSecurityTests } from './security/admin_authorization.test';
 import { runPhase2SessionSecurityTests } from './security/phase2_session_security.test';
 import { runHttpRouteProtectionTests } from './integration/http_route_protection.test';
@@ -33,6 +34,7 @@ async function main() {
     await runTenantIsolationE2ETest();
     await runLiveDestinationE2ETest();
     await runServerActionE2ETest();
+    await runLiveCrossRoleWalkthrough();
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     console.log('\n================================================================');
