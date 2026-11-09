@@ -35,12 +35,15 @@ interface EditCompanyProfileModalProps {
 }
 
 const BUSINESS_TYPE_OPTIONS = [
-  'Food & Agricultural Goods (Processed Foods, Spices, Grains)',
-  'Steel & Industrial Metals (Hot-Rolled Coils, Stainless Steel)',
-  'Gems & Jewellery (Polished Diamonds, Gold Articles)',
+  'Food & Processed Agro (Ready-to-Eat, Fruit Pulps, Canned Foods)',
+  'Spices & Condiments (Black Pepper, Cardamom, Turmeric, Cumin)',
   'Textiles & Apparel (Garments, Cotton Yarn, Home Furnishing)',
+  'Engineering & Automotive Goods (Auto Parts, Industrial Machinery, Fasteners)',
   'Chemicals & Pharmaceuticals (Active Pharma Ingredients, Specialty Chemicals)',
-  'Engineering & Automotive Goods (Auto Parts, Industrial Machinery)',
+  'Ceramics & Sanitaryware (Porcelain Tiles, Vitrified Tiles, Bath Fittings)',
+  'Gems & Jewellery (Polished Diamonds, Gold Articles, Studded Jewellery)',
+  'Steel & Industrial Metals (Hot-Rolled Coils, Stainless Steel, Pipes)',
+  'Agricultural Goods (Grains, Pulses, Basmati Rice)',
   'Handicrafts, Leather & Consumer Products',
 ];
 

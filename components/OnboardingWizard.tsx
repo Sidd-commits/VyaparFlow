@@ -42,10 +42,12 @@ interface ProductItem {
 }
 
 const INDUSTRY_OPTIONS = [
-  { id: 'Textiles & Garments', label: 'Textiles & Apparel', desc: 'Readymade garments, silk, cotton, home textiles' },
-  { id: 'Food & Processed Agri', label: 'Food & Agriculture', desc: 'Spices, grains, processed foods, mango pulp' },
-  { id: 'Engineering & Machinery', label: 'Engineering Goods', desc: 'Industrial valves, pumps, precision machinery' },
-  { id: 'Chemicals & Petrochemicals', label: 'Chemicals & Allied', desc: 'Specialty chemicals, polymers, dyes & pigments' },
+  { id: 'Food & Processed Agri', label: 'Food & Agriculture', desc: 'Fruit pulps, processed foods, grains, agro produce' },
+  { id: 'Spices & Condiments', label: 'Spices & Condiments', desc: 'Black pepper, cardamom, turmeric, whole & ground spices' },
+  { id: 'Textiles & Garments', label: 'Textiles & Apparel', desc: 'Readymade garments, silk, cotton yarn, home textiles' },
+  { id: 'Engineering & Machinery', label: 'Engineering Goods', desc: 'Auto parts, industrial valves, pumps, precision machinery' },
+  { id: 'Chemicals & Petrochemicals', label: 'Chemicals & Allied', desc: 'Specialty chemicals, APIs, polymers, dyes & pigments' },
+  { id: 'Ceramics & Sanitaryware', label: 'Ceramics & Tiles', desc: 'Porcelain & vitrified tiles, sanitaryware, Morbi cluster' },
   { id: 'Pharmaceuticals & Healthcare', label: 'Pharmaceuticals', desc: 'APIs, generic formulations, medical devices' },
   { id: 'Metals & Steel', label: 'Iron, Steel & Metals', desc: 'Alloy castings, steel pipes, metal structures' },
   { id: 'Gems & Jewellery', label: 'Gems & Jewellery', desc: 'Gold ornaments, cut & polished diamonds, silver' },

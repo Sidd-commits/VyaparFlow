@@ -119,7 +119,47 @@ export function getApplicableRequirementsForCorridor(
   // Industry-specific certifications & regulatory requirements
   const bizStr = `${businessTypeStr} ${productCategoryName}`.toLowerCase();
 
-  if (bizStr.includes('food') || bizStr.includes('agri') || bizStr.includes('spice') || bizStr.includes('tea') || bizStr.includes('beverage')) {
+  // 1. Spices & Condiments (Spices Board, AGMARK, Aflatoxin / ETO testing)
+  if (bizStr.includes('spice')) {
+    rules.push(
+      {
+        title: 'Spices Board Registration Certificate (CRES)',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Statutory registration with Spices Board India under Section 11 of the Spices Board Act.',
+        mandatory: true,
+      },
+      {
+        title: 'AGMARK Quality Grading Certificate',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Mandatory export grade designation mark for Indian whole and ground spices.',
+        mandatory: true,
+      },
+      {
+        title: 'Aflatoxin & Pesticide Residue Lab Test Report (NABL)',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'NABL-accredited test certificate confirming compliance with destination MRL limits.',
+        mandatory: true,
+      },
+      {
+        title: 'Fumigation & Phytosanitary Certificate',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Plant quarantine clearance and pest disinfection certificate for spice consignment.',
+        mandatory: true,
+      }
+    );
+  } else if (bizStr.includes('food') || bizStr.includes('agri') || bizStr.includes('tea') || bizStr.includes('beverage') || bizStr.includes('mango') || bizStr.includes('grape') || bizStr.includes('fruit') || bizStr.includes('pulse') || bizStr.includes('grain')) {
     rules.push(
       {
         title: 'FSSAI Food Export Manufacturing License',
@@ -146,6 +186,57 @@ export function getApplicableRequirementsForCorridor(
         weight: 15,
         blocksDispatch: true,
         reason: 'Laboratory analytical test report verifying pesticide and heavy metal maximum residue limits (MRL).',
+        mandatory: true,
+      }
+    );
+  } else if (bizStr.includes('textile') || bizStr.includes('apparel') || bizStr.includes('garment') || bizStr.includes('cotton') || bizStr.includes('fabric') || bizStr.includes('yarn')) {
+    rules.push(
+      {
+        title: 'AEPC / Texprocil Export Promotion RCMC',
+        type: 'certification',
+        priority: 'critical',
+        weight: 20,
+        blocksDispatch: true,
+        reason: 'Apparel Export Promotion Council or Cotton Textiles Export Promotion Council registration.',
+        mandatory: true,
+      },
+      {
+        title: 'OEKO-TEX Standard 100 & AZO-Free Dye Lab Report',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Laboratory test verifying absence of harmful carcinogenic aromatic amines and AZO dyes.',
+        mandatory: true,
+      },
+      {
+        title: 'GOTS Organic / Fiber Composition Certificate',
+        type: 'certification',
+        priority: 'high',
+        weight: 15,
+        blocksDispatch: false,
+        reason: 'Verified fiber blend composition or Global Organic Textile Standard certification.',
+        mandatory: false,
+      }
+    );
+  } else if (bizStr.includes('ceramic') || bizStr.includes('sanitaryware') || bizStr.includes('porcelain') || bizStr.includes('vitrified') || bizStr.includes('floor tile') || bizStr.includes('wall tile') || /\btiles?\b/.test(bizStr)) {
+    rules.push(
+      {
+        title: 'CAPEXIL Registration-cum-Membership Certificate (RCMC)',
+        type: 'certification',
+        priority: 'critical',
+        weight: 20,
+        blocksDispatch: true,
+        reason: 'Chemicals and Allied Products Export Promotion Council registration for ceramic products.',
+        mandatory: true,
+      },
+      {
+        title: 'ISO 10545 Mechanical Strength & Water Absorption Test Report',
+        type: 'certification',
+        priority: 'critical',
+        weight: 20,
+        blocksDispatch: true,
+        reason: 'Laboratory physical testing verifying modulus of rupture, breaking strength, and water absorption <0.5%.',
         mandatory: true,
       }
     );
@@ -193,30 +284,19 @@ export function getApplicableRequirementsForCorridor(
           ? 'International conflict-free diamond certification under Kimberley Process.'
           : 'Official purity assay certificate for gold jewellery and precious articles.',
         mandatory: true,
-      }
-    );
-  } else if (bizStr.includes('textile') || bizStr.includes('apparel') || bizStr.includes('garment') || bizStr.includes('cotton') || bizStr.includes('fabric')) {
-    rules.push(
+      },
       {
-        title: 'AEPC / Texprocil Export Promotion RCMC',
-        type: 'certification',
+        title: 'Customs Valuation & Government Approved Valuer Certificate',
+        type: 'document',
         priority: 'critical',
         weight: 15,
         blocksDispatch: true,
-        reason: 'Apparel Export Promotion Council registration for garment and textile consignments.',
-        mandatory: true,
-      },
-      {
-        title: 'OEKO-TEX Standard 100 & AZO-Free Dye Lab Report',
-        type: 'certification',
-        priority: 'high',
-        weight: 15,
-        blocksDispatch: true,
-        reason: 'Laboratory test verifying absence of harmful carcinogenic aromatic amines and AZO dyes.',
+        reason: 'Formal appraisal declaring precious metal weight, stone purity, and export value.',
         mandatory: true,
       }
     );
-  } else if (bizStr.includes('chemical') || bizStr.includes('pharma') || bizStr.includes('drug') || bizStr.includes('medicine')) {
+
+  } else if (bizStr.includes('chemical') || bizStr.includes('pharma') || bizStr.includes('drug') || bizStr.includes('medicine') || bizStr.includes('api')) {
     rules.push(
       {
         title: 'Pharmexcil / Chemexcil Registration (RCMC)',
@@ -235,17 +315,44 @@ export function getApplicableRequirementsForCorridor(
         blocksDispatch: true,
         reason: 'Good Manufacturing Practice validation and batch-specific chemical assay analysis.',
         mandatory: true,
+      },
+      {
+        title: '16-Section GHS Safety Data Sheet (SDS / MSDS)',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Globally Harmonized System safety data sheet in destination language declaring hazards and handling.',
+        mandatory: true,
+      },
+      {
+        title: 'IMO / IATA Dangerous Goods (DG) or Non-DG Declaration',
+        type: 'certification',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'Certified hazardous material classification document for maritime and air carriage.',
+        mandatory: true,
       }
     );
-  } else if (bizStr.includes('engineer') || bizStr.includes('machin') || bizStr.includes('electric') || bizStr.includes('auto')) {
+  } else if (bizStr.includes('engineer') || bizStr.includes('machin') || bizStr.includes('electric') || bizStr.includes('auto') || bizStr.includes('fastener') || bizStr.includes('hardware')) {
     rules.push(
       {
         title: 'EEPC India Registration-cum-Membership Certificate (RCMC)',
         type: 'certification',
         priority: 'critical',
+        weight: 20,
+        blocksDispatch: true,
+        reason: 'Engineering Export Promotion Council registration for industrial machinery, auto parts, and precision hardware.',
+        mandatory: true,
+      },
+      {
+        title: 'Mill Test Certificate (MTC EN 10204 3.1 / Spectro Analysis)',
+        type: 'certification',
+        priority: 'critical',
         weight: 15,
         blocksDispatch: true,
-        reason: 'Engineering Export Promotion Council registration for industrial machinery and parts.',
+        reason: 'Chemical composition, tensile strength, and metallurgical hardness test certificate.',
         mandatory: true,
       },
       {
@@ -253,9 +360,18 @@ export function getApplicableRequirementsForCorridor(
         type: 'certification',
         priority: 'high',
         weight: 15,
-        blocksDispatch: true,
+        blocksDispatch: false,
         reason: 'International safety and electromagnetic compatibility compliance certificate.',
-        mandatory: true,
+        mandatory: false,
+      },
+      {
+        title: 'Production Part Approval Process (PPAP Level 3 Report)',
+        type: 'certification',
+        priority: 'high',
+        weight: 15,
+        blocksDispatch: false,
+        reason: 'Automotive dimensional verification report, control plan, and gage R&R study.',
+        mandatory: false,
       }
     );
   } else if (bizStr.includes('leather') || bizStr.includes('footwear')) {
@@ -315,6 +431,8 @@ export function getApplicableRequirementsForCorridor(
   }
 
   // Destination-specific requirements
+  const isConsumable = bizStr.includes('food') || bizStr.includes('agri') || bizStr.includes('spice') || bizStr.includes('pharma') || bizStr.includes('tea') || bizStr.includes('fruit');
+
   if (destinationCountryIso === 'AE') {
     rules.push({
       title: 'Bilingual (Arabic & English) Export Labelling',
@@ -325,16 +443,39 @@ export function getApplicableRequirementsForCorridor(
       reason: 'UAE MoIAT standard requiring Arabic product description, production, and expiry dates.',
       mandatory: true,
     });
+    if (isConsumable) {
+      rules.push({
+        title: 'Halal Food Compliance Certificate',
+        type: 'certification',
+        priority: 'high',
+        weight: 15,
+        blocksDispatch: false,
+        reason: 'Accredited Halal certification required by UAE Ministry of Climate Change and Environment.',
+        mandatory: false,
+      });
+    }
   } else if (destinationCountryIso === 'US') {
-    rules.push({
-      title: 'US FDA Prior Notice & FSVP Verification',
-      type: 'document',
-      priority: 'critical',
-      weight: 15,
-      blocksDispatch: true,
-      reason: 'US Customs and FDA electronic Prior Notice confirmation for US port entry.',
-      mandatory: true,
-    });
+    if (isConsumable) {
+      rules.push({
+        title: 'US FDA Prior Notice & FSVP Verification',
+        type: 'document',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'US Customs and FDA electronic Prior Notice confirmation for US port entry.',
+        mandatory: true,
+      });
+    } else {
+      rules.push({
+        title: 'US Customs Automated Commercial Environment (ACE) Entry Manifest',
+        type: 'document',
+        priority: 'critical',
+        weight: 15,
+        blocksDispatch: true,
+        reason: 'CBP electronic 10+2 Importer Security Filing (ISF) and commercial entry documentation.',
+        mandatory: true,
+      });
+    }
   } else if (destinationCountryIso === 'NL' || destinationCountryIso === 'DE' || destinationCountryIso === 'FR') {
     rules.push({
       title: 'EU CE Marking & REACH Chemical Declaration',
@@ -410,7 +551,13 @@ export async function syncBusinessRequirements(businessId: string): Promise<void
       products: {
         include: {
           category: true,
-          destinations: { include: { country: true, requirements: { include: { documents: true } } } },
+          destinations: {
+            include: {
+              country: true,
+              requirements: { include: { documents: true } },
+              packagingItems: true,
+            },
+          },
         },
       },
     },
@@ -419,6 +566,17 @@ export async function syncBusinessRequirements(businessId: string): Promise<void
   if (!business || business.products.length === 0) return;
 
   for (const product of business.products) {
+    // Determine matched business type for this product
+    let matchedType: BusinessType = 'Food';
+    const bizCategoryStr = `${business.businessType} ${product.category?.name || ''}`.toLowerCase();
+    for (const type of BUSINESS_TYPES) {
+      if (bizCategoryStr.includes(type.toLowerCase())) {
+        matchedType = type;
+        break;
+      }
+    }
+    const clusterConfig = BUSINESS_TYPE_CONFIGS[matchedType];
+
     for (const pc of product.destinations) {
       const applicableRules = getApplicableRequirementsForCorridor(
         business.businessType,
@@ -458,6 +616,39 @@ export async function syncBusinessRequirements(businessId: string): Promise<void
           await prisma.requirement.delete({
             where: { id: existing.id },
           }).catch(() => {});
+        }
+      }
+
+      // Synchronize sector-tailored packaging & labelling checklist items
+      if (clusterConfig?.packagingItems) {
+        const existingPkgs = pc.packagingItems || [];
+        for (const item of clusterConfig.packagingItems) {
+          const exists = existingPkgs.find((p) => p.title.toLowerCase() === item.title.toLowerCase());
+          if (!exists) {
+            await prisma.packagingItem.create({
+              data: {
+                productCountryId: pc.id,
+                title: item.title,
+                type: item.type,
+                priority: item.priority,
+                mandatory: item.mandatory,
+                status: item.initialStatus,
+                notes: item.notes,
+              },
+            }).catch(() => {});
+          }
+        }
+
+        // Clean up obsolete packaging items from other industries if incomplete
+        for (const existingPkg of existingPkgs) {
+          const isApplicable = clusterConfig.packagingItems.some(
+            (p) => p.title.toLowerCase() === existingPkg.title.toLowerCase()
+          );
+          if (!isApplicable && existingPkg.status !== 'completed') {
+            await prisma.packagingItem.delete({
+              where: { id: existingPkg.id },
+            }).catch(() => {});
+          }
         }
       }
     }
