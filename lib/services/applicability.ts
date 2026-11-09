@@ -4,6 +4,7 @@ import {
   BUSINESS_TYPE_CONFIGS,
   type BusinessType,
 } from '@/lib/businessTypeConfig';
+import { getStatutoryExportIncentive } from './financialRoi';
 
 export interface ApplicableCorridorRule {
   title: string;
@@ -29,6 +30,9 @@ export interface TariffIntelligenceData {
   sourceAuthority: string;
   lastVerifiedDate: string;
   disclaimer: string;
+  statutorySchemeName?: string;
+  statutoryRebateRate?: string;
+  statutoryBenefitSummary?: string;
 }
 
 /**
@@ -669,6 +673,13 @@ export function getTariffIntelligence(
   const safeDestName = destinationCountryName || 'No export destination added yet';
   const iso = destinationCountryIso?.toUpperCase() || '';
 
+  const statutory = getStatutoryExportIncentive(safeProd, safeHs);
+  const statutoryInfo = {
+    statutorySchemeName: statutory.schemeName,
+    statutoryRebateRate: `${statutory.ratePercentage}% FOB Remission`,
+    statutoryBenefitSummary: `${statutory.schemeFullName} (${statutory.ratePercentage}% FOB value directly credited to ICEGATE ledger)`,
+  };
+
   if (!destinationCountryIso || destinationCountryIso === '--' || !destinationCountryName) {
     return {
       corridorName: 'No Active Trade Corridor Configured',
@@ -684,6 +695,7 @@ export function getTariffIntelligence(
       sourceAuthority: 'Indian Customs ICEGATE / DGFT Trade Intelligence',
       lastVerifiedDate: '12 Sep 2026',
       disclaimer: 'Add an export destination in Onboarding or Product Settings to view tailored tariff schedules and duty arbitrage.',
+      ...statutoryInfo,
     };
   }
 
@@ -703,6 +715,7 @@ export function getTariffIntelligence(
       sourceAuthority: 'General Department of Vietnam Customs / Ministry of Industry & Trade (MOIT) / DGFT India',
       lastVerifiedDate: '12 Sep 2026',
       disclaimer: 'Indicative preferential rate under AIFTA Schedule. Exporters must submit a valid Form AI Certificate of Origin issued by authorized agencies (EIC/DGFT) for preferential customs duty.',
+      ...statutoryInfo,
     };
   }
 
@@ -722,6 +735,7 @@ export function getTariffIntelligence(
       sourceAuthority: 'Indian Customs ICEGATE / DGFT FTP 2023 / UAE Customs Tariff Schedule',
       lastVerifiedDate: '12 Sep 2026',
       disclaimer: 'Indicative tariff calculated based on published India-UAE CEPA schedule. Final customs duty assessed at port of destination based on verified CEPA Certificate of Origin.',
+      ...statutoryInfo,
     };
   }
 
@@ -741,6 +755,7 @@ export function getTariffIntelligence(
       sourceAuthority: 'European Commission TARIC Database / DGFT India REX Portal',
       lastVerifiedDate: '12 Sep 2026',
       disclaimer: 'Indicative TARIC rate for EU entry. Consignments must adhere to EU REACH, CE marking, and applicable food/textile safety directives.',
+      ...statutoryInfo,
     };
   }
 
@@ -760,6 +775,7 @@ export function getTariffIntelligence(
       sourceAuthority: 'US International Trade Commission (USITC HTS) / ICEGATE',
       lastVerifiedDate: '12 Sep 2026',
       disclaimer: 'Indicative US tariff rate under Harmonized Tariff Schedule (HTS). Merchandise processing fees (MPF) and harbor maintenance fees (HMF) apply separately.',
+      ...statutoryInfo,
     };
   }
 
@@ -779,6 +795,7 @@ export function getTariffIntelligence(
       sourceAuthority: 'HM Revenue & Customs (HMRC) Trade Tariff / DGFT',
       lastVerifiedDate: '12 Sep 2026',
       disclaimer: 'Indicative rate under UK Global Tariff. Consignments require UKCA compliance or UK product safety declarations where applicable.',
+      ...statutoryInfo,
     };
   }
 
@@ -798,6 +815,7 @@ export function getTariffIntelligence(
       sourceAuthority: 'Australian Border Force (ABF) / DFAT / DGFT India',
       lastVerifiedDate: '12 Sep 2026',
       disclaimer: 'Indicative preferential rate under Ind-Aus ECTA. Requires COO issued by designated Indian issuing agencies.',
+      ...statutoryInfo,
     };
   }
 
@@ -817,6 +835,7 @@ export function getTariffIntelligence(
       sourceAuthority: 'Zakat, Tax and Customs Authority (ZATCA) / SASO Saber / DGFT',
       lastVerifiedDate: '12 Sep 2026',
       disclaimer: 'Consignments require Saber product & shipment conformity certificates (PCoC / SCoC) prior to vessel departure.',
+      ...statutoryInfo,
     };
   }
 
@@ -836,6 +855,7 @@ export function getTariffIntelligence(
       sourceAuthority: 'Japan Customs (Ministry of Finance) / METI / DGFT India',
       lastVerifiedDate: '12 Sep 2026',
       disclaimer: 'Preferential tariff rate under IJCEPA. Requires formal Certificate of Origin issued by Export Inspection Council (EIC).',
+      ...statutoryInfo,
     };
   }
 
@@ -854,5 +874,6 @@ export function getTariffIntelligence(
     sourceAuthority: 'ICEGATE Customs Tariff & DGFT Schedule',
     lastVerifiedDate: '12 Sep 2026',
     disclaimer: 'Indicative tariff estimate based on standard HS code classification. Please verify with destination customs broker for port clearance.',
+    ...statutoryInfo,
   };
 }
